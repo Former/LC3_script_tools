@@ -1,5 +1,9 @@
 LC3 toolchain sources - fork https://github.com/edga/lc3 commit c7e8222bd74923f02a80986c83197796a725136c
 
+** Chages
+  1. Migrate to cmake
+  2. Regress test
+
  + =tests=: Regress tests programs.
  + =lc3tools=: Unix LC3 assembler and simulator from the book accompanying web-site.
  + =lcc-1.3=: LCC based C compiler for LC3.
