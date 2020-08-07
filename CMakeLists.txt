@@ -4,3 +4,4 @@ project(lc3
 )
 
 add_subdirectory(lc3tools)
+add_subdirectory(lcc-1.3)
