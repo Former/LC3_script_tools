@@ -1,0 +1,21 @@
+Enter 10 numbers.
+Input number 0 : 345
+Input number 1 : 46
+Input number 2 : 8
+Input number 3 : 2
+Input number 4 : 6
+Input number 5 : 7
+Input number 6 : 7
+Input number 7 : 4
+Input number 8 : 52
+Input number 9 : 3
+Original number 345.  Number of repeats 1
+Original number 46.  Number of repeats 1
+Original number 8.  Number of repeats 1
+Original number 2.  Number of repeats 1
+Original number 6.  Number of repeats 1
+Original number 7.  Number of repeats 2
+Original number 7.  Number of repeats 2
+Original number 4.  Number of repeats 1
+Original number 52.  Number of repeats 1
+Original number 3.  Number of repeats 1

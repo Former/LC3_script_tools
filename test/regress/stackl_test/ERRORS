@@ -1,0 +1,6 @@
+test3.c
+    COMP broken z=32767
+    AND_EQ broken z=1445
+    equals in expr works
+test9.c
+    sizeof(struct_t)*ii - not work
