@@ -4,11 +4,6 @@ project(lc3tools
 	LANGUAGES C
 )
 
-#find_package(FLEX)
-#flex_target(flex_scanner stackl.l ${CMAKE_CURRENT_BINARY_DIR}/scanner.cpp)
-
-#add_flex_bison_dependency(flex_scanner bison_parser)
-
 set(INSTALL_DIR "${CMAKE_BINARY_DIR}/bin")
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})

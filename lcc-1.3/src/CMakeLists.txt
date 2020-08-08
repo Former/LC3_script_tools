@@ -3,7 +3,6 @@ project(rcc_prj
 	DESCRIPTION "rcc_prj project"
 )
 
-#include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 set(SRCS 
@@ -37,10 +36,10 @@ set(SRCS
 	profio.c
 	symbolic.c
 
-	#sparc.c
 	dagcheck.c
 	lc3.c
 	lc3dtu.c
+	#sparc.c
 	#x86.c
 	#x86linux.c
 	)
@@ -57,10 +56,10 @@ target_compile_options(librcc PRIVATE ${COMPILE_FLAG})
 set(GEN_FILES 
 	lc3dtu
 	lc3
+	dagcheck
+	#sparc
 	#x86
 	#x86linux
-	#sparc
-	dagcheck
 	)
 
 foreach(GEN_FILE ${GEN_FILES})
@@ -82,17 +81,12 @@ endforeach()
 
 set(COMPILE_FLAG
 	-g
-#	-DLCCDIR='"${LCCDIR}${PATHSEP}"'
-#	-DPATHSEP='"${PATHSEP}"'
-#	-DBASEDIR='"${BASEDIR}${PATHSEP}"'
-#	${EXTRAFLAGS}
 	)
 
 add_executable(rcc
 	main.c
 	)
 target_compile_options(rcc PRIVATE ${COMPILE_FLAG})
-#target_link_libraries(rcc m)
 set_target_properties(rcc PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${INSTALL_DIR}/")
 
 target_link_libraries(rcc librcc)

@@ -3,7 +3,6 @@ project(lc3pp_prj
 	DESCRIPTION "lc3pp_prj project"
 )
 
-#include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 set(TOP_DIR "${CMAKE_CURRENT_SOURCE_DIR}/..")
@@ -12,10 +11,6 @@ set(PATHSEP /)
 
 set(COMPILE_FLAG
 	-g
-#	-DLCCDIR='"${LCCDIR}${PATHSEP}"'
-#	-DPATHSEP='"${PATHSEP}"'
-#	-DBASEDIR='"${BASEDIR}${PATHSEP}"'
-#	${EXTRAFLAGS}
 	)
 
 add_executable(lc3pp

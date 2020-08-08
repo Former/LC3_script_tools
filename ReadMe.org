@@ -4,9 +4,13 @@ LC3 toolchain sources - fork https://github.com/edga/lc3 commit c7e8222bd74923f0
  + =lc3tools=: Unix LC3 assembler and simulator from the book accompanying web-site.
  + =lcc-1.3=: LCC based C compiler for LC3.
 
+* Before compile
+  1. sudo aptitude install libncurses5-dev
+
 * Chages
   1. Migrate to cmake
   2. Regress test
+  3. Small bash script for simple use cmake
    
 * lc3tools
 *Original authors:* \\

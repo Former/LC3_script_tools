@@ -25,19 +25,9 @@ function(BuildFile a_OutFile a_InputFile a_Oprimization a_Index)
 		OUTPUT ${OUT_FILE}.asm
 		COMMAND mkdir -p ${OUT_FILE_DIR}
 		COMMAND ${LCC} ${CMAKE_CURRENT_SOURCE_DIR}/${a_InputFile} -o ${OUT_FILE}
-		#COMMAND ${LC3AS} ${OUT_FILE}.asm
 		DEPENDS lcc lc3as rcc cpp
 		COMMENT "Compile ${SRCS_TEST_C_FILE}"
 	)
-
-#	set(OUT_OBJ_FILE
-#			${OUT_FILE}.bin
-#			${OUT_FILE}.dbg
-#			${OUT_FILE}.lst
-#			${OUT_FILE}.obj
-#			${OUT_FILE}.sym
-#			${OUT_FILE}.vconst
-#			)
 
 	set(TARGET_NAME ${OUT_FILE_NAME}_${a_Index}_${a_Oprimization})
 	add_custom_target(${TARGET_NAME} ALL DEPENDS ${OUT_FILE}.asm)
@@ -52,7 +42,7 @@ function(BuildFile_AndRegressTest a_FileName a_Oprimization a_Index)
 endfunction()
 
 function(BuildRegressTest a_InputFileTemplate)
-	file(GLOB SRCS_TEST_C_FILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${a_InputFileTemplate}) #_RECURSE
+	file(GLOB SRCS_TEST_C_FILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${a_InputFileTemplate}) 
 	
 	set(INDEX 0)
 	
