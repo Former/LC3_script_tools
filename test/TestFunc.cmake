@@ -2,7 +2,7 @@ set(INSTALL_DIR "${CMAKE_BINARY_DIR}/bin")
 
 set(LCC ${INSTALL_DIR}/lcc) 
 set(LC3AS ${INSTALL_DIR}/lc3as) 
-set(LC3SIM ${INSTALL_DIR}/lc3sim) 
+set(LC3SIM ${INSTALL_DIR}/lc3sim-c) 
 
 set(DEFAULT_OUT ${CMAKE_CURRENT_SOURCE_DIR}/../default_out) 
 
@@ -37,7 +37,12 @@ function(BuildFile_AndRegressTest a_FileName a_Oprimization a_Index)
 	BuildFile(OUT_FILE ${a_FileName} ${a_Oprimization} ${a_Index})
 	
 	add_test(NAME test_${INDEX}_${a_FileName}_${a_Oprimization} 
-		COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/../run_regress_test ${LC3SIM} ${OUT_FILE} ${CMAKE_CURRENT_SOURCE_DIR}/${a_FileName}.in ${CMAKE_CURRENT_SOURCE_DIR}/${a_FileName}.expected ${DEFAULT_OUT}
+		COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/../run_regress_test 
+			${LC3SIM}
+			${OUT_FILE}
+			${CMAKE_CURRENT_SOURCE_DIR}/${a_FileName}.in
+			${CMAKE_CURRENT_SOURCE_DIR}/${a_FileName}.expected
+			${DEFAULT_OUT} "stdout"
 		)
 endfunction()
 

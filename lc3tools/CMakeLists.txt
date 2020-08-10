@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 project(lc3tools
-	DESCRIPTION "lc3tools c compiler "
+	DESCRIPTION "lc3tools project"
 	LANGUAGES C
 )
 

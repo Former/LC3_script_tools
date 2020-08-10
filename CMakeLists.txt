@@ -5,6 +5,7 @@ project(lc3
 
 add_subdirectory(lc3tools)
 add_subdirectory(lcc-1.3)
+add_subdirectory(lc3sim-c)
 
 enable_testing()
 add_subdirectory(test)

@@ -4,6 +4,8 @@ byte_code_file=$2
 input_file=$3
 correct_file=$4
 default_out_file=$5
+out_config=$6
+
 
 in_file=$byte_code_file.in
 out_file=$byte_code_file.out  
@@ -22,11 +24,22 @@ cp $input_file $in_file
 touch $in_file
 touch $out_file
 
-# make correct out file
-cat $default_out_file > $out_correct_file
-cat $correct_file >> $out_correct_file
+# run test prog
+if [[ $out_config == "stdout" ]]
+then
+    # make correct out file
+    cat $correct_file > $out_correct_file
 
-$sim_file -fileio $in_file $out_file -s $script_file 
+    cat $in_file | $sim_file $byte_code_file_correct > $out_file
+else
+    # make correct out file
+    cat $default_out_file > $out_correct_file
+    cat $correct_file >> $out_correct_file
+
+    $sim_file -fileio $in_file $out_file -s $script_file 
+fi
+
+
 RETVAL=$?
 [ $RETVAL -ne 0 ]  && echo $byte_code_file FAILED && exit $RETVAL
 
