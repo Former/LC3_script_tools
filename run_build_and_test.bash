@@ -10,5 +10,5 @@ cmake ..
 make -j
 
 # Run test
-ctest
+ctest -j
 
