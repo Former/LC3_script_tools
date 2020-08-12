@@ -1,16 +1,19 @@
 #!/bin/bash
 
 # Clean
-./clean_build.bash
+time ./clean_build.bash
 
 # Build
 echo "Run cmake"
 mkdir build
 cd build
-cmake .. 
-make -j
+time cmake .. 
+time make -j $1
 
 # Run test
 echo "Run ctest"
-ctest -j
+time ctest -j $1
+
+
+
 
