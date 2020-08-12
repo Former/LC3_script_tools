@@ -1,22 +1,24 @@
 #!/bin/bash
+#input files and params
 sim_file=$1
 byte_code_file=$2
-input_file=$3
-correct_file=$4
-default_out_file=$5
-out_config=$6
+append_for_name_temp_files=$3
+input_file=$4
+correct_file=$5
+default_out_file=$6
+out_config=$7
 
-
-in_file=$byte_code_file.in
-out_file=$byte_code_file.out  
-out_correct_file=$byte_code_file.correct.out
-script_file=$byte_code_file.script
-byte_code_file_correct=${byte_code_file%.*}_correct.obj
+#temp files
+in_file=$byte_code_file_$append_for_name_temp_files.in
+out_file=$byte_code_file_$append_for_name_temp_files.out
+out_correct_file=$byte_code_file_$append_for_name_temp_files.correct.out
+script_file=$byte_code_file_$append_for_name_temp_files.script
+#byte_code_file_correct=${byte_code_file%.*}_$append_for_name_temp_files_correct.obj
 
 # replace finish code to zero(nop) for stop programm after command "continue"
-sed 's/\x41\xC0\x0F\xFF/\x41\xC0\x00\x00/g' $byte_code_file > $byte_code_file_correct
+#sed 's/\x41\xC0\x0F\xFF/\x41\xC0\x00\x00/g' $byte_code_file > $byte_code_file_correct
 
-echo "file $byte_code_file_correct" > $script_file
+echo "file $byte_code_file" > $script_file
 echo "continue" >> $script_file
 echo "quit" >> $script_file
 
@@ -30,7 +32,7 @@ then
     # make correct out file
     cat $correct_file > $out_correct_file
 
-    cat $in_file | $sim_file $byte_code_file_correct > $out_file
+    cat $in_file | $sim_file $byte_code_file > $out_file
 else
     # make correct out file
     cat $default_out_file > $out_correct_file
@@ -38,7 +40,6 @@ else
 
     $sim_file -fileio $in_file $out_file -s $script_file 
 fi
-
 
 RETVAL=$?
 [ $RETVAL -ne 0 ]  && echo $byte_code_file FAILED && exit $RETVAL
