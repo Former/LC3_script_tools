@@ -1,1 +1,6 @@
 build/
+lc3tools/lex.lc3.c
+lc3tools/lex.lc3convert.c
+lcc-1.3/src/dagcheck.c
+lcc-1.3/src/lc3.c
+lcc-1.3/src/lc3dtu.c
