@@ -32,7 +32,7 @@ function(BuildObjFile a_OutObjFile a_InputFile a_OutBuildDir)
         COMMAND mkdir -p ${out_file_dir}
         COMMAND ${LCC} ${CMAKE_CURRENT_SOURCE_DIR}/${a_InputFile} -o ${template_out_file}
         COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/../correct_obj_file ${obj_file} ${obj_correct_file}
-        DEPENDS lcc lc3as rcc cpp
+        DEPENDS lcc lc3as rcc cpp ${CMAKE_CURRENT_SOURCE_DIR}/${a_InputFile}
         COMMENT "Compile ${a_InputFile}"
     )
 
@@ -52,7 +52,7 @@ function(BuildObjFiles a_OutObjFileList a_InputFileList a_OutBuildDir)
 endfunction()
 
 function(AndRegressTest a_SimExe a_ObjFile a_SourceFile a_AppendForNameTempFiles a_DefaultOutFile a_TypeOut)
-    add_test(NAME test_${a_SourceFile}_${a_AppendForNameTempFiles} 
+    add_test(NAME test_${a_AppendForNameTempFiles}__${a_SourceFile}
         COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/../run_regress_test 
             ${a_SimExe}
             ${a_ObjFile}

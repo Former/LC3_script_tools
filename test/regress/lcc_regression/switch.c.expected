@@ -74,39 +74,3 @@ x = 0x7000 (default)
 3
 4
 5
-\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95LPVco\8E\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\95\98\99\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A\9A"%
-Welcome to the LC-3 simulator.
-
-The contents of the LC-3 tools distribution, including sources, management
-tools, and data, are Copyright (c) 2003 Steven S. Lumetta.
-
-The LC-3 tools distribution is free software covered by the GNU General
-Public License, and you are welcome to modify it and/or distribute copies
-of it under certain conditions.  The file COPYING (distributed with the
-tools) specifies those conditions.  There is absolutely no warranty for
-the LC-3 tools distribution, as described in the file NO_WARRANTY (also
-distributed with the tools).
-
-Have fun.
-2:fqy\98\9F\B9\C7\DB	%,-4N\p\97\9E\A5\AC\B3\BA\C1\C2\C9鈉\92\92\92\92\8A\8B\8C\92\92\92\92\92\92\8D\8E\8F\90\91 '.5<CJQSSd~\85\A5\AC\AD\B6\B6\B6\B6\AE\AF\B0\B6\B6\B6\B6\B6\B6\B1\B2\B3\B4\B5\D1\D9\E1\E9\F1\F9	,HOi\D2\D2\D2ҙ\CE\CE\CF\CF\CF\D0\D0\D0\C3\D3\D3\D3\D3\F3
-!2I`qq\8E\95\B5\D1\ED	;Qm\89\9F\BB\D1\E7\F5#:Qh\96\AD\C4\DB\F218b\99\AF\C6\DD\F4
-Mau\89\9D\B1\BF\BF\DD
-!5I]q\A7\D9\FB\FC\005
-
-Welcome to the LC-3 simulator.
-
-The contents of the LC-3 tools distribution, including sources, management
-tools, and data, are Copyright (c) 2003 Steven S. Lumetta.
-
-The LC-3 tools distribution is free software covered by the GNU General
-Public License, and you are welcome to modify it and/or distribute copies
-of it under certain conditions.  The file COPYING (distributed with the
-tools) specifies those conditions.  There is absolutely no warranty for
-the LC-3 tools distribution, as described in the file NO_WARRANTY (also
-distributed with the tools).
-
-Have fun.
-
-
---- halting the LC-3 ---
-
