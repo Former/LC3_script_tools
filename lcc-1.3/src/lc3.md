@@ -1435,6 +1435,7 @@ static void defstring(int n, char *str) {
                 case '\t':  print("\\t"); break;
                 case '\v':  print("\\v"); break;
                 case '\0':  print("\\0"); break;
+                case '\"':  print("\\\""); break;
                 case '\\':  print("\\\\"); break;
                 default: print("%c", (*s));
             }
