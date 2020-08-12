@@ -29,7 +29,7 @@ set(COMPILE_FLAG
 add_executable(cpp
 	${SRCS}
 	)
-target_compile_options(cpp PRIVATE ${COMPILE_FLAG})
+target_compile_options(cpp PRIVATE ${COMPILE_FLAG} ${EXTRA_COMPILE_OPTIONS})
 set_target_properties(cpp PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${INSTALL_DIR}/")
 
 

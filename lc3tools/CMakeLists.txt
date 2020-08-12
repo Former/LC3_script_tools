@@ -36,7 +36,7 @@ add_executable(lc3as
 	${SOURCES_ASM}
 	)
 
-target_compile_options(lc3as PRIVATE -g)
+target_compile_options(lc3as PRIVATE -g -O2)
 target_link_libraries(lc3as libasm_symbol)
 set_target_properties(lc3as PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${INSTALL_DIR}")
 
@@ -61,7 +61,7 @@ add_executable(lc3convert
 	${SOURCES_COVERT}
 	)
 
-target_compile_options(lc3convert PRIVATE -g)
+target_compile_options(lc3convert PRIVATE -g -O2)
 set_target_properties(lc3convert PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${INSTALL_DIR}")
 
 # lc3sim
@@ -70,7 +70,7 @@ add_library(libsim_symbol STATIC
 	symbol.h
 	)
 target_compile_definitions(libsim_symbol PRIVATE MAP_LOCATION_TO_SYMBOL)
-target_compile_options(libsim_symbol PRIVATE -g -Wall)
+target_compile_options(libsim_symbol PRIVATE -g -Wall -O2)
 
 set(SIM_FILES 
 	lc3sim.c
@@ -84,7 +84,7 @@ add_executable(lc3sim
 	)
 target_link_libraries(lc3sim curses libsim_symbol)
 target_compile_definitions(lc3sim PRIVATE INSTALL_DIR="${INSTALL_DIR}" MAP_LOCATION_TO_SYMBOL)
-target_compile_options(lc3sim PRIVATE -g -Wall)
+target_compile_options(lc3sim PRIVATE -g -Wall -O2)
 set_target_properties(lc3sim PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${INSTALL_DIR}")
 
 # lc3sym-tk

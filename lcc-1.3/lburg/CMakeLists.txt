@@ -21,7 +21,7 @@ set(COMPILE_FLAG
 add_executable(lburg
 	${SRCS}
 	)
-target_compile_options(lburg PRIVATE ${COMPILE_FLAG})
+target_compile_options(lburg PRIVATE ${COMPILE_FLAG} ${EXTRA_COMPILE_OPTIONS})
 set_target_properties(lburg PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${INSTALL_DIR}/")
 
 

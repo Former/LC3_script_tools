@@ -3,6 +3,8 @@ project(lcc-1.3
 	DESCRIPTION "lcc-1.3 project"
 )
 
+set(EXTRA_COMPILE_OPTIONS -O2)
+
 add_subdirectory(cpp)
 add_subdirectory(etc)
 add_subdirectory(lburg)

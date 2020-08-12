@@ -16,12 +16,12 @@ set(COMPILE_FLAG
 add_executable(lc3pp
 	lc3pp.c
 	)
-target_compile_options(lc3pp PRIVATE ${COMPILE_FLAG})
+target_compile_options(lc3pp PRIVATE ${COMPILE_FLAG} ${EXTRA_COMPILE_OPTIONS})
 set_target_properties(lc3pp PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${INSTALL_DIR}/")
 
 add_executable(SourcePaste
 	SourcePaste.c
 	)
-target_compile_options(SourcePaste PRIVATE ${COMPILE_FLAG})
+target_compile_options(SourcePaste PRIVATE ${COMPILE_FLAG} ${EXTRA_COMPILE_OPTIONS})
 set_target_properties(SourcePaste PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${INSTALL_DIR}/")
 

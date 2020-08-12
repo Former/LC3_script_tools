@@ -22,7 +22,7 @@ set(COMPILE_FLAG
 add_executable(lcc
 	${SRCS}
 	)
-target_compile_options(lcc PRIVATE ${COMPILE_FLAG})
+target_compile_options(lcc PRIVATE ${COMPILE_FLAG} ${EXTRA_COMPILE_OPTIONS})
 set_target_properties(lcc PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${INSTALL_DIR}/")
 
 target_compile_definitions(lcc PRIVATE LCCDIR="${INSTALL_DIR}${PATHSEP}" PATHSEP="${PATHSEP}" BASEDIR="${BASEDIR}${PATHSEP}")

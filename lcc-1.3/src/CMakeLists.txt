@@ -51,7 +51,7 @@ set(PATHSEP /)
 add_library(librcc STATIC 
 	${SRCS}
 	)
-target_compile_options(librcc PRIVATE ${COMPILE_FLAG})
+target_compile_options(librcc PRIVATE ${COMPILE_FLAG} ${EXTRA_COMPILE_OPTIONS})
 
 set(GEN_FILES 
 	lc3dtu
@@ -86,7 +86,7 @@ set(COMPILE_FLAG
 add_executable(rcc
 	main.c
 	)
-target_compile_options(rcc PRIVATE ${COMPILE_FLAG})
+target_compile_options(rcc PRIVATE ${COMPILE_FLAG} ${EXTRA_COMPILE_OPTIONS})
 set_target_properties(rcc PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${INSTALL_DIR}/")
 
 target_link_libraries(rcc librcc)
