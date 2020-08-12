@@ -1,9 +1,10 @@
 cmake_minimum_required(VERSION 3.10)
 project(lcc-1.3
-	DESCRIPTION "lcc-1.3 project"
+    DESCRIPTION "lcc-1.3 project"
 )
 
-set(EXTRA_COMPILE_OPTIONS -O2)
+set(OPTIMIZE_COMPILE_OPTION -O2)
+set(EXTRA_COMPILE_OPTIONS ${OPTIMIZE_COMPILE_OPTION})
 
 add_subdirectory(cpp)
 add_subdirectory(etc)
