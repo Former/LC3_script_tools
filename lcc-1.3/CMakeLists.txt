@@ -3,7 +3,7 @@ project(lcc-1.3
     DESCRIPTION "lcc-1.3 project"
 )
 
-set(OPTIMIZE_COMPILE_OPTION -O2)
+set(OPTIMIZE_COMPILE_OPTION -O0)
 set(EXTRA_COMPILE_OPTIONS ${OPTIMIZE_COMPILE_OPTION})
 
 add_subdirectory(cpp)
