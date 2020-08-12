@@ -11,7 +11,6 @@ set(TYPE_OUT_STDOUT "stdout")
 set(TYPE_OUT_FILE "file")
 
 function(BuildObjFile a_OutObjFile a_InputFile a_OutBuildDir)
-     message("a_InputFile = ${a_InputFile} a_OutBuildDir = ${a_OutBuildDir}")
     set(raw_template_out_file
         ${CMAKE_CURRENT_BINARY_DIR}/${a_OutBuildDir}/${a_InputFile}
         )
@@ -34,19 +33,16 @@ function(BuildObjFile a_OutObjFile a_InputFile a_OutBuildDir)
         COMMAND ${LCC} ${CMAKE_CURRENT_SOURCE_DIR}/${a_InputFile} -o ${template_out_file}
         COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/../correct_obj_file ${obj_file} ${obj_correct_file}
         DEPENDS lcc lc3as rcc cpp
-        COMMENT "Compile ${a_InputFile} to ${obj_correct_file}"
+        COMMENT "Compile ${a_InputFile}"
     )
 
     set(cur_target_name ${a_OutBuildDir}_${out_file_name})
-    message("cur_target_name = ${cur_target_name} a_OutBuildDir = ${a_OutBuildDir}")
     add_custom_target(${cur_target_name} ALL DEPENDS ${obj_correct_file})
 endfunction()
 
 function(BuildObjFiles a_OutObjFileList a_InputFileList a_OutBuildDir)
     set(out_list)
-    message("BuildObjFiles a_InputFileList = ${a_InputFileList} a_OutBuildDir = ${a_OutBuildDir}")
     foreach(cur_file ${a_InputFileList})
-        message("cur_file = ${cur_file}")
         BuildObjFile(out_file ${cur_file} ${a_OutBuildDir}) 
 
         list(APPEND out_list ${out_file})
@@ -66,34 +62,4 @@ function(AndRegressTest a_SimExe a_ObjFile a_SourceFile a_AppendForNameTempFiles
             ${a_DefaultOutFile} 
             ${a_TypeOut}
         )
-endfunction()
-
-macro(AndRegressTests a_SimExe a_ObjFileList a_SourceFileList a_ExcludeSourceFileList a_AppendForNameTempFiles a_DefaultOutFile a_TypeOut)
-    list(LENGTH a_ObjFileList obj_file_count)
-    foreach(index RANGE 0 obj_file_count)
-        list(GET a_ObjFileList index cur_obj_file)
-        list(GET a_SourceFileList index cur_src_file)
-
-        list(FIND a_ExcludeSourceFileList ${cur_src_file} find_src_file)
-        if(NOT ${find_src_file} EQUAL -1)
-            continue() # Cur source are exclude
-        endif()
-
-        AndRegressTest(${a_SimExe} ${cur_obj_file} ${cur_src_file} ${a_AppendForNameTempFiles} ${a_DefaultOutFile} ${a_TypeOut})
-    endforeach()
-endmacro()
-
-function(MakeFileList a_OutFileList a_InputFileTemplateList)
-    set(out_list)
-    set(a_InputFileTemplateList1 ${a_InputFileTemplateList})
-    message("a_InputFileTemplateList1 = ${a_InputFileTemplateList1}")
-
-    foreach(cur_templete ${a_InputFileTemplateList})
-        file(GLOB cur_list RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${cur_templete}) 
-
-        list(APPEND out_list ${cur_list})
-        message("cur_list = ${cur_list}")
-    endforeach()
-
-    set(a_OutFileList out_list PARENT_SCOPE)
 endfunction()
