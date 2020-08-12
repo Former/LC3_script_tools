@@ -9,10 +9,10 @@ default_out_file=$6
 out_config=$7
 
 #temp files
-in_file=$byte_code_file_$append_for_name_temp_files.in
-out_file=$byte_code_file_$append_for_name_temp_files.out
-out_correct_file=$byte_code_file_$append_for_name_temp_files.correct.out
-script_file=$byte_code_file_$append_for_name_temp_files.script
+in_file=$byte_code_file.$append_for_name_temp_files.in
+out_file=$byte_code_file.$append_for_name_temp_files.out
+out_correct_file=$byte_code_file.$append_for_name_temp_files.correct.out
+script_file=$byte_code_file.$append_for_name_temp_files.script
 #byte_code_file_correct=${byte_code_file%.*}_$append_for_name_temp_files_correct.obj
 
 # replace finish code to zero(nop) for stop programm after command "continue"

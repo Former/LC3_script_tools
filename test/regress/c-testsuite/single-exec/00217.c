@@ -1,12 +1,12 @@
-int printf(const char *, ...);
+//int printf(const char *, ...);
 char t[] = "012345678";
 
 int main(void)
 {
     char *data = t;
-    unsigned long long r = 4;
+    unsigned int r = 4;
     unsigned a = 5;
-    unsigned long long b = 12;
+    unsigned int b = 12;
 
     *(unsigned*)(data + r) += a - b;
 
