@@ -48,4 +48,5 @@ diff -qbwB $out_file $out_correct_file
 RETVAL=$?
 [ $RETVAL -eq 0 ] && echo $byte_code_file PASSED
 [ $RETVAL -ne 0 ] && echo $byte_code_file FAILED
+[ $RETVAL -ne 0 ] && echo "diff $out_correct_file $out_file:" && diff $out_correct_file $out_file --color -y
 exit $RETVAL
