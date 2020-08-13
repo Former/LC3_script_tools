@@ -141,7 +141,7 @@ typedef struct {
 
 #include "config.h"
 typedef struct metrics {
-	unsigned char size, align, outofline;
+	unsigned char size, align, outofline, bits_count_in_one_byte;
 } Metrics;
 typedef struct interface {
 	Metrics charmetric;

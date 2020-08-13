@@ -752,37 +752,33 @@ static Symbol icon(unsigned long n, int overflow, int base) {
 
 	switch (tval.type->op) {
 	case INT:
-		 /*
 		if (overflow || n > tval.type->u.sym->u.limits.max.i) {
 			warning("overflow in constant `%S'\n", token,
 				(char*)cp - token);
 			tval.u.c.v.i = tval.type->u.sym->u.limits.max.i;
 		} else
 			tval.u.c.v.i = n;
-			*/
-		if (n > 1<<15) {
+		/*if (n > 1<<15) {
 			warning("overflow in constant `%S'\n", token,
 				(char*)cp - token);
 			tval.u.c.v.i = 1<<15;
 		} else
-			tval.u.c.v.i = n;
+			tval.u.c.v.i = n;*/
 		 //tval.u.c.v.i = n;//lc3
 		break;
 	case UNSIGNED:
-		/*
 		if (overflow || n > tval.type->u.sym->u.limits.max.u) {
 			warning("overflow in constant `%S'\n", token,
 				(char*)cp - token);
 			tval.u.c.v.u = tval.type->u.sym->u.limits.max.u;
 		} else
 			tval.u.c.v.u = n;
-			*/
-		if (n > 1<<16) {
+		/*if (n > 1<<16) {
 			warning("overflow in constant `%S'\n", token,
 				(char*)cp - token);
 			tval.u.c.v.u = 1<<16;
 		} else
-			tval.u.c.v.u = n;
+			tval.u.c.v.u = n;*/
 		//tval.u.c.v.u = n;//lc3
 		break;
 	default: assert(0);

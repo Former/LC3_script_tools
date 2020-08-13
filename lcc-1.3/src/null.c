@@ -30,16 +30,16 @@ static void I(stabtype)(Symbol p) {}
 static char rcsid[] = "$Id: null.c,v 1.1.1.1 2004/03/24 04:37:33 sjp Exp $";
 
 Interface nullIR = {
-	1, 1, 0,	/* char */
-	2, 2, 0,	/* short */
-	4, 4, 0,	/* int */
-	8, 8, 1,	/* long */
-	8 ,8, 1,	/* long long */
-	4, 4, 1,	/* float */
-	8, 8, 1,	/* double */
-	16,16,1,	/* long double */
-	4, 4, 0,	/* T* */
-	0, 4, 0,	/* struct */
+	1, 1, 0, 8,	/* char */
+	2, 2, 0, 8,	/* short */
+	4, 4, 0, 8,	/* int */
+	8, 8, 1, 8,	/* long */
+	8 ,8, 1, 8,	/* long long */
+	4, 4, 1, 8,	/* float */
+	8, 8, 1, 8,	/* double */
+	16,16,1, 8,	/* long double */
+	4, 4, 0, 8,	/* T* */
+	0, 4, 0, 8,	/* struct */
 	1,		/* little_endian */
 	0,		/* mulops_calls */
 	0,		/* wants_callb */

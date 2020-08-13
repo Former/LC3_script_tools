@@ -435,16 +435,16 @@ static void I(stabsym)(Symbol p) {}
 static void I(stabtype)(Symbol p) {}
 
 Interface symbolicIR = {
-	1, 1, 0,	/* char */
-	2, 2, 0,	/* short */
-	4, 4, 0,	/* int */
-	4, 4, 0,	/* long */
-	4, 4, 0,	/* long long */
-	4, 4, 1,	/* float */
-	8, 8, 1,	/* double */
-	8, 8, 1,	/* long double */
-	4, 4, 0,	/* T* */
-	0, 4, 0,	/* struct */
+	1, 1, 0, 8,	/* char */
+	2, 2, 0, 8,	/* short */
+	4, 4, 0, 8,	/* int */
+	4, 4, 0, 8,	/* long */
+	4, 4, 0, 8,	/* long long */
+	4, 4, 1, 8,	/* float */
+	8, 8, 1, 8,	/* double */
+	8, 8, 1, 8,	/* long double */
+	4, 4, 0, 8,	/* T* */
+	0, 4, 0, 8,	/* struct */
 	0,		/* little_endian */
 	0,		/* mulops_calls */
 	0,		/* wants_callb */
@@ -480,16 +480,16 @@ Interface symbolicIR = {
 };
 
 Interface symbolic64IR = {
-	1, 1, 0,	/* char */
-	2, 2, 0,	/* short */
-	4, 4, 0,	/* int */
-	8, 8, 0,	/* long */
-	8, 8, 0,	/* long long */
-	4, 4, 1,	/* float */
-	8, 8, 1,	/* double */
-	8, 8, 1,	/* long double */
-	8, 8, 0,	/* T* */
-	0, 1, 0,	/* struct */
+	1, 1, 0, 8,	/* char */
+	2, 2, 0, 8,	/* short */
+	4, 4, 0, 8,	/* int */
+	8, 8, 0, 8,	/* long */
+	8, 8, 0, 8,	/* long long */
+	4, 4, 1, 8,	/* float */
+	8, 8, 1, 8,	/* double */
+	8, 8, 1, 8,	/* long double */
+	8, 8, 0, 8,	/* T* */
+	0, 1, 0, 8,	/* struct */
 	1,		/* little_endian */
 	0,		/* mulops_calls */
 	0,		/* wants_callb */

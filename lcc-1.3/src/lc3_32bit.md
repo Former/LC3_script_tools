@@ -1600,17 +1600,17 @@ static void blkstore(int size, int off, int reg, int tmp) {
 }
 
 
-Interface lc3IR = {
-	1, 1, 1, 16,  /* char */    // FixMe: 3rd param outofline is set, so forbids constant to apear in DAGs
-	1, 1, 1, 16,  /* short */
-	1, 1, 1, 16,  /* int */
-	1, 1, 1, 16,  /* long */
-	1, 1, 1, 16,  /* long long */
-	4, 4, 1, 16,  /* float */
-	8, 8, 1, 16,  /* double */
-	8, 8, 1, 16,  /* long double */
-	1, 1, 0, 16,  /* T * */
-	0, 1, 0, 16,  /* struct */
+Interface lc3_32bitIR = {
+	1, 1, 1, 32,  /* char */    // FixMe: 3rd param outofline is set, so forbids constant to apear in DAGs
+	1, 1, 1, 32,  /* short */
+	1, 1, 1, 32,  /* int */
+	1, 1, 1, 32,  /* long */
+	1, 1, 1, 32,  /* long long */
+	4, 4, 1, 32,  /* float */
+	8, 8, 1, 32,  /* double */
+	8, 8, 1, 32,  /* long double */
+	1, 1, 0, 32,  /* T * */
+	0, 1, 0, 32,  /* struct */
 	0,      /* big_endian 0=big*/
 	0,  /* mulops_calls 1=hardware does not implement mul,div,rem */
 	0,  /* 0 = no wants_callb */

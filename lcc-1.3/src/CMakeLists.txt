@@ -38,6 +38,7 @@ set(SRCS
 
 	dagcheck.c
 	lc3.c
+	lc3_32bit.c
 	#lc3dtu.c
 	#sparc.c
 	#x86.c
@@ -56,6 +57,7 @@ target_compile_options(librcc PRIVATE ${COMPILE_FLAG} ${EXTRA_COMPILE_OPTIONS})
 set(GEN_FILES 
 	dagcheck
 	lc3
+	lc3_32bit
 	#lc3dtu
 	#sparc
 	#x86
