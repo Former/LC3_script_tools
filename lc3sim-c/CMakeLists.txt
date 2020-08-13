@@ -25,10 +25,17 @@ set(SOURCES
     )
 
 set(CMAKE_C_COMPILER gcc)
-add_executable(lc3sim-c 
+add_executable(lc3sim-c16 
     ${SOURCES}
     )
-target_compile_options(lc3sim-c PRIVATE ${OPTIMIZE_COMPILE_OPTION} -Wall -g --std=c11)
-set_target_properties(lc3sim-c PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${INSTALL_DIR}/")
+target_compile_definitions(lc3sim-c16 PRIVATE LC3_16BIT)
+target_compile_options(lc3sim-c16 PRIVATE ${OPTIMIZE_COMPILE_OPTION} -Wall -g --std=c11)
+set_target_properties(lc3sim-c16 PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${INSTALL_DIR}/")
 
+add_executable(lc3sim-c32 
+    ${SOURCES}
+    )
+target_compile_definitions(lc3sim-c32 PRIVATE LC3_32BIT)
+target_compile_options(lc3sim-c32 PRIVATE ${OPTIMIZE_COMPILE_OPTION} -Wall -g --std=c11)
+set_target_properties(lc3sim-c32 PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${INSTALL_DIR}/")
 

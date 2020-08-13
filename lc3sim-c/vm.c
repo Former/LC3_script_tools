@@ -15,6 +15,7 @@
 #include <sys/mman.h>
 
 #include "vm.h"
+#include "types.h"
 
 #ifdef TRACE
 #   define DEBUG_TRACE printf
@@ -28,14 +29,14 @@ extern unsigned int lc3os_obj_len;
 // MARK: - Types
 
 enum {
-    VM_ADDR_MAX = UINT16_MAX,
+    VM_ADDR_MAX     = LC3_MAX_MEMORY_ADDRES,
     VM_ADDR_INITIAL = 0x3000,
-    VM_SIGN_BIT = 1 << 15,
-    VM_STATUS_BIT = 1 << 15,
+    VM_SIGN_BIT     = 1 << LC3_SIGN_BIT_INDEX,
+    VM_STATUS_BIT   = 1 << LC3_STATUS_BIT_INDEX,
 };
 
-typedef uint16_t vm_byte;
-typedef uint16_t vm_addr;
+typedef lc3_register_type vm_byte;
+typedef lc3_mem_addres_type vm_addr;
 
 typedef enum {
     VM_OPCODE_ADD  = 0b0001,
@@ -95,8 +96,8 @@ static uint16_t swap16(uint16_t val) {
     return (val << 8) | (val >> 8);
 }
 
-static uint16_t sextend(uint16_t val, uint16_t n) {
-    uint16_t m = 1 << (n - 1);
+static vm_byte sextend(vm_byte val, vm_byte n) {
+    vm_byte m = 1 << (n - 1);
     val &= ((1 << n) - 1);
     return (val ^ m) - m;
 }
@@ -197,15 +198,16 @@ vm_result vm_load_file(vm_ctx vm, const char *file) {
 }
 
 vm_result vm_load_data(vm_ctx vm, unsigned const char *data, size_t length) {
+    typedef uint16_t vm_byte_load;
     assert(vm != NULL);
 
-    vm_addr load_addr = swap16(*((vm_addr*)data));
-    size_t load_length = (length - sizeof(vm_addr)) / sizeof(vm_byte);
+    vm_addr load_addr = swap16(*((vm_byte_load*)data));
+    size_t load_length = (length - sizeof(vm_byte_load)) / sizeof(vm_byte_load);
 
     assert(load_addr + load_length < VM_ADDR_MAX);
 
     vm_byte *dest = vm->mem + load_addr;
-    vm_byte *source = (vm_byte*)(data + sizeof(vm_addr));
+    vm_byte_load *source = (vm_byte_load*)(data + sizeof(vm_byte_load));
 
     if (dest + load_length >= vm->mem + VM_ADDR_MAX) {
         return VM_INPUT_TOO_LARGE;
@@ -222,7 +224,7 @@ vm_result vm_load_data(vm_ctx vm, unsigned const char *data, size_t length) {
 
 // MARK: - Execution
 
-static vm_flag vm_sign_flag(uint16_t val) {
+static vm_flag vm_sign_flag(vm_reg val) {
     if (val == 0) {
         return VM_FLAG_ZERO;
     }

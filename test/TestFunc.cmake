@@ -3,7 +3,8 @@ set(INSTALL_DIR "${CMAKE_BINARY_DIR}/bin")
 set(LCC ${INSTALL_DIR}/lcc) 
 set(LC3AS ${INSTALL_DIR}/lc3as) 
 set(LC3SIM ${INSTALL_DIR}/lc3sim) 
-set(LC3SIM_C ${INSTALL_DIR}/lc3sim-c) 
+set(LC3SIM_C16 ${INSTALL_DIR}/lc3sim-c16) 
+set(LC3SIM_C32 ${INSTALL_DIR}/lc3sim-c32) 
 
 set(DEFAULT_OUT ${CMAKE_CURRENT_SOURCE_DIR}/../default_out) 
 
