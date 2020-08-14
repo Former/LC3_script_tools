@@ -16,10 +16,19 @@ ADD_CUSTOM_COMMAND(
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         COMMENT "Generating lc3os.c"
     )
+
+ADD_CUSTOM_COMMAND(
+        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/lc3os32.c
+        SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/lc3os32.obj
+        COMMAND xxd -i lc3os32.obj > ${CMAKE_CURRENT_BINARY_DIR}/lc3os32.c
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        COMMENT "Generating lc3os32.c"
+    )
     
 set(SOURCES
     main.c
     ${CMAKE_CURRENT_BINARY_DIR}/lc3os.c
+    ${CMAKE_CURRENT_BINARY_DIR}/lc3os32.c
     vm.h
     vm.c
     )

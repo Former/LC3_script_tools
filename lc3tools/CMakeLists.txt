@@ -38,15 +38,18 @@ function(add_asm_exe a_ExeName)
           ${SOURCES_ASM}
           )
      
-     target_compile_definitions(${a_ExeName} PRIVATE ONLY_OBJ_FILE)
      target_compile_options(${a_ExeName} PRIVATE -g ${OPTIMIZE_COMPILE_OPTION})
      target_link_libraries(${a_ExeName} libasm_symbol)
      set_target_properties(${a_ExeName} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${INSTALL_DIR}")
 endfunction()
 
 add_asm_exe(lc3as)
+target_compile_definitions(lc3as PRIVATE ONLY_OBJ_FILE)
 add_asm_exe(lc3as32)
-target_compile_definitions(lc3as32 PRIVATE LC3_32BIT)
+target_compile_definitions(lc3as32 PRIVATE LC3_32BIT ONLY_OBJ_FILE)
+add_asm_exe(lc3as_sym)
+add_asm_exe(lc3as32_sym)
+target_compile_definitions(lc3as32_sym PRIVATE LC3_32BIT)
 
 # lc3Convert
 FIND_PACKAGE(FLEX REQUIRED)

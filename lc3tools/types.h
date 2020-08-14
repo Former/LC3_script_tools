@@ -26,7 +26,7 @@
  * Author:	    Alexei Bezborodov
  * Version:	    1
  * Creation Date:   13.08.2020
- * Filename:	    symbol.h
+ * Filename:	    types.h
  * History:
  *		Copyright notices and Gnu Public License marker added.
  */
@@ -41,24 +41,29 @@
 typedef uint32_t lc3_register_type;
 #define LC3_SWAP swap32
 #define LC3_CODE_MASK 0xFFFFFFFF
-//typedef uint32_t lc3_mem_addres_type;
 
-//#define LC3_MAX_MEMORY_ADDRES (2*UINT16_MAX) // may be up to UINT32_MAX
+#define HANDLES_64_BIT_LONGS_PROPERTY(value) 
+
+#define CHECK_OUT_OF_RANGE(bits) 0
+#define CHECK_OUT_OF_RANGE_UNSIGNED(bits) 0
 
 #else // LC3_16BIT
 
 typedef uint16_t lc3_register_type;
 #define LC3_SWAP swap16
 #define LC3_CODE_MASK 0x0000FFFF
-//typedef uint16_t lc3_mem_addres_type;
 
-//#define LC3_MAX_MEMORY_ADDRES UINT16_MAX
+#define HANDLES_64_BIT_LONGS_PROPERTY(value) \
+    do { \
+    if (0x10000 > (value) && 0x8000 <= (value)) \
+        (value) |= -65536L; \
+    } while (0)
+
+#define CHECK_OUT_OF_RANGE(bits) ((v < -(1L << (bits - 1))) || (v >= (1L << (bits - 1))))
+#define CHECK_OUT_OF_RANGE_UNSIGNED(bits) (v >= (1L << (bits)))
 
 #endif // LC3_32BIT and LC3_16BIT
 
-
 #define LC3_REG_BIT_COUNT (sizeof(lc3_register_type) * 8)
-//#define LC3_SIGN_BIT_INDEX (sizeof(lc3_register_type) * 8 - 1)
-//#define LC3_STATUS_BIT_INDEX (sizeof(lc3_register_type) * 8 - 1)
 
 #endif //TYPES_H

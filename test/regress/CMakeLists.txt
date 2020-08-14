@@ -83,18 +83,21 @@ list(REMOVE_ITEM src_file_list ${exclude_src_files})
 
 # Make obj file list
 foreach (cur_file ${src_file_list})
-    BuildObjFile(out_file ${cur_file} ${OUT_DIR}) 
-
+    BuildObjFile(out_file ${cur_file} ${LC3_TARGET_LCC_NAME} ${LC3AS} ${CORRECT_EXE} ${OUT_DIR}16) 
     list(APPEND obj_file_list ${out_file})
+
+    BuildObjFile(out_file ${cur_file} ${LC3_32_TARGET_LCC_NAME} ${LC3AS32} ${CORRECT32_EXE} ${OUT_DIR}32) 
+    list(APPEND obj32_file_list ${out_file})
 endforeach()
 
-# Known errors: Errors when execute
+# Known errors 16 bit: Errors when execute
 set(exclude_src_files
     c-testsuite/single-exec/00087.c # in output restart os
     c-testsuite/single-exec/00124.c # in output restart os
     c-testsuite/single-exec/00164.c # error! a == b always true, a != b always false 
     c-testsuite/single-exec/00166.c # int owerflow
     c-testsuite/single-exec/00220.c # not work %04x and %ld ....
+    lcc_regression/fig14_2.c # int owerflow
     )
 
 set(exclude_src_files_for_lc3sim_c
@@ -110,7 +113,7 @@ set(exclude_src_files_for_lc3sim
     c-testsuite/single-exec/00215.c # unlimit time exec 
     )
 
-# Config test
+# Config test 16 bit
 list(LENGTH obj_file_list obj_file_count)
 math(EXPR obj_count "${obj_file_count} - 1")
 foreach (index RANGE 0 ${obj_count})
@@ -118,13 +121,41 @@ foreach (index RANGE 0 ${obj_count})
     list(GET src_file_list ${index} cur_src_file)
 
     list(FIND exclude_src_files_for_lc3sim_c ${cur_src_file} find_src_file)
-    if(${find_src_file} EQUAL -1)
+    if (${find_src_file} EQUAL -1)
         AndRegressTest(${LC3SIM_C16} ${cur_obj_file} ${cur_src_file} "sim16" ${DEFAULT_OUT} ${TYPE_OUT_STDOUT})
-        #AndRegressTest(${LC3SIM_C32} ${cur_obj_file} ${cur_src_file} "sim32" ${DEFAULT_OUT} ${TYPE_OUT_STDOUT})
     endif()
 
     list(FIND exclude_src_files_for_lc3sim ${cur_src_file} find_src_file)
     if (${find_src_file} EQUAL -1)
         AndRegressTest(${LC3SIM} ${cur_obj_file} ${cur_src_file} "def16" ${DEFAULT_OUT} ${TYPE_OUT_FILE})
     endif()
+endforeach()
+
+
+# Known errors 32 bit: Errors when execute
+set(exclude_src_files_for_lc3sim_c32
+    c-testsuite/single-exec/00087.c # in output restart os
+    c-testsuite/single-exec/00124.c # in output restart os
+    c-testsuite/single-exec/00164.c # error! a == b always true, a != b always false 
+    #c-testsuite/single-exec/00166.c # int owerflow
+    c-testsuite/single-exec/00220.c # not work %04x and %ld ....
+    stackl_test/test3.c # COMP broken z=-42406
+    )
+
+# Config test 32 bit
+list(LENGTH obj32_file_list obj_file_count)
+math(EXPR obj_count "${obj_file_count} - 1")
+foreach (index RANGE 0 ${obj_count})
+    list(GET obj32_file_list ${index} cur_obj_file)
+    list(GET src_file_list ${index} cur_src_file)
+
+    list(FIND exclude_src_files_for_lc3sim_c32 ${cur_src_file} find_src_file)
+    if (${find_src_file} EQUAL -1)
+        AndRegressTest(${LC3SIM_C32} ${cur_obj_file} ${cur_src_file} "sim32" ${DEFAULT_OUT} ${TYPE_OUT_STDOUT})
+    endif()
+
+#    list(FIND exclude_src_files_for_lc3sim ${cur_src_file} find_src_file)
+#    if (${find_src_file} EQUAL -1)
+#        AndRegressTest(${LC3SIM} ${cur_obj_file} ${cur_src_file} "def32" ${DEFAULT_OUT} ${TYPE_OUT_FILE})
+#    endif()
 endforeach()

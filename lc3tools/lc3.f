@@ -687,10 +687,7 @@ read_raw_val (const char* s, long * vptr)
         return -1;
     }
 
-#ifndef LC3_32BIT
-    if (0x10000 > v && 0x8000 <= v)
-        v |= -65536L;   /* handles 64-bit longs properly */
-#endif
+    HANDLES_64_BIT_LONGS_PROPERTY(v);
 
     *vptr = v;
     return 0;
@@ -706,12 +703,12 @@ read_val (const char* s, int* vptr, int bits)
     if (read_raw_val(s, &v))
 	return -1;
 
-    if (v < -(1L << (bits - 1)) || v >= (1L << bits)) {
+    if (CHECK_OUT_OF_RANGE(bits)) {
         show_error("constant outside of allowed range\n");
         num_errors++;
         return -1;
     }
-    if ((v & (1UL << (bits - 1))) != 0)
+    if (bits != 32 && ((v & (1UL << (bits - 1))) != 0))
         v |= ~((1UL << bits) - 1);
     *vptr = v;
     return 0;
@@ -727,12 +724,12 @@ read_signed_val (const char* s, int* vptr, int bits)
     if (read_raw_val(s, &v))
 	return -1;
 
-    if (v < -(1L << (bits - 1)) || v >= (1L << (bits-1))) {
+    if (CHECK_OUT_OF_RANGE(bits)) {
         show_error("constant outside of allowed range\n");
         num_errors++;
         return -1;
     }
-    if ((v & (1UL << (bits - 1))) != 0)
+    if (bits != 32 && ((v & (1UL << (bits - 1))) != 0))
         v |= ~((1UL << bits) - 1);
     *vptr = v;
     return 0;
@@ -754,7 +751,7 @@ read_unsigned_val (const char* s, int* vptr, int bits)
 	return -1;
     }
 
-    if (v >= (1L << (bits))) {
+    if (CHECK_OUT_OF_RANGE_UNSIGNED(bits)) {
         show_error("constant outside of allowed range\n");
         num_errors++;
         return -1;

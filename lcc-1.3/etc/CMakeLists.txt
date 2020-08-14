@@ -13,7 +13,6 @@ set(SRCS
 set(BASEDIR "${CMAKE_CURRENT_SOURCE_DIR}/..")
 set(INSTALL_DIR "${CMAKE_BINARY_DIR}/bin")
 set(PATHSEP /)
-message("INSTALL_DIR = ${INSTALL_DIR}")
 
 set(COMPILE_FLAG
 	-g
