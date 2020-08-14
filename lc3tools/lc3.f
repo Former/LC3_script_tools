@@ -53,6 +53,7 @@ part of the label?  Currently I allow only alpha followed by alphanum and _.
 #include <limits.h>
 
 #include "symbol.h"
+#include "types.h"
 
 #define FPRINTF(file, ...) do{ if (file) fprintf(file, __VA_ARGS__); }while(0)
 #define FCLOSE(file) do{ if (file) { fclose(file); file = NULL; } }while(0)
@@ -686,8 +687,10 @@ read_raw_val (const char* s, long * vptr)
         return -1;
     }
 
+#ifndef LC3_32BIT
     if (0x10000 > v && 0x8000 <= v)
         v |= -65536L;   /* handles 64-bit longs properly */
+#endif
 
     *vptr = v;
     return 0;
@@ -761,17 +764,25 @@ read_unsigned_val (const char* s, int* vptr, int bits)
     return 0;
 }
 
+static uint16_t swap16(uint16_t val) {
+    return (val << 8) | (val >> 8);
+}
+
+static uint32_t swap32(uint32_t val) {
+    return (val << 8 * 3) | ((val << 8) & 0x00FF0000) | ((val >> 8) & 0x0000FF00) | (val >> 8 * 3);
+}
+
 static void
 write_value (int val, int dbg)
 {
     static int old_line = -1;
     static int old_loc = -1;
-    char out[2];
-    char bits[16+1];
+    lc3_register_type out;
+    char bits[LC3_REG_BIT_COUNT + 1] = {};
     int i;
     int this_loc = code_loc;
 
-    code_loc = (code_loc + 1) & 0xFFFF;
+    code_loc = (code_loc + 1) & LC3_CODE_MASK;
     if (code_loc == 0) {
 	show_error("More code than available address space.\n");
 	exit(1);
@@ -780,9 +791,8 @@ write_value (int val, int dbg)
         return;
         
     /* FIXME: just htons... */
-    out[0] = (val >> 8);
-    out[1] = (val & 0xFF);
-    FWRITE (out, 2, 1, objout);
+    out = LC3_SWAP(val);
+    FWRITE (&out, sizeof(out), 1, objout);
     if (!saw_orig) { /* This is first word (offset, not an instruction) */
         /*
          * Listing file
@@ -835,14 +845,14 @@ write_value (int val, int dbg)
          * Bits file
          */
         bits[0] = '\n';
-        for (i=1; i <= 16; i++)
-            bits[i] = (val & (1U << (16-i))) ? '1' : '0';
+        for (i=1; i <= LC3_REG_BIT_COUNT; i++)
+            bits[i] = (val & (1U << (LC3_REG_BIT_COUNT-i))) ? '1' : '0';
 
         /* Xilinx doesn't like trailing end of line, so we avoid it at the end */
         if (this_loc > code_orig)
-            FWRITE (bits, 17, 1, binout);
+            FWRITE (bits, LC3_REG_BIT_COUNT+1, 1, binout);
         else
-            FWRITE (bits+1, 16, 1, binout);
+            FWRITE (bits+1, LC3_REG_BIT_COUNT, 1, binout);
     }
     
 }
@@ -874,7 +884,7 @@ find_label (const char* optarg, int bits)
     label = find_symbol (local, NULL);
     if (label != NULL) {
 	value = label->addr;
-	if (bits != 16) { /* Everything except 16 bits is PC-relative. */
+	if (bits != LC3_REG_BIT_COUNT) { /* Everything except 16/32 bits is PC-relative. */
 	    limit = (1L << (bits - 1));
 	    value -= code_loc + 1;
 	    if (value < -limit || value >= limit) {
@@ -988,7 +998,7 @@ generate_instruction (operands_t operands, const char* opstr)
 
     if (inst.op == OP_ORIG) {
 	if (saw_orig == 0) {
-	    if (read_val (o1, &code_loc, 16) == -1)
+	    if (read_val (o1, &code_loc, LC3_REG_BIT_COUNT) == -1)
 		/* Pick arbitrary value, to continue input processing to report other errors.
                    The num_errors variable will prevent code generation. */
 		code_loc = 0x3000; 
@@ -1120,10 +1130,10 @@ generate_instruction (operands_t operands, const char* opstr)
 	/* Generate non-trap pseudo-ops. */
     	case OP_FILL:
 	    if (operands == O_I) {
-		(void)read_val (o1, &val, 16);
-		val &= 0xFFFF;
+		(void)read_val (o1, &val, LC3_REG_BIT_COUNT);
+		val &= LC3_CODE_MASK;
 	    } else /* O_L */
-		val = find_label (o1, 16);
+		val = find_label (o1, LC3_REG_BIT_COUNT);
 	    write_value (val,0);
     	    break;
 	case OP_RET:   
@@ -1162,8 +1172,8 @@ generate_instruction (operands_t operands, const char* opstr)
 	    write_value (0, 0);
 	    break;
 	case OP_BLKW:
-	    (void)read_val (o1, &val, 16);
-	    val &= 0xFFFF;
+	    (void)read_val (o1, &val, LC3_REG_BIT_COUNT);
+	    val &= LC3_CODE_MASK;
 	    while (val-- > 0) {
 	        write_value (0x0000, 0);
 		last_cmd = NULL;	// To disable the source display for the next values
@@ -1219,8 +1229,8 @@ generate_instruction (operands_t operands, const char* opstr)
 
         /* directives */
         case OP_BLKWTO:
-	    (void)read_val (o1, &val, 16);
-	    val &= 0xFFFF;
+	    (void)read_val (o1, &val, LC3_REG_BIT_COUNT);
+	    val &= LC3_CODE_MASK;
             if (code_loc > val) {
                 show_error("requested address is in the past\n");
                 num_errors++;

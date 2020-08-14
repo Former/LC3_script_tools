@@ -10,7 +10,7 @@ set(OPTIMIZE_COMPILE_OPTION -O2)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
-# lc3as
+# lc3as lc3as32
 FIND_PACKAGE(FLEX REQUIRED)
 if (FLEX_FOUND)
     ADD_CUSTOM_COMMAND(
@@ -33,14 +33,20 @@ set(SOURCES_ASM
      ${CMAKE_CURRENT_SOURCE_DIR}/lex.lc3.c
      )
 
-add_executable(lc3as 
-     ${SOURCES_ASM}
-     )
+function(add_asm_exe a_ExeName)
+     add_executable(${a_ExeName} 
+          ${SOURCES_ASM}
+          )
+     
+     target_compile_definitions(${a_ExeName} PRIVATE ONLY_OBJ_FILE)
+     target_compile_options(${a_ExeName} PRIVATE -g ${OPTIMIZE_COMPILE_OPTION})
+     target_link_libraries(${a_ExeName} libasm_symbol)
+     set_target_properties(${a_ExeName} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${INSTALL_DIR}")
+endfunction()
 
-target_compile_definitions(lc3as PRIVATE ONLY_OBJ_FILE)
-target_compile_options(lc3as PRIVATE -g ${OPTIMIZE_COMPILE_OPTION})
-target_link_libraries(lc3as libasm_symbol)
-set_target_properties(lc3as PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${INSTALL_DIR}")
+add_asm_exe(lc3as)
+add_asm_exe(lc3as32)
+target_compile_definitions(lc3as32 PRIVATE LC3_32BIT)
 
 # lc3Convert
 FIND_PACKAGE(FLEX REQUIRED)
