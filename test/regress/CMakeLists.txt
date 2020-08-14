@@ -120,7 +120,7 @@ foreach (index RANGE 0 ${obj_count})
     list(FIND exclude_src_files_for_lc3sim_c ${cur_src_file} find_src_file)
     if(${find_src_file} EQUAL -1)
         AndRegressTest(${LC3SIM_C16} ${cur_obj_file} ${cur_src_file} "sim16" ${DEFAULT_OUT} ${TYPE_OUT_STDOUT})
-        AndRegressTest(${LC3SIM_C32} ${cur_obj_file} ${cur_src_file} "sim32" ${DEFAULT_OUT} ${TYPE_OUT_STDOUT})
+        #AndRegressTest(${LC3SIM_C32} ${cur_obj_file} ${cur_src_file} "sim32" ${DEFAULT_OUT} ${TYPE_OUT_STDOUT})
     endif()
 
     list(FIND exclude_src_files_for_lc3sim ${cur_src_file} find_src_file)

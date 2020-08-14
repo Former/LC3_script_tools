@@ -19,7 +19,7 @@ shift right works
 NEG works
 NOT 1 works
 NOT 2 works
-COMP broken z=32767
+COMP broken z=-32768
 PLUS_EQ works
 MINUS_EQ works
 TIMES_EQ works
