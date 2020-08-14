@@ -137,7 +137,6 @@ set(exclude_src_files_for_lc3sim_c32
     c-testsuite/single-exec/00087.c # in output restart os
     c-testsuite/single-exec/00124.c # in output restart os
     c-testsuite/single-exec/00164.c # error! a == b always true, a != b always false 
-    #c-testsuite/single-exec/00166.c # int owerflow
     c-testsuite/single-exec/00220.c # not work %04x and %ld ....
     stackl_test/test3.c # COMP broken z=-42406
     )
@@ -153,9 +152,4 @@ foreach (index RANGE 0 ${obj_count})
     if (${find_src_file} EQUAL -1)
         AndRegressTest(${LC3SIM_C32} ${cur_obj_file} ${cur_src_file} "sim32" ${DEFAULT_OUT} ${TYPE_OUT_STDOUT})
     endif()
-
-#    list(FIND exclude_src_files_for_lc3sim ${cur_src_file} find_src_file)
-#    if (${find_src_file} EQUAL -1)
-#        AndRegressTest(${LC3SIM} ${cur_obj_file} ${cur_src_file} "def32" ${DEFAULT_OUT} ${TYPE_OUT_FILE})
-#    endif()
 endforeach()

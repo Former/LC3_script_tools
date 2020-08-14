@@ -36,14 +36,27 @@ function(BuildObjFile a_OutObjFile a_InputFile a_TargetName a_AsmExe a_CorrectEx
     set(${a_OutObjFile} ${obj_correct_file} PARENT_SCOPE)
 
     add_custom_command(
-        OUTPUT ${obj_correct_file}
+        OUTPUT ${template_out_file}.asm
         COMMAND mkdir -p ${out_file_dir}
         COMMAND ${LCC} -target=${a_TargetName} -L ${CMAKE_CURRENT_SOURCE_DIR}/${a_InputFile} -o ${template_out_file}
-        COMMAND ${a_AsmExe} ${template_out_file}.asm
-        COMMAND ${a_CorrectExe} ${obj_file} ${obj_correct_file}
-        #WORKING_DIRECTORY ${out_file_dir}
-        DEPENDS lcc lc3as lc3as32 rcc cpp ${CMAKE_CURRENT_SOURCE_DIR}/${a_InputFile}
+        DEPENDS lcc rcc cpp ${CMAKE_CURRENT_SOURCE_DIR}/${a_InputFile}
         COMMENT "Compile ${a_OutBuildDir}/${a_InputFile}"
+    )
+
+    add_custom_command(
+        OUTPUT ${obj_file}
+        COMMAND ${a_AsmExe} ${template_out_file}.asm
+        WORKING_DIRECTORY ${out_file_dir}
+        DEPENDS lc3as lc3as32 ${template_out_file}.asm
+        COMMENT "Asm ${obj_file}"
+    )
+
+    add_custom_command(
+        OUTPUT ${obj_correct_file}
+        COMMAND ${a_CorrectExe} ${obj_file} ${obj_correct_file}
+        WORKING_DIRECTORY ${out_file_dir}
+        DEPENDS ${obj_file}
+        COMMENT "Correct to ${obj_correct_file}"
     )
 
     set(cur_target_name ${a_OutBuildDir}_${out_file_name})
