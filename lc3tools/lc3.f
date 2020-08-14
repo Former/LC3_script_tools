@@ -54,6 +54,10 @@ part of the label?  Currently I allow only alpha followed by alphanum and _.
 
 #include "symbol.h"
 
+#define FPRINTF(file, ...) do{ if (file) fprintf(file, __VA_ARGS__); }while(0)
+#define FCLOSE(file) do{ if (file) { fclose(file); file = NULL; } }while(0)
+#define FWRITE(a, b, c, file) do{ if (file) fwrite(a, b, c, file); }while(0)
+
 typedef enum opcode_t opcode_t;
 enum opcode_t {
     /* no opcode seen (yet) */
@@ -265,16 +269,16 @@ static char *source_name = NULL;
 static char *last_label = NULL;
 static char *last_cmd = NULL;
 static char instr_disasm[512];
-static FILE* symout;
-static FILE* objout;
-static FILE* dbgout;
-static FILE* lstout;
+static FILE* symout = NULL;
+static FILE* objout = NULL;
+static FILE* dbgout = NULL;
+static FILE* lstout = NULL;
 /*
  * "base.bin" file used to initialize content of memory in VHDL code.
  * Each generated word is output on separate line as sequence of 16 characters ('1' or '0')
  */
-static FILE* binout;
-static FILE* vcout;
+static FILE* binout = NULL;
+static FILE* vcout = NULL;
 static int vcout_line_addr;
 
 /* debug support */
@@ -308,7 +312,7 @@ static void show_error(const char* format, ...)
     va_list args;
     
     va_start(args,format);
-    fprintf (stderr, "%s:%3d: ", source_name, line_num);
+    FPRINTF (stderr, "%s:%3d: ", source_name, line_num);
     vfprintf (stderr, format, args );
     va_end(args);
 }
@@ -477,7 +481,7 @@ main (int argc, char** argv)
     char* fname;
 
     if (argc != 2) {
-        fprintf (stderr, "usage: %s <ASM filename>\n", argv[0]);
+        FPRINTF (stderr, "usage: %s <ASM filename>\n", argv[0]);
 	return 1;
     }
 
@@ -498,52 +502,54 @@ main (int argc, char** argv)
 
     /* Open input file. */
     if ((lc3in = fopen (fname, "r")) == NULL) {
-        fprintf (stderr, "Could not open %s for reading.\n", fname);
+        FPRINTF (stderr, "Could not open %s for reading.\n", fname);
 	return 2;
     }
 
     /* Open output files. */
     strcpy (ext, ".obj");
     if ((objout = fopen (fname, "wb")) == NULL) {
-        fprintf (stderr, "Could not open %s for writing.\n", fname);
+        FPRINTF (stderr, "Could not open %s for writing.\n", fname);
 	return 2;
     }
+#ifndef ONLY_OBJ_FILE
     strcpy (ext, ".bin");
     if ((binout = fopen (fname, "w")) == NULL) {
-        fprintf (stderr, "Could not open %s for writing.\n", fname);
+        FPRINTF (stderr, "Could not open %s for writing.\n", fname);
 	return 2;
     }
     strcpy (ext, ".lst");
     if ((lstout = fopen (fname, "w")) == NULL) {
-        fprintf (stderr, "Could not open %s for writing.\n", fname);
+        FPRINTF (stderr, "Could not open %s for writing.\n", fname);
 	return 2;
     }
     strcpy (ext, ".vconst");
     if ((vcout = fopen (fname, "w")) == NULL) {
-        fprintf (stderr, "Could not open %s for writing.\n", fname);
+        FPRINTF (stderr, "Could not open %s for writing.\n", fname);
 	return 2;
     }
     strcpy(ext, ".dbg");
     if ((dbgout = fopen (fname, "w")) == NULL) {
-	 fprintf (stderr, "Could not open %s for writing.\n", fname);
+	 FPRINTF (stderr, "Could not open %s for writing.\n", fname);
 	 return 2;
     } else {
 	char buf[512];
         char *cwd = getcwd(buf, sizeof(buf));
-        fprintf(dbgout, "#0:%s/%s\n", cwd, argv[1]);
+        FPRINTF(dbgout, "#0:%s/%s\n", cwd, argv[1]);
     }
     strcpy (ext, ".sym");
     if ((symout = fopen (fname, "w")) == NULL) {
-        fprintf (stderr, "Could not open %s for writing.\n", fname);
+        FPRINTF (stderr, "Could not open %s for writing.\n", fname);
 	return 2;
     } else {
         /* FIXME: Do we really need to exactly match old format for compatibility 
            with Windows simulator? */
-        fprintf (symout, "// Symbol table\n");
-        fprintf (symout, "// Scope level 0:\n");
-        fprintf (symout, "//\tSymbol Name       Page Address\n");
-        fprintf (symout, "//\t----------------  ------------\n");
+        FPRINTF (symout, "// Symbol table\n");
+        FPRINTF (symout, "// Scope level 0:\n");
+        FPRINTF (symout, "//\tSymbol Name       Page Address\n");
+        FPRINTF (symout, "//\t----------------  ------------\n");
     }
+#endif // ONLY_OBJ_FILE
 
     puts ("STARTING PASS 1");
     pass = 1;
@@ -595,21 +601,21 @@ main (int argc, char** argv)
     if (num_errors > 0)
     	return 1;
 
-    fprintf (symout, "\n");
-    fclose (symout);
-    fclose (objout);
-    fclose (binout);
+    FPRINTF (symout, "\n");
+    FCLOSE (symout);
+    FCLOSE (objout);
+    FCLOSE (binout);
     /* dbgout: finish pending line */
     if (dbg_line_state==DBG_LINE_STARTED) {
-        fprintf (dbgout, "@%s:%.4x:%.4x\n", dbg_line_info, dbg_line_start_addr, code_loc-1);
+        FPRINTF (dbgout, "@%s:%.4x:%.4x\n", dbg_line_info, dbg_line_start_addr, code_loc-1);
     }
-    fclose (dbgout);
+    FCLOSE (dbgout);
     /* VHDL constants file */
     if (vcout_line_addr <= code_loc) {
-        fprintf(vcout, " -- addr 0x%04x to 0x%04x\nothers => X\"0000\"\n", vcout_line_addr, code_loc);
+        FPRINTF(vcout, " -- addr 0x%04x to 0x%04x\nothers => X\"0000\"\n", vcout_line_addr, code_loc);
     } else
-    	fprintf(vcout, "others => X\"0000\"\n");
-    fclose(vcout);
+    	FPRINTF(vcout, "others => X\"0000\"\n");
+    FCLOSE(vcout);
 
     return 0;
 }
@@ -776,17 +782,17 @@ write_value (int val, int dbg)
     /* FIXME: just htons... */
     out[0] = (val >> 8);
     out[1] = (val & 0xFF);
-    fwrite (out, 2, 1, objout);
+    FWRITE (out, 2, 1, objout);
     if (!saw_orig) { /* This is first word (offset, not an instruction) */
         /*
          * Listing file
          */
-        fprintf(lstout,   " Addr: OPCODE   LineNo: Source\n");
+        FPRINTF(lstout,   " Addr: OPCODE   LineNo: Source\n");
         /* 
          * VHDL constants file
          */
         if (this_loc != 0) {
-            fprintf(vcout, "%d to 16#%x# => X\"0000\", -- addr 0x%04x to 0x%04x\n", 
+            FPRINTF(vcout, "%d to 16#%x# => X\"0000\", -- addr 0x%04x to 0x%04x\n", 
                 0, this_loc-1, 0, this_loc-1);
         }
         vcout_line_addr = val;
@@ -798,7 +804,7 @@ write_value (int val, int dbg)
             const char * label = last_label ? last_label : "";
             const char * cmd = last_cmd ? last_cmd : "";
             char * rest = last_cmd ? yytext : "\n";
-            fprintf(lstout, "x%04x: x%04x    %6d: %16s %s %s", this_loc, val, line_num, label, cmd, rest);
+            FPRINTF(lstout, "x%04x: x%04x    %6d: %16s %s %s", this_loc, val, line_num, label, cmd, rest);
         }   
          
         /*
@@ -806,7 +812,7 @@ write_value (int val, int dbg)
          */
 	/* assembly line numbers */
         if (dbg && old_line != line_num && old_loc != this_loc) {
-            fprintf (dbgout, "@0:%d:%.4x:%.4x\n", line_num, this_loc, this_loc);
+            FPRINTF (dbgout, "@0:%d:%.4x:%.4x\n", line_num, this_loc, this_loc);
             old_line = line_num;
             old_loc = this_loc;
         }
@@ -820,10 +826,10 @@ write_value (int val, int dbg)
          * VHDL constants file
          */
     	if (this_loc % 8 == 7) {
-	    	fprintf(vcout, "X\"%04x\",  -- addr 0x%04x to 0x%04x\n", val, vcout_line_addr, this_loc);
+	    	FPRINTF(vcout, "X\"%04x\",  -- addr 0x%04x to 0x%04x\n", val, vcout_line_addr, this_loc);
 	    	vcout_line_addr = this_loc+1;
 	    } else
-	    	fprintf(vcout, "X\"%04x\", ", val);
+	    	FPRINTF(vcout, "X\"%04x\", ", val);
 	    	
         /*
          * Bits file
@@ -834,9 +840,9 @@ write_value (int val, int dbg)
 
         /* Xilinx doesn't like trailing end of line, so we avoid it at the end */
         if (this_loc > code_orig)
-            fwrite (bits, 17, 1, binout);
+            FWRITE (bits, 17, 1, binout);
         else
-            fwrite (bits+1, 16, 1, binout);
+            FWRITE (bits+1, 16, 1, binout);
     }
     
 }
@@ -906,14 +912,14 @@ handle_debug (debug_stab_t stype, char* opstr)
     switch(stype) {
         case D_FILE:
 	    /* Just copy the value */
-	    //fprintf (dbgout, "#%s\n", yytext);
-	    fprintf (dbgout, "#%s\n", opstr);
+	    //FPRINTF (dbgout, "#%s\n", yytext);
+	    FPRINTF (dbgout, "#%s\n", opstr);
 	    break;
 
         case D_LINE:
             if (dbg_line_state==DBG_LINE_STARTED) {
                 /* finish previous line */
-                fprintf (dbgout, "@%s:%.4x:%.4x\n", dbg_line_info, dbg_line_start_addr, code_loc-1);
+                FPRINTF (dbgout, "@%s:%.4x:%.4x\n", dbg_line_info, dbg_line_start_addr, code_loc-1);
             }
             dbg_line_state = DBG_LINE_PARSED;
 	    dbg_line_info[sizeof(dbg_line_info)-1] = 0;
@@ -923,19 +929,19 @@ handle_debug (debug_stab_t stype, char* opstr)
         case D_LINE_END:
             if (dbg_line_state==DBG_LINE_STARTED) {
                 /* finish previous line */
-                fprintf (dbgout, "@%s:%.4x:%.4x\n", dbg_line_info, dbg_line_start_addr, code_loc-1);
+                FPRINTF (dbgout, "@%s:%.4x:%.4x\n", dbg_line_info, dbg_line_start_addr, code_loc-1);
             }
             dbg_line_state = DBG_LINE_NONE;
 	    break;
 
 	case D_TYPE:
 	    /* Just copy the value */
-	    fprintf (dbgout, "T %s\n", opstr);
+	    FPRINTF (dbgout, "T %s\n", opstr);
 	    break;
 
 	case D_SYMBOL:
 	    /* Just copy the value */
-	    fprintf (dbgout, "S %s\n", opstr);
+	    FPRINTF (dbgout, "S %s\n", opstr);
 	    break;
 
 	case D_BLOCK:
@@ -943,7 +949,7 @@ handle_debug (debug_stab_t stype, char* opstr)
 	    int is_block_start = opstr[0] == 'S';
 	    /* Just copy the value */
 
-	    fprintf (dbgout, "B %s:%.4x\n", opstr, (is_block_start) ? code_loc : code_loc-1);
+	    FPRINTF (dbgout, "B %s:%.4x\n", opstr, (is_block_start) ? code_loc : code_loc-1);
 	    break;
 	    }
     }
@@ -1269,8 +1275,8 @@ found_label (const char* lname)
 	    show_error("label %s has already appeared\n", last_label);
 	    num_errors++;
 	} else {
-	    fprintf (symout, "//\t%-16s  %04X\n", last_label, code_loc);
-	    fprintf (dbgout, "!%04x:%s\n", code_loc, last_label);
+	    FPRINTF (symout, "//\t%-16s  %04X\n", last_label, code_loc);
+	    FPRINTF (dbgout, "!%04x:%s\n", code_loc, last_label);
         }
     }
 }

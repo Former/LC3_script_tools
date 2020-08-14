@@ -37,6 +37,7 @@ add_executable(lc3as
      ${SOURCES_ASM}
      )
 
+target_compile_definitions(lc3as PRIVATE ONLY_OBJ_FILE)
 target_compile_options(lc3as PRIVATE -g ${OPTIMIZE_COMPILE_OPTION})
 target_link_libraries(lc3as libasm_symbol)
 set_target_properties(lc3as PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${INSTALL_DIR}")
