@@ -13,6 +13,7 @@ LC3 toolchain sources - fork https://github.com/edga/lc3 commit c7e8222bd74923f0
   1. Migrate to cmake
   2. Regress test
   3. Small bash script for simple use cmake
+  4. 32 bit version
    
 * lc3tools
 *Original authors:* \\
