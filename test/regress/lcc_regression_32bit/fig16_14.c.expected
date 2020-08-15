@@ -1,0 +1,22 @@
+Enter 10 numbers.
+Input number 0 : 90432
+Input number 1 : 5
+Input number 2 : 70123
+Input number 3 : 5
+Input number 4 : 45
+Input number 5 : 0
+Input number 6 : 1
+Input number 7 : 2
+Input number 8 : 5
+Input number 9 : 121222
+The input set, in ascending order:
+0
+1
+2
+5
+5
+5
+45
+70123
+90432
+121222

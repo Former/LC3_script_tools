@@ -9,14 +9,21 @@ include(../TestFunc.cmake)
 
 set(OUT_DIR "build")
 
-set(source_file_templates
+set(source_16bit_file_templates
     "stackl_test/*.c"
     "c-testsuite/single-exec/*.c"
     "lcc_regression/*.c"
     )
 
+set(source_32bit_file_templates
+    "stackl_test/*.c"
+    "c-testsuite/single-exec/*.c"
+    "lcc_regression/*.c"
+    "lcc_regression_32bit/*.c"
+    )
+
 # Known errors: this files not compile
-set(exclude_src_files
+set(not_compile_src_files
     c-testsuite/single-exec/00025.c # no strlen
     c-testsuite/single-exec/00040.c # no calloc
     c-testsuite/single-exec/00048.c # no {.name=} in struct
@@ -73,21 +80,39 @@ set(exclude_src_files
     c-testsuite/single-exec/00219.c # 00219.c:42: illegal expression
     )
 
+set(exclude_src_16bit_files
+    ${not_compile_src_files}
+    )
+
+set(exclude_src_32bit_files
+    ${not_compile_src_files}
+    )
+
 # Make source file list
-foreach (cur_templete ${source_file_templates})
+foreach (cur_templete ${source_16bit_file_templates})
     file(GLOB cur_list RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${cur_templete}) 
 
-    list(APPEND src_file_list ${cur_list})
+    list(APPEND src_16bit_file_list ${cur_list})
 endforeach()
-list(REMOVE_ITEM src_file_list ${exclude_src_files})
+list(REMOVE_ITEM src_16bit_file_list ${exclude_src_16bit_files})
+
+foreach (cur_templete ${source_32bit_file_templates})
+    file(GLOB cur_list RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${cur_templete}) 
+
+    list(APPEND src_32bit_file_list ${cur_list})
+endforeach()
+list(REMOVE_ITEM src_32bit_file_list ${exclude_src_32bit_files})
+
 
 # Make obj file list
-foreach (cur_file ${src_file_list})
+foreach (cur_file ${src_16bit_file_list})
     BuildObjFile(out_file ${cur_file} ${LC3_TARGET_LCC_NAME} ${LC3AS} ${CORRECT_EXE} ${OUT_DIR}16) 
-    list(APPEND obj_file_list ${out_file})
+    list(APPEND obj_16bit_file_list ${out_file})
+endforeach()
 
+foreach (cur_file ${src_32bit_file_list})
     BuildObjFile(out_file ${cur_file} ${LC3_32_TARGET_LCC_NAME} ${LC3AS32} ${CORRECT32_EXE} ${OUT_DIR}32) 
-    list(APPEND obj32_file_list ${out_file})
+    list(APPEND obj_32bit_file_list ${out_file})
 endforeach()
 
 # Known errors 16 bit: Errors when execute
@@ -114,11 +139,11 @@ set(exclude_src_files_for_lc3sim
     )
 
 # Config test 16 bit
-list(LENGTH obj_file_list obj_file_count)
-math(EXPR obj_count "${obj_file_count} - 1")
-foreach (index RANGE 0 ${obj_count})
-    list(GET obj_file_list ${index} cur_obj_file)
-    list(GET src_file_list ${index} cur_src_file)
+list(LENGTH obj_16bit_file_list obj_16bit_file_count)
+math(EXPR obj_16bit_file_count "${obj_16bit_file_count} - 1")
+foreach (index RANGE 0 ${obj_16bit_file_count})
+    list(GET obj_16bit_file_list ${index} cur_obj_file)
+    list(GET src_16bit_file_list ${index} cur_src_file)
 
     list(FIND exclude_src_files_for_lc3sim_c ${cur_src_file} find_src_file)
     if (${find_src_file} EQUAL -1)
@@ -142,11 +167,11 @@ set(exclude_src_files_for_lc3sim_c32
     )
 
 # Config test 32 bit
-list(LENGTH obj32_file_list obj_file_count)
-math(EXPR obj_count "${obj_file_count} - 1")
-foreach (index RANGE 0 ${obj_count})
-    list(GET obj32_file_list ${index} cur_obj_file)
-    list(GET src_file_list ${index} cur_src_file)
+list(LENGTH obj_32bit_file_list obj_32bit_file_count)
+math(EXPR obj_32bit_file_count "${obj_32bit_file_count} - 1")
+foreach (index RANGE 0 ${obj_32bit_file_count})
+    list(GET obj_32bit_file_list ${index} cur_obj_file)
+    list(GET src_32bit_file_list ${index} cur_src_file)
 
     list(FIND exclude_src_files_for_lc3sim_c32 ${cur_src_file} find_src_file)
     if (${find_src_file} EQUAL -1)

@@ -59,7 +59,8 @@ function(BuildObjFile a_OutObjFile a_InputFile a_TargetName a_AsmExe a_CorrectEx
         COMMENT "Correct to ${obj_correct_file}"
     )
 
-    set(cur_target_name ${a_OutBuildDir}_${out_file_name})
+    string(REPLACE "/" "_" input_name ${a_InputFile})
+    set(cur_target_name ${a_OutBuildDir}_${input_name})
     add_custom_target(${cur_target_name} ALL DEPENDS ${obj_correct_file})
 endfunction()
 
