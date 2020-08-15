@@ -100,7 +100,7 @@ void type_init(int argc, char *argv[]) {
 		if (strncmp(argv[i], "-unsigned_char=", 15) == 0)
 			IR->unsigned_char = argv[i][15] - '0';
 #define xx(name) \
-		else if (sscanf(argv[i], "-" #name "=%d,%d,%d,%d", &size, &align, &outofline, bits_count_in_one_byte) == 3) { \
+		else if (sscanf(argv[i], "-" #name "=%d,%d,%d,%d", &size, &align, &outofline, &bits_count_in_one_byte) == 3) { \
 			IR->name.size = size; IR->name.align = align; \
 			IR->name.outofline = outofline; \
 			IR->name.bits_count_in_one_byte = bits_count_in_one_byte; \
