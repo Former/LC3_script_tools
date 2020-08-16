@@ -1,6 +1,7 @@
 //
 //  Created by Ryan Pendleton on 6/28/18.
 //  Copyright © 2018 Ryan Pendleton. All rights reserved.
+//  Changed 16.08.2020 Alexei Bezborodov
 //
 
 #include <assert.h>
@@ -47,18 +48,15 @@ int main(int argc, const char * argv[]) {
         return VM_EXIT_USAGE;
     }
 
-    vm_result res;
+    vm_load_result read_res;
     vm_ctx vm = vm_create();
-    vm_load_os(vm);
+    read_res = vm_load_os(vm);
+    
+    if (read_res == VM_LOAD_SUCCESS)
+        read_res = vm_load_file(vm, argv[1]);
 
-    res = vm_load_file(vm, argv[1]);
-
-    switch (res) {
-        case VM_SUCCESS:
-            break;
-
-        case VM_OPCODE_NOT_IMPLEMENTED:
-            assert(0);
+    switch (read_res) {
+        case VM_LOAD_SUCCESS:
             break;
 
         case VM_INPUT_NOT_FOUND:
@@ -73,22 +71,23 @@ int main(int argc, const char * argv[]) {
     disable_input_buffering();
     signal(SIGINT, handle_signal);
 
-    res = vm_run(vm);
+    vm_result run_res;
+    run_res = vm_run(vm);
 
     restore_input_buffering();
 
-    switch (res) {
+    switch (run_res) {
         case VM_SUCCESS:
         case VM_OPCODE_NOP:
-            break;
-
-        case VM_INPUT_NOT_FOUND:
-        case VM_INPUT_TOO_LARGE:
-            assert(0);
+        case VM_RES_ADDR_MCR:
             break;
 
         case VM_OPCODE_NOT_IMPLEMENTED:
             fprintf(stderr, "%s: Failed to execute input: Attempted to execute unimplemented opcode\n", argv[0]);
+            return VM_EXIT_OPCODE_INVALID;
+
+        case VM_ERROR_ADDRES_OUT_OF_RANGE:
+            fprintf(stderr, "%s: Failed to execute input: Addres out of range\n", argv[0]);
             return VM_EXIT_OPCODE_INVALID;
     }
 

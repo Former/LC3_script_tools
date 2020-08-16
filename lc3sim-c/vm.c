@@ -1,6 +1,7 @@
 //
 //  Created by Ryan Pendleton on 6/28/18.
 //  Copyright © 2018 Ryan Pendleton. All rights reserved.
+//  Changed 16.08.2020 Alexei Bezborodov
 //
 
 #include <assert.h>
@@ -15,7 +16,6 @@
 #include <sys/mman.h>
 
 #include "vm.h"
-#include "types.h"
 
 #ifdef TRACE
 #   define DEBUG_TRACE printf
@@ -54,9 +54,6 @@ enum {
     VM_SIGN_BIT     = 1 << LC3_SIGN_BIT_INDEX,
     VM_STATUS_BIT   = 1 << LC3_STATUS_BIT_INDEX,
 };
-
-typedef lc3_register_type vm_byte;
-typedef lc3_mem_addres_type vm_addr;
 
 typedef enum {
     VM_OPCODE_ADD  = 0b0001,
@@ -136,7 +133,16 @@ void vm_destroy(vm_ctx vm) {
 
 // MARK: - Memory
 
-static vm_byte vm_read(vm_ctx vm, vm_addr addr) {
+vm_result vm_mem_read(vm_ctx vm, vm_addr addr, vm_byte* out)
+{
+    if (addr < 0 || addr >= VM_ADDR_MAX)
+        return VM_ERROR_ADDRES_OUT_OF_RANGE;
+    
+    *out = vm->mem[addr];
+    return VM_SUCCESS;
+}
+
+vm_result vm_read(vm_ctx vm, vm_addr addr, vm_byte* out) {
     assert(vm != NULL);
 
     if (addr == VM_ADDR_KBSR) {
@@ -148,47 +154,60 @@ static vm_byte vm_read(vm_ctx vm, vm_addr addr) {
         timeout.tv_sec = 0;
         timeout.tv_usec = 0;
 
-        return select(1, &readfds, NULL, NULL, &timeout) ? VM_STATUS_BIT : 0;
+        *out = select(1, &readfds, NULL, NULL, &timeout) ? VM_STATUS_BIT : 0;
+        return VM_SUCCESS;
     }
     else if (addr == VM_ADDR_KBDR) {
-        if (vm_read(vm, VM_ADDR_KBSR)) {
-            return getchar();
+        vm_byte kbsr = 0;
+        vm_result ret = vm_read(vm, VM_ADDR_KBSR, &kbsr);
+        assert(ret == VM_SUCCESS);
+        if (kbsr) {
+            *out = getchar();
+            return VM_SUCCESS;
         }
         else {
-            return 0;
+            *out = 0;
+            return VM_SUCCESS;
         }
     }
     else if (addr == VM_ADDR_DSR) {
-        return VM_STATUS_BIT;
+        *out = VM_STATUS_BIT;
+        return VM_SUCCESS;
     }
     else if (addr == VM_ADDR_DDR) {
-        return 0;
+        *out = 0;
+        return VM_SUCCESS;
     }
 
-    return vm->mem[addr];
+    return vm_mem_read(vm, addr, out);
 }
 
-static void vm_write(vm_ctx vm, vm_addr addr, vm_byte val) {
+static vm_result vm_write(vm_ctx vm, vm_addr addr, vm_byte val) {
     assert(vm != NULL);
 
     if (addr == VM_ADDR_KBSR || addr == VM_ADDR_KBDR || addr == VM_ADDR_DSR) {
-        return;
+        return VM_SUCCESS;
     }
     else if (addr == VM_ADDR_DDR) {
         putchar(val);
         fflush(stdout);
-        return;
+        return VM_SUCCESS;
     }
 
+    if (addr < 0 || addr >= VM_ADDR_MAX)
+        return VM_ERROR_ADDRES_OUT_OF_RANGE;
+
     vm->mem[addr] = val;
+    return VM_SUCCESS;
 }
 
-void vm_load_os(vm_ctx vm) {
-    vm_result res = vm_load_data(vm, lc3os_bin_data, lc3os_bin_data_len);
-    assert(res == VM_SUCCESS);
+vm_load_result vm_load_os(vm_ctx vm) {
+    vm_load_result res = vm_load_data(vm, lc3os_bin_data, lc3os_bin_data_len);
+    assert(res == VM_LOAD_SUCCESS);
+    return res;
 }
 
-vm_result vm_load_file(vm_ctx vm, const char *file) {
+vm_load_result vm_load_file(vm_ctx vm, const char *file) {
     int fd, ret;
     struct stat statbuf;
     unsigned char *data;
@@ -205,7 +224,7 @@ vm_result vm_load_file(vm_ctx vm, const char *file) {
         return VM_INPUT_NOT_FOUND;
     }
 
-    vm_result result = vm_load_data(vm, data, statbuf.st_size);
+    vm_load_result result = vm_load_data(vm, data, statbuf.st_size);
 
     munmap(data, statbuf.st_size);
     close(fd);
@@ -213,7 +232,7 @@ vm_result vm_load_file(vm_ctx vm, const char *file) {
     return result;
 }
 
-vm_result vm_load_data(vm_ctx vm, unsigned const char *data, size_t length) {
+vm_load_result vm_load_data(vm_ctx vm, unsigned const char *data, size_t length) {
     typedef vm_byte vm_byte_load;
     assert(vm != NULL);
 
@@ -235,7 +254,7 @@ vm_result vm_load_data(vm_ctx vm, unsigned const char *data, size_t length) {
 
     vm->reg[VM_REG_PC] = load_addr;
 
-    return VM_SUCCESS;
+    return VM_LOAD_SUCCESS;
 }
 
 // MARK: - Execution
@@ -351,7 +370,9 @@ static vm_result vm_perform(vm_ctx vm, vm_byte instr) {
 
             DEBUG_TRACE("VM_OPCODE_LD dr %x pc_offset9 %x\n", dr, pc_offset9);
 
-            vm->reg[dr] = vm_read(vm, vm->reg[VM_REG_PC] + pc_offset9);
+            vm_result ret = vm_read(vm, vm->reg[VM_REG_PC] + pc_offset9, &vm->reg[dr]);
+            if (ret != VM_SUCCESS)
+                return ret;
 
             vm_setcc(vm, dr);
             break;
@@ -363,7 +384,14 @@ static vm_result vm_perform(vm_ctx vm, vm_byte instr) {
 
             DEBUG_TRACE("VM_OPCODE_LDI dr %x pc_offset9 %x\n", dr, pc_offset9);
 
-            vm->reg[dr] = vm_read(vm, vm_read(vm, vm->reg[VM_REG_PC] + pc_offset9));
+            vm_byte addr = 0;
+            vm_result ret = vm_read(vm, vm->reg[VM_REG_PC] + pc_offset9, &addr);
+            if (ret != VM_SUCCESS)
+                return ret;
+            
+            ret = vm_read(vm, addr, &vm->reg[dr]);
+            if (ret != VM_SUCCESS)
+                return ret;
 
             vm_setcc(vm, dr);
             break;
@@ -376,7 +404,9 @@ static vm_result vm_perform(vm_ctx vm, vm_byte instr) {
 
             DEBUG_TRACE("VM_OPCODE_LDR dr %x baser %x\n", dr, baser);
 
-            vm->reg[dr] = vm_read(vm, vm->reg[baser] + offset6);
+            vm_result ret = vm_read(vm, vm->reg[baser] + offset6, &vm->reg[dr]);
+            if (ret != VM_SUCCESS)
+                return ret;
 
             vm_setcc(vm, dr);
             break;
@@ -417,7 +447,9 @@ static vm_result vm_perform(vm_ctx vm, vm_byte instr) {
 
             DEBUG_TRACE("VM_OPCODE_ST sr %x pc_offset9 %x\n", sr, pc_offset9);
 
-            vm_write(vm, vm->reg[VM_REG_PC] + pc_offset9, vm->reg[sr]);
+            vm_result ret = vm_write(vm, vm->reg[VM_REG_PC] + pc_offset9, vm->reg[sr]);
+            if (ret != VM_SUCCESS)
+                return ret;
 
             break;
         }
@@ -427,8 +459,15 @@ static vm_result vm_perform(vm_ctx vm, vm_byte instr) {
             vm_addr pc_offset9 = sextend(instr, 9);
 
             DEBUG_TRACE("VM_OPCODE_STI sr %x pc_offset9 %x\n", sr, pc_offset9);
+            
+            vm_byte addr = 0;
+            vm_result ret = vm_read(vm, vm->reg[VM_REG_PC] + pc_offset9, &addr);
+            if (ret != VM_SUCCESS)
+                return ret;
 
-            vm_write(vm, vm_read(vm, vm->reg[VM_REG_PC] + pc_offset9), vm->reg[sr]);
+            ret = vm_write(vm, addr, vm->reg[sr]);
+            if (ret != VM_SUCCESS)
+                return ret;
 
             break;
         }
@@ -440,7 +479,9 @@ static vm_result vm_perform(vm_ctx vm, vm_byte instr) {
 
             DEBUG_TRACE("VM_OPCODE_STR sr %x baser %x\n", sr, baser);
 
-            vm_write(vm, vm->reg[baser] + offset6, vm->reg[sr]);
+            vm_result ret = vm_write(vm, vm->reg[baser] + offset6, vm->reg[sr]);
+            if (ret != VM_SUCCESS)
+                return ret;
 
             break;
         }
@@ -457,7 +498,9 @@ static vm_result vm_perform(vm_ctx vm, vm_byte instr) {
             else {
                 // fallback to OS implementation of remaining traps
                 vm->reg[7] = vm->reg[VM_REG_PC];
-                vm->reg[VM_REG_PC] = vm_read(vm, trapvect8);
+                vm_result ret = vm_read(vm, trapvect8, &vm->reg[VM_REG_PC]);
+                if (ret != VM_SUCCESS)
+                    return ret;
             }
 
             break;
@@ -474,12 +517,25 @@ static vm_result vm_perform(vm_ctx vm, vm_byte instr) {
 vm_result vm_run(vm_ctx vm) {
     assert(vm != NULL);
 
-    while (vm_read(vm, VM_ADDR_MCR) & VM_STATUS_BIT) {
-        vm_result res = vm_perform(vm, vm_read(vm, vm->reg[VM_REG_PC]++));
-
-        if (res != VM_SUCCESS) {
+    while (1) {
+        vm_byte stop = 0;
+        vm_result res = vm_read(vm, VM_ADDR_MCR, &stop);
+        if (res != VM_SUCCESS)
             return res;
-        }
+
+        if (!(stop & VM_STATUS_BIT))
+            return VM_RES_ADDR_MCR;
+
+        vm_byte instr = 0;
+        res = vm_read(vm, vm->reg[VM_REG_PC], &instr);
+        if (res != VM_SUCCESS)
+            return res;
+
+        ++vm->reg[VM_REG_PC];
+        
+        res = vm_perform(vm, instr);
+        if (res != VM_SUCCESS)
+            return res;
     }
 
     return VM_SUCCESS;
