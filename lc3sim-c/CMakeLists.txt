@@ -26,25 +26,42 @@ ADD_CUSTOM_COMMAND(
     )
     
 set(SOURCES
-    main.c
     ${CMAKE_CURRENT_BINARY_DIR}/lc3os.c
     ${CMAKE_CURRENT_BINARY_DIR}/lc3os32.c
     vm.h
     vm.c
     )
 
+function(SetOptionts a_TargetName a_Definitions)
+    target_compile_definitions(${a_TargetName} PRIVATE ${a_Definitions})
+    target_compile_options(${a_TargetName} PRIVATE ${OPTIMIZE_COMPILE_OPTION} -Wall -g --std=c11)
+    set_target_properties(${a_TargetName} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${INSTALL_DIR}/")
+endfunction()
+
 set(CMAKE_C_COMPILER gcc)
+
+# 16 bit
 add_executable(lc3sim-c16 
     ${SOURCES}
+    main.c
     )
-target_compile_definitions(lc3sim-c16 PRIVATE LC3_16BIT)
-target_compile_options(lc3sim-c16 PRIVATE ${OPTIMIZE_COMPILE_OPTION} -Wall -g --std=c11)
-set_target_properties(lc3sim-c16 PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${INSTALL_DIR}/")
+SetOptionts(lc3sim-c16 LC3_16BIT)
+
+add_library(liblc3sim-c16 STATIC 
+    ${SOURCES}
+    )
+SetOptionts(liblc3sim-c16 LC3_16BIT)
+
+# 32 bit
 
 add_executable(lc3sim-c32 
     ${SOURCES}
+    main.c
     )
-target_compile_definitions(lc3sim-c32 PRIVATE LC3_32BIT)
-target_compile_options(lc3sim-c32 PRIVATE ${OPTIMIZE_COMPILE_OPTION} -Wall -g --std=c11)
-set_target_properties(lc3sim-c32 PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${INSTALL_DIR}/")
+SetOptionts(lc3sim-c32 LC3_32BIT)
+
+add_library(liblc3sim-c32 STATIC 
+    ${SOURCES}
+    )
+SetOptionts(liblc3sim-c32 LC3_32BIT)
 
