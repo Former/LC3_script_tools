@@ -14,6 +14,7 @@ time make -j $1
 echo "Run ctest"
 time ctest -j $1
 
-
-
+# Run unit test
+./unittest_16
+./unittest_32
 

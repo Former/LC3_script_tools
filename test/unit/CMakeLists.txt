@@ -11,23 +11,39 @@ add_library(libgtest STATIC
     gtest/gtest-all.cc
     )
 
-set(test_index 0)
+set(source_16bit_file_templates
+    "lc3sim-c/*.cpp"
+    )
 
-function(AddTest a_TestSourceFile a_Lib a_Definitions)
-    math(EXPR test_index "${test_index} + 1")
-    set(test_index ${test_index} PARENT_SCOPE)
-    
-    get_filename_component(out_file_name ${a_TestSourceFile} NAME)
-    set(test_target_name unittest_${test_index}_${out_file_name})
-    
-    add_executable(${test_target_name} ${a_TestSourceFile} main.cpp)
-    target_compile_definitions(${test_target_name} PRIVATE ${a_Definitions})# GTEST_IS_THREADSAFE)
-    target_compile_options(${test_target_name} PRIVATE ${OPTIMIZE_COMPILE_OPTION} -Wall -g --std=c11)
-    target_link_libraries(${test_target_name} libgtest ${a_Lib} pthread m)# event-pthreads-2.1-6)
-    add_test(run_${test_target_name} ${test_target_name})
-endfunction()
+set(source_32bit_file_templates
+    "lc3sim-c/*.cpp"
+    )
 
-AddTest(lc3sim-c/test_lc3sim-c.cpp liblc3sim-c16 LC3_16BIT)
-AddTest(lc3sim-c/test_lc3sim-c.cpp liblc3sim-c32 LC3_32BIT)
+foreach (cur_templete ${source_16bit_file_templates})
+    file(GLOB cur_list RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${cur_templete}) 
+
+    list(APPEND src_16bit_file_list ${cur_list})
+endforeach()
+
+foreach (cur_templete ${source_32bit_file_templates})
+    file(GLOB cur_list RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${cur_templete}) 
+
+    list(APPEND src_32bit_file_list ${cur_list})
+endforeach()
+
+set(BIN_DIR "${CMAKE_BINARY_DIR}/")
+
+macro(AddTest a_TestName a_FileList a_Lib a_Definitions)
+    add_executable(${a_TestName} ${a_FileList} main.cpp)
+    target_compile_definitions(${a_TestName} PRIVATE ${a_Definitions})
+    target_compile_options(${a_TestName} PRIVATE ${OPTIMIZE_COMPILE_OPTION} -Wall -g)
+    target_link_libraries(${a_TestName} libgtest ${a_Lib} pthread m)
+    set_target_properties(${a_TestName} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${BIN_DIR}")
+    
+    add_test(run_${a_TestName} ${BIN_DIR}${a_TestName})
+endmacro()
+
+AddTest("unittest_16" ${src_16bit_file_list} liblc3sim_c16 LC3_16BIT)
+AddTest("unittest_32" ${src_32bit_file_list} liblc3sim_c32 LC3_32BIT)
 
 

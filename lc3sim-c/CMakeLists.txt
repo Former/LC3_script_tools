@@ -47,10 +47,10 @@ add_executable(lc3sim-c16
     )
 SetOptionts(lc3sim-c16 LC3_16BIT)
 
-add_library(liblc3sim-c16 STATIC 
+add_library(liblc3sim_c16 STATIC 
     ${SOURCES}
     )
-SetOptionts(liblc3sim-c16 LC3_16BIT)
+SetOptionts(liblc3sim_c16 LC3_16BIT)
 
 # 32 bit
 
@@ -60,8 +60,8 @@ add_executable(lc3sim-c32
     )
 SetOptionts(lc3sim-c32 LC3_32BIT)
 
-add_library(liblc3sim-c32 STATIC 
+add_library(liblc3sim_c32 STATIC 
     ${SOURCES}
     )
-SetOptionts(liblc3sim-c32 LC3_32BIT)
+SetOptionts(liblc3sim_c32 LC3_32BIT)
 
