@@ -18,16 +18,16 @@ function(AddTest a_TestSourceFile a_Lib a_Definitions)
     set(test_index ${test_index} PARENT_SCOPE)
     
     get_filename_component(out_file_name ${a_TestSourceFile} NAME)
-    set(test_target_name unittest${test_index}_${out_file_name})
+    set(test_target_name unittest_${test_index}_${out_file_name})
     
     add_executable(${test_target_name} ${a_TestSourceFile} main.cpp)
-    target_compile_definitions(${test_target_name} PRIVATE ${a_Definitions})
+    target_compile_definitions(${test_target_name} PRIVATE ${a_Definitions})# GTEST_IS_THREADSAFE)
     target_compile_options(${test_target_name} PRIVATE ${OPTIMIZE_COMPILE_OPTION} -Wall -g --std=c11)
-    target_link_libraries(${test_target_name} libgtest ${a_Lib} libpthread)
-    add_test(unittest_${test_target_name} ${test_target_name})
+    target_link_libraries(${test_target_name} libgtest ${a_Lib} pthread m)# event-pthreads-2.1-6)
+    add_test(run_${test_target_name} ${test_target_name})
 endfunction()
 
 AddTest(test_lc3sim-c.cpp liblc3sim-c16 LC3_16BIT)
-AddTest(test_lc3sim-c.cpp liblc3sim-c32 LC3_32BIT)
+#AddTest(test_lc3sim-c.cpp liblc3sim-c32 LC3_32BIT)
 
 

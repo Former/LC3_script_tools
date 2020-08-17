@@ -6,6 +6,10 @@
 
 #pragma once
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdint.h>
 
 #include "types.h"
@@ -41,3 +45,7 @@ vm_load_result vm_load_data(vm_ctx vm, unsigned const char *data, size_t length)
 vm_result vm_mem_read(vm_ctx vm, vm_addr addr, vm_byte* out);
 
 vm_result vm_run(vm_ctx vm);
+
+#ifdef __cplusplus
+}
+#endif

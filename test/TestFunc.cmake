@@ -76,7 +76,7 @@ function(BuildObjFiles a_OutObjFileList a_InputFileList a_TargetName a_AsmExe a_
 endfunction()
 
 function(AndRegressTest a_SimExe a_ObjFile a_SourceFile a_AppendForNameTempFiles a_DefaultOutFile a_TypeOut)
-    add_test(NAME test_${a_AppendForNameTempFiles}__${a_SourceFile}
+    add_test(NAME regress_test_${a_AppendForNameTempFiles}__${a_SourceFile}
         COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/../run_regress_test 
             ${a_SimExe}
             ${a_ObjFile}
