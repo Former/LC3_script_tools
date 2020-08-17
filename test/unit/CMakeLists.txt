@@ -27,7 +27,7 @@ function(AddTest a_TestSourceFile a_Lib a_Definitions)
     add_test(run_${test_target_name} ${test_target_name})
 endfunction()
 
-AddTest(test_lc3sim-c.cpp liblc3sim-c16 LC3_16BIT)
-#AddTest(test_lc3sim-c.cpp liblc3sim-c32 LC3_32BIT)
+AddTest(lc3sim-c/test_lc3sim-c.cpp liblc3sim-c16 LC3_16BIT)
+AddTest(lc3sim-c/test_lc3sim-c.cpp liblc3sim-c32 LC3_32BIT)
 
 
