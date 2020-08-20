@@ -1,3 +1,6 @@
+cmake-build*/
+.codelite/
+compile_flags.txt
 build/
 lc3tools/lex.lc3.c
 lc3tools/lex.lc3convert.c
