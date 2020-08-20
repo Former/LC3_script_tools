@@ -36,14 +36,14 @@ TEST(LC3SIM_C, LoadOS)
 }
 
 #ifdef LC3_32BIT
-#   define BIG_DATA 0xFFFFFF
+#   define BIG_DATA 0xFFFFFFu
 #else
-#   define BIG_DATA 0x1FFF
+#   define BIG_DATA 0x1FFFu
 #endif
 
 TEST(LC3SIM_C, LoadDataNopOn0)
 {
-    lc3_register_type data[] = {0u, 0u, 0xFF, BIG_DATA};
+    lc3_register_type data[] = {0u, 0u, 0xFFu, BIG_DATA};
     
     ARRAY_SWAP(data);
 
@@ -62,7 +62,7 @@ TEST(LC3SIM_C, LoadDataNopOn0)
     EXPECT_EQ(out[0], 0u);
 
     EXPECT_EQ(res_read[1], VM_SUCCESS);
-    EXPECT_EQ(out[1], 0xFF);
+    EXPECT_EQ(out[1], 0xFFu);
 
     EXPECT_EQ(res_read[2], VM_SUCCESS);
     EXPECT_EQ(out[2], BIG_DATA);
@@ -72,7 +72,7 @@ TEST(LC3SIM_C, LoadDataNopOn0)
 
 TEST(LC3SIM_C, LoadDataNopOn100)
 {
-    lc3_register_type data[] = {100u, 0u, 0xFF, BIG_DATA};
+    lc3_register_type data[] = {100u, 0u, 0xFFu, BIG_DATA};
     
     ARRAY_SWAP(data);
 
@@ -91,7 +91,7 @@ TEST(LC3SIM_C, LoadDataNopOn100)
     EXPECT_EQ(out[0], 0u);
 
     EXPECT_EQ(res_read[1], VM_SUCCESS);
-    EXPECT_EQ(out[1], 0xFF);
+    EXPECT_EQ(out[1], 0xFFu);
 
     EXPECT_EQ(res_read[2], VM_SUCCESS);
     EXPECT_EQ(out[2], BIG_DATA);
@@ -101,7 +101,7 @@ TEST(LC3SIM_C, LoadDataNopOn100)
 
 TEST(LC3SIM_C, RunNopOn0)
 {
-    lc3_register_type data[] = {0u, 0u, 0xFF, 0x13};
+    lc3_register_type data[] = {0u, 0u, 0xFFu, 0x13u};
 
     ARRAY_SWAP(data);
 
@@ -118,7 +118,7 @@ TEST(LC3SIM_C, RunNopOn0)
 
 TEST(LC3SIM_C, RunNopOn100)
 {
-    lc3_register_type data[] = {100u, 0u, 0xFF, 0x13};
+    lc3_register_type data[] = {100u, 0u, 0xFFu, 0x13u};
 
     ARRAY_SWAP(data);
 
