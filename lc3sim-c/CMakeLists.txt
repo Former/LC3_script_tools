@@ -41,27 +41,25 @@ endfunction()
 set(CMAKE_C_COMPILER gcc)
 
 # 16 bit
-add_executable(lc3sim-c16 
-    ${SOURCES}
-    main.c
-    )
-SetOptionts(lc3sim-c16 LC3_16BIT)
-
 add_library(liblc3sim_c16 STATIC 
     ${SOURCES}
     )
 SetOptionts(liblc3sim_c16 LC3_16BIT)
 
-# 32 bit
-
-add_executable(lc3sim-c32 
-    ${SOURCES}
+add_executable(lc3sim-c16 
     main.c
     )
-SetOptionts(lc3sim-c32 LC3_32BIT)
+SetOptionts(lc3sim-c16 LC3_16BIT)
+target_link_libraries(lc3sim-c16 liblc3sim_c16)
 
+# 32 bit
 add_library(liblc3sim_c32 STATIC 
     ${SOURCES}
     )
 SetOptionts(liblc3sim_c32 LC3_32BIT)
 
+add_executable(lc3sim-c32 
+    main.c
+    )
+SetOptionts(lc3sim-c32 LC3_32BIT)
+target_link_libraries(lc3sim-c32 liblc3sim_c32)

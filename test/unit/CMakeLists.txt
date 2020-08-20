@@ -1,3 +1,8 @@
+cmake_minimum_required(VERSION 3.10)
+project(unit_test
+    DESCRIPTION "unit_test project"
+)
+
 enable_testing()
 
 include_directories("gtest")
