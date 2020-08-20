@@ -1,4 +1,5 @@
 // Copyright 2020 by Alexei Bezborodov <AlexeiBv@narod.ru>
+#pragma once
 
 namespace LC3_Sim
 {
@@ -12,7 +13,7 @@ typedef RegType     AddressType;
 class IInputOutput
 {
 public:
-    virtual ~IInputOutput() {}
+    virtual ~IInputOutput();
     
     virtual Char GetChar() const = 0;
 
@@ -29,7 +30,7 @@ public:
         rErrorAccess,
     };
 
-    virtual ~IVirtualMemory() {}
+    virtual ~IVirtualMemory();
     
     virtual Result Read(RegType* a_Value, AddressType a_Address) const = 0;
 
@@ -39,10 +40,7 @@ public:
 // Регистры процессора.
 struct Registers
 {
-    Registers()
-    {
-        m_Reg = {0};
-    }
+    Registers();
     
     enum RegName
     {
@@ -65,16 +63,12 @@ struct Registers
 // Параметры конфигурации процессора.
 struct ProcessorConfig
 {
-    ProcessorConfig(AddressType a_ExceptionHandlerAddress, AddressType a_ExceptionMask)
-        :m_ExceptionHandlerAddress(a_ExceptionHandlerAddress),m_ExceptionMask(a_ExceptionMask)
-    {
-        m_ExceptionCount = 0;
-    }
+    ProcessorConfig(AddressType a_ExceptionHandlerAddress, AddressType a_ExceptionMask);
     
     AddressType m_ExceptionHandlerAddress;
     RegType     m_ExceptionMask;
     RegType     m_ExceptionCount;
-}
+};
 
 // InstructionExecuter выполняет одну инструкцию
 class InstructionExecuter
@@ -96,16 +90,8 @@ private:
         AddressType     m_AccessAddress;
         AddressType     m_ExecuteAddress;
 
-        Exception()
-        {
-            m_Type = etSuccess;
-            m_AccessAddress = 0;
-            m_ExecuteAddress = 0;
-        }
-        Exception(ExceptionType a_Type, AddressType a_ExecuteAddress, AddressType a_AccessAddress)
-            :m_Type(a_Type), m_AccessAddress(a_ExecuteAddress), m_ExecuteAddress(a_AccessAddress)
-        {
-        }
+        Exception();
+        Exception(ExceptionType a_Type, AddressType a_ExecuteAddress, AddressType a_AccessAddress);
     };
 public:
     InstructionExecuter(Registers* a_Registers, IVirtualMemory* a_VirtualMemory, IInputOutput* a_InputOutput);
