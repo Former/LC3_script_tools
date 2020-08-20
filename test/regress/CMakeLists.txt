@@ -67,6 +67,15 @@ set(not_compile_src_files
     c-testsuite/single-exec/00195.c # double
     c-testsuite/single-exec/00201.c # CAT2(a,b) a##b
     c-testsuite/single-exec/00214.c # __builtin_expect ?
+    c-testsuite/single-exec/00200.c #? build64
+    c-testsuite/single-exec/00164.c #? build64
+    c-testsuite/single-exec/00143.c #? build64
+    c-testsuite/single-exec/00128.c #? build64
+    c-testsuite/single-exec/00051.c #? build64
+    lcc_regression/fig16_1.c #? build64
+    lcc_regression_32bit/fig16_1.c #? build64
+    lcc_regression/fig16_9.c #? build64
+    lcc_regression_32bit/fig16_9.c #? build64
     c-testsuite/single-exec/00202.c # 00202.c:9 Bad token jim; produced by ##
     c-testsuite/single-exec/00203.c # 00203.c:7: `2147483648LL' is a preprocessing number but an invalid integer constant
     c-testsuite/single-exec/00204.c # float
