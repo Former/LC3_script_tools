@@ -7,7 +7,7 @@ LC3 toolchain sources - fork https://github.com/edga/lc3 commit c7e8222bd74923f0
  + =lc3sim-c32,lc3as32=: 32bit version assembler and virtual machine
 
 * Before compile
-  1. sudo aptitude install libncurses5-dev
+  1. sudo aptitude install cmake gcc g++ libncurses5-dev
 
 * Chages
   1. Migrate to cmake
