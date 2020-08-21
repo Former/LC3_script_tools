@@ -61,23 +61,23 @@ enum eConfig {
 
 enum EOperCode
 {
-    operCode_BR   = 0b0000,
-    operCode_ADD  = 0b0001,
-    operCode_LD   = 0b0010,
-    operCode_ST   = 0b0011,
-    operCode_JSR  = 0b0100,
-    operCode_AND  = 0b0101,
-    operCode_LDR  = 0b0110,
-    operCode_STR  = 0b0111,
-    operCode_RTI  = 0b1000,
-    operCode_NOT  = 0b1001,
-    operCode_LDI  = 0b1010,
-    operCode_STI  = 0b1011,
-    operCode_JMP  = 0b1100,
-    operCode_RESERVED = 0b1101,
-    operCode_LEA  = 0b1110,
-    operCode_TRAP = 0b1111,
-} vm_opcode;
+    eOperCode_BR   = 0b0000,
+    eOperCode_ADD  = 0b0001,
+    eOperCode_LD   = 0b0010,
+    eOperCode_ST   = 0b0011,
+    eOperCode_JSR  = 0b0100,
+    eOperCode_AND  = 0b0101,
+    eOperCode_LDR  = 0b0110,
+    eOperCode_STR  = 0b0111,
+    eOperCode_RTI  = 0b1000,
+    eOperCode_NOT  = 0b1001,
+    eOperCode_LDI  = 0b1010,
+    eOperCode_STI  = 0b1011,
+    eOperCode_JMP  = 0b1100,
+    eOperCode_RESERVED = 0b1101,
+    eOperCode_LEA  = 0b1110,
+    eOperCode_TRAP = 0b1111,
+};
 
 enum ESpecAddr
 {
@@ -168,14 +168,32 @@ static void SetCC(Registers* a_Registers, LC3_Sim::RegNumType a_RegNum)
 #define REG_NUM2_MOVE_BIT           (REG_NUM1_MOVE_BIT - REG_NUM_BIT_COUNT)
 #define REG_NUM2_MASK               REG_NUM_MASK
 #define REG_NUM2(instr)             ((instr >> REG_NUM2_MOVE_BIT) & REG_NUM2_MASK)
+
+#define INT_AFTER_NUM1(instr)       IntValue(instr, REG_NUM1_MOVE_BIT)
+#define INT_AFTER_NUM1_FLAG(instr)  (instr & (1 << (REG_NUM1_MOVE_BIT - 1)))
+#define INT_AFTER_NUM1_WITH_FLAG(instr) IntValue(instr, REG_NUM1_MOVE_BIT - 1)
         
 #define REG_NUM3_MOVE_BIT           0
 #define REG_NUM3_MASK               REG_NUM_MASK
 #define REG_NUM3(instr)             ((instr >> REG_NUM3_MOVE_BIT) & REG_NUM3_MASK)
 
+#define INT_AFTER_NUM2(instr)       IntValue(instr, REG_NUM2_MOVE_BIT)
 #define INT_AFTER_NUM2_FLAG(instr)  (instr & (1 << (REG_NUM2_MOVE_BIT - 1)))
-#define INT_AFTER_NUM2(instr)       IntValue(instr, REG_NUM2_MOVE_BIT - 1)
+#define INT_AFTER_NUM2_WITH_FLAG(instr)  IntValue(instr, REG_NUM2_MOVE_BIT - 1)
 
+#define PZN_BIT_COUNT               3
+#define PZN_MASK                    ((1 << PZN_BIT_COUNT) - 1)
+
+#define REG(reg_num)                m_Registers->m_Reg[reg_num]
+#define EXCEPTION(type)             Exception(Exception::type, REG(LC3_Sim::Registers::rnReg_PC), 0)
+
+#define REG_WITH_NUM1(instr)        REG(REG_NUM1(instr))
+#define REG_WITH_NUM2(instr)        REG(REG_NUM2(instr))
+#define REG_WITH_NUM3(instr)        REG(REG_NUM3(instr))
+
+#define MEMORY_READ(out, addr)      MemoryRead(out, addr, m_VirtualMemory, m_InputOutrut);
+#define MEMORY_WRITE(value, addr)   MemoryWrite(value, addr, m_VirtualMemory, m_InputOutrut);
+            
 
 LC3_Sim::InstructionExecuter::Exception LC3_Sim::InstructionExecuter::ExecuteOneInstruction(LC3_Sim::RegType a_Instruction)
 {
@@ -183,25 +201,90 @@ LC3_Sim::InstructionExecuter::Exception LC3_Sim::InstructionExecuter::ExecuteOne
     
     switch (oper_code)
     {
-        case VM_OPCODE_ADD: 
+        case eOperCode_BR:
         {
-            LC3_Sim::RegType reg_num1 = REG_NUM1(a_Instruction);
-            LC3_Sim::RegType reg_num2 = REG_NUM2(a_Instruction);
-    
+            LC3_Sim::RegType cur_pzn = REG(LC3_Sim::Registers::rnReg_PSR) & PZN_MASK;
+            LC3_Sim::RegType instr_pzn = REG_NUM1(a_Instruction) & PZN_MASK;
+
+            if (cur_pzn & instr_pzn)
+                REG(LC3_Sim::Registers::rnReg_PC) += INT_AFTER_NUM1(a_Instruction);
+
+            if (a_Instruction == 0)
+                return EXCEPTION(etNop);
+            
+            break;
+        }
+        case eOperCode_ADD: 
+        {
             if (INT_AFTER_NUM2_FLAG(a_Instruction))
+                REG_WITH_NUM1(a_Instruction) = REG_WITH_NUM2(a_Instruction) + INT_AFTER_NUM2_WITH_FLAG(a_Instruction);
+            else
+                REG_WITH_NUM1(a_Instruction) = REG_WITH_NUM2(a_Instruction) + REG_WITH_NUM3(a_Instruction);
+    
+            SetCC(a_Registers, REG_NUM1(a_Instruction));
+            break;
+        }
+        case eOperCode_LD:
+        {
+            LC3_Sim::IVirtualMemory::Result res =
+                MEMORY_READ(&(REG_WITH_NUM1(a_Instruction)), REG(LC3_Sim::Registers::rnReg_PC) + INT_AFTER_NUM1(a_Instruction));
+            
+            if (res != LC3_Sim::IVirtualMemory::Result::rSuccess)
+                return EXCEPTION(etErrorRead);
+
+            SetCC(a_Registers, REG_NUM1(a_Instruction));
+            break;
+        }
+        case eOperCode_ST:
+        {
+            LC3_Sim::IVirtualMemory::Result res =
+                MEMORY_WRITE(REG_WITH_NUM1(a_Instruction), REG(LC3_Sim::Registers::rnReg_PC) + INT_AFTER_NUM1(a_Instruction));
+
+            if (res != LC3_Sim::IVirtualMemory::Result::rSuccess)
+                return EXCEPTION(etErrorWrite);
+                
+            break;
+        }
+        case eOperCode_JSR:
+        {
+            if (INT_AFTER_NUM1_FLAG(a_Instruction))
             {
-                LC3_Sim::RegType int1 = INT_AFTER_NUM2(a_Instruction);
-                a_Registers->m_Reg[reg_num1] = a_Registers->m_Reg[reg_num2] + int1;
+                REG(LC3_Sim::Registers::rnReg_7) = REG(LC3_Sim::Registers::rnReg_PC);
+                REG(LC3_Sim::Registers::rnReg_PC) += INT_AFTER_NUM1_WITH_FLAG(a_Instruction);
             }
             else
             {
-                LC3_Sim::RegType reg_num3 = REG_NUM3(a_Instruction);
-                a_Registers->m_Reg[reg_num1] = a_Registers->m_Reg[reg_num2] + a_Registers->m_Reg[reg_num3];
+                LC3_Sim::RegType tmp = REG_WITH_NUM2(a_Instruction);
+                REG(LC3_Sim::Registers::rnReg_7) = REG(LC3_Sim::Registers::rnReg_PC);
+                REG(LC3_Sim::Registers::rnReg_PC) = tmp;
             }
-    
-            SetCC(a_Registers, reg_num1);
+
             break;
         }
+        case eOperCode_AND:
+        {
+            if (INT_AFTER_NUM2_FLAG(a_Instruction))
+                REG_WITH_NUM1(a_Instruction) = REG_WITH_NUM2(a_Instruction) & INT_AFTER_NUM2_WITH_FLAG(a_Instruction);
+            else
+                REG_WITH_NUM1(a_Instruction) = REG_WITH_NUM2(a_Instruction) & REG_WITH_NUM3(a_Instruction);
+    
+            SetCC(a_Registers, REG_NUM1(a_Instruction));
+            break;
+        }
+        case eOperCode_LDR:
+        {
+            LC3_Sim::IVirtualMemory::Result res =
+                MEMORY_READ(&(REG_WITH_NUM1(a_Instruction)), REG_WITH_NUM2(a_Instruction) + INT_AFTER_NUM2(a_Instruction));
+            
+            if (res != LC3_Sim::IVirtualMemory::Result::rSuccess)
+                return EXCEPTION(etErrorRead);
+
+            SetCC(a_Registers, REG_NUM1(a_Instruction));
+            break;
+        }
+    }
+    
+    return EXCEPTION(etSuccess);
 }
 
 LC3_Sim::Processor::Processor(Registers* a_Registers, IVirtualMemory* a_VirtualMemory, IInputOutput* a_InputOutput, ProcessorConfig* a_ProcessorConfig)
