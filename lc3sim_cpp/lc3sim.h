@@ -7,6 +7,7 @@ namespace LC3_Sim
 typedef char        Char;
 typedef bool        Bool;
 typedef uint16_t    RegType;
+typedef size_t      RegNumType;
 typedef size_t      InstructionIndex;
 typedef RegType     AddressType;
 
@@ -18,6 +19,8 @@ public:
     virtual Char GetChar() const = 0;
 
     virtual void PutChar(Char a_Word) = 0;
+
+    virtual Bool CheckKeyboard() const = 0;
 };
 
 class IVirtualMemory
@@ -96,7 +99,7 @@ private:
 public:
     InstructionExecuter(Registers* a_Registers, IVirtualMemory* a_VirtualMemory, IInputOutput* a_InputOutput);
 
-    Exception ExecuteOneInstruction();
+    Exception ExecuteOneInstruction(RegType a_Instruction);
 
 private:
     Registers*      m_Registers;

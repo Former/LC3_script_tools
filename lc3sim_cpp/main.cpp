@@ -30,6 +30,19 @@ public:
         putchar(a_Word);
         fflush(stdout);
     }
+    
+    virtual Bool CheckKeyboard() const override
+    {
+        static fd_set read_fds;
+        FD_ZERO(&read_fds);
+        FD_SET(STDIN_FILENO, &read_fds);
+
+        struct timeval timeout;
+        timeout.tv_sec = 0;
+        timeout.tv_usec = 0;
+
+        return select(1, &read_fds, NULL, NULL, &timeout) ? true : false;
+    }
 };
 
 class SimpleVM: public LC3_Sim::IVirtualMemory
