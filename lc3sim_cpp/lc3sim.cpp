@@ -186,13 +186,16 @@ static void SetCC(Registers* a_Registers, LC3_Sim::RegNumType a_RegNum)
 
 #define REG(reg_num)                m_Registers->m_Reg[reg_num]
 #define EXCEPTION(type)             Exception(Exception::type, REG(LC3_Sim::Registers::rnReg_PC), 0)
+#define EXCEPTION_A(type, addr)     Exception(Exception::type, REG(LC3_Sim::Registers::rnReg_PC), addr)
 
 #define REG_WITH_NUM1(instr)        REG(REG_NUM1(instr))
 #define REG_WITH_NUM2(instr)        REG(REG_NUM2(instr))
 #define REG_WITH_NUM3(instr)        REG(REG_NUM3(instr))
 
-#define MEMORY_READ(out, addr)      MemoryRead(out, addr, m_VirtualMemory, m_InputOutrut);
-#define MEMORY_WRITE(value, addr)   MemoryWrite(value, addr, m_VirtualMemory, m_InputOutrut);
+#define MEMORY_READ(out, addr)      MemoryRead(out, addr, m_VirtualMemory, m_InputOutrut)
+#define MEMORY_WRITE(value, addr)   MemoryWrite(value, addr, m_VirtualMemory, m_InputOutrut)
+
+#define SET_CC_REG_NUM1(instr)      SetCC(a_Registers, REG_NUM1(instr))
             
 
 LC3_Sim::InstructionExecuter::Exception LC3_Sim::InstructionExecuter::ExecuteOneInstruction(LC3_Sim::RegType a_Instruction)
@@ -221,27 +224,29 @@ LC3_Sim::InstructionExecuter::Exception LC3_Sim::InstructionExecuter::ExecuteOne
             else
                 REG_WITH_NUM1(a_Instruction) = REG_WITH_NUM2(a_Instruction) + REG_WITH_NUM3(a_Instruction);
     
-            SetCC(a_Registers, REG_NUM1(a_Instruction));
+            SET_CC_REG_NUM1(a_Instruction);
             break;
         }
         case eOperCode_LD:
         {
+            LC3_Sim::AddressType addr = REG(LC3_Sim::Registers::rnReg_PC) + INT_AFTER_NUM1(a_Instruction);
             LC3_Sim::IVirtualMemory::Result res =
-                MEMORY_READ(&(REG_WITH_NUM1(a_Instruction)), REG(LC3_Sim::Registers::rnReg_PC) + INT_AFTER_NUM1(a_Instruction));
+                MEMORY_READ(&(REG_WITH_NUM1(a_Instruction)), addr);
             
             if (res != LC3_Sim::IVirtualMemory::Result::rSuccess)
-                return EXCEPTION(etErrorRead);
+                return EXCEPTION_A(etErrorRead, addr);
 
-            SetCC(a_Registers, REG_NUM1(a_Instruction));
+            SET_CC_REG_NUM1(a_Instruction);
             break;
         }
         case eOperCode_ST:
         {
+            LC3_Sim::AddressType addr = REG(LC3_Sim::Registers::rnReg_PC) + INT_AFTER_NUM1(a_Instruction);
             LC3_Sim::IVirtualMemory::Result res =
-                MEMORY_WRITE(REG_WITH_NUM1(a_Instruction), REG(LC3_Sim::Registers::rnReg_PC) + INT_AFTER_NUM1(a_Instruction));
+                MEMORY_WRITE(REG_WITH_NUM1(a_Instruction), addr);
 
             if (res != LC3_Sim::IVirtualMemory::Result::rSuccess)
-                return EXCEPTION(etErrorWrite);
+                return EXCEPTION_A(etErrorWrite, addr);
                 
             break;
         }
@@ -268,18 +273,110 @@ LC3_Sim::InstructionExecuter::Exception LC3_Sim::InstructionExecuter::ExecuteOne
             else
                 REG_WITH_NUM1(a_Instruction) = REG_WITH_NUM2(a_Instruction) & REG_WITH_NUM3(a_Instruction);
     
-            SetCC(a_Registers, REG_NUM1(a_Instruction));
+            SET_CC_REG_NUM1(a_Instruction);
             break;
         }
         case eOperCode_LDR:
         {
+            LC3_Sim::AddressType addr = REG_WITH_NUM2(a_Instruction) + INT_AFTER_NUM2(a_Instruction);
             LC3_Sim::IVirtualMemory::Result res =
-                MEMORY_READ(&(REG_WITH_NUM1(a_Instruction)), REG_WITH_NUM2(a_Instruction) + INT_AFTER_NUM2(a_Instruction));
+                MEMORY_READ(&(REG_WITH_NUM1(a_Instruction)), addr);
             
             if (res != LC3_Sim::IVirtualMemory::Result::rSuccess)
-                return EXCEPTION(etErrorRead);
+                return EXCEPTION_A(etErrorRead, addr);
 
-            SetCC(a_Registers, REG_NUM1(a_Instruction));
+            SET_CC_REG_NUM1(a_Instruction);
+            break;
+        }
+        case eOperCode_STR:
+        {
+            LC3_Sim::AddressType addr = REG_WITH_NUM2(a_Instruction) + INT_AFTER_NUM2(a_Instruction);
+            LC3_Sim::IVirtualMemory::Result res =
+                MEMORY_WRITE(REG_WITH_NUM1(a_Instruction), addr);
+
+            if (res != LC3_Sim::IVirtualMemory::Result::rSuccess)
+                return EXCEPTION_A(etErrorWrite, addr);
+                
+            break;
+        }
+        case eOperCode_RTI:
+            return EXCEPTION(etNotImplemented);
+        case eOperCode_NOT:
+        {
+            REG_WITH_NUM1(a_Instruction) = ~REG_WITH_NUM2(a_Instruction);
+
+            SET_CC_REG_NUM1(a_Instruction);
+            break;
+        }
+        case eOperCode_LDI:
+        {
+            LC3_Sim::AddressType addr1 = REG(LC3_Sim::Registers::rnReg_PC) + INT_AFTER_NUM1(a_Instruction);
+            LC3_Sim::AddressType addr2 = 0;
+            LC3_Sim::IVirtualMemory::Result res =
+                MEMORY_READ(&addr2, addr1);
+            
+            if (res != LC3_Sim::IVirtualMemory::Result::rSuccess)
+                return EXCEPTION_A(etErrorRead, addr1);
+
+            res = MEMORY_READ(&REG_WITH_NUM1(a_Instruction), addr2);
+            
+            if (res != LC3_Sim::IVirtualMemory::Result::rSuccess)
+                return EXCEPTION_A(etErrorRead, addr2);
+
+            SET_CC_REG_NUM1(a_Instruction);
+        }
+        case eOperCode_STI:
+        {
+            LC3_Sim::AddressType addr1 = REG(LC3_Sim::Registers::rnReg_PC) + INT_AFTER_NUM1(a_Instruction);
+            LC3_Sim::AddressType addr2 = 0;
+            LC3_Sim::IVirtualMemory::Result res =
+                MEMORY_READ(&addr2, addr1);
+            
+            if (res != LC3_Sim::IVirtualMemory::Result::rSuccess)
+                return EXCEPTION_A(etErrorRead, addr1);
+
+            res = MEMORY_WRITE(REG_WITH_NUM1(a_Instruction), addr2);
+            
+            if (res != LC3_Sim::IVirtualMemory::Result::rSuccess)
+                return EXCEPTION_A(etErrorWrite, addr2);
+
+            SET_CC_REG_NUM1(a_Instruction);
+        }
+        case eOperCode_JMP:
+        {
+            REG(LC3_Sim::Registers::rnReg_PC) = REG_WITH_NUM2(a_Instruction);
+            break;
+        }
+        case eOperCode_RESERVED:        
+            return EXCEPTION(etNotImplemented);
+        case eOperCode_LEA:
+        {
+            REG_WITH_NUM1(a_Instruction) = REG(LC3_Sim::Registers::rnReg_PC) + INT_AFTER_NUM1(a_Instruction);
+
+            SET_CC_REG_NUM1(a_Instruction);
+            break;
+        }
+        case eOperCode_TRAP:
+        {
+            LC3_Sim::AddressType addr = a_Instruction & 0xff;
+
+            if (addr == 0x20)
+            {
+                // Для меньшей загрузки процессора в idle
+                REG(LC3_Sim::Registers::rnReg_0) = m_InputOutput->GetChar();
+            }
+            else
+            {
+                // Возвращаемся в ОС после обработки исключений
+                REG(LC3_Sim::Registers::rnReg_7) = REG(LC3_Sim::Registers::rnReg_PC);
+                
+                LC3_Sim::IVirtualMemory::Result res =
+                    MEMORY_READ(&REG(LC3_Sim::Registers::rnReg_PC), addr);
+            
+                if (res != LC3_Sim::IVirtualMemory::Result::rSuccess)
+                    return EXCEPTION_A(etErrorRead, addr);
+            }
+
             break;
         }
     }
