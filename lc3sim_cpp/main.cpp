@@ -30,11 +30,14 @@ class SimpleIO: public LC3_Sim::IInputOutput
 public:
     virtual LC3_Sim::Char GetChar() const override
     {
-        return getchar();
+        LC3_Sim::Char ret = getchar();
+        DEBUG_TRACE("GetChar %c\n", ret);
+        return ret;
     }
 
     virtual void PutChar(LC3_Sim::Char a_Word) override
     {
+        DEBUG_TRACE("PutChar %c\n", a_Word);
         putchar(a_Word);
         fflush(stdout);
     }
@@ -67,6 +70,7 @@ public:
             return rErrorAddressOutOfRange;
         
         *a_Value = m_Memory[a_Address];
+        return rSuccess;
     }
 
     virtual LC3_Sim::IVirtualMemory::Result Write(LC3_Sim::RegType a_Value, LC3_Sim::AddressType a_Address) override
@@ -75,6 +79,7 @@ public:
             return rErrorAddressOutOfRange;
         
         m_Memory[a_Address] = a_Value;
+        return rSuccess;
     }
 private:
     std::vector<LC3_Sim::RegType> m_Memory;
@@ -107,6 +112,10 @@ int main(int argc, const char* argv[])
 
         case LC3_Sim::Processor::lrFileNotFound:
             printf("%s: Failed to load input.\n", argv[0]);
+            return 1;
+
+        case LC3_Sim::Processor::lrWriteError:
+            printf("%s: Failed to load input: Write error.\n", argv[0]);
             return 1;
 
         case LC3_Sim::Processor::lrFileTooLarge:

@@ -3,6 +3,12 @@
 
 #include <types.h>
 
+#ifdef TRACE
+#   define DEBUG_TRACE printf
+#else
+#   define DEBUG_TRACE(...)
+#endif
+
 namespace LC3_Sim
 {
 

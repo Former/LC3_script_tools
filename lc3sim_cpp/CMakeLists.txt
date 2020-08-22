@@ -47,6 +47,13 @@ add_executable(lc3sim_cpp16
     )
 SetOptionts(lc3sim_cpp16 LC3_16BIT)
 
+add_executable(lc3sim_cpp16trace 
+    ${SOURCES}
+    main.cpp
+    )
+SetOptionts(lc3sim_cpp16trace LC3_16BIT)
+target_compile_definitions(lc3sim_cpp16trace PRIVATE LC3_16BIT TRACE)
+
 add_library(liblc3sim_cpp16 STATIC 
     ${SOURCES}
     )
