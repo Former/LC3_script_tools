@@ -1,5 +1,6 @@
 // Copyright 2020 by Alexei Bezborodov <AlexeiBv@narod.ru>
-#include "lc3sim_cpp/lc3sim.h"
+#include "lc3sim.h"
+#include "instr_config.h"
 
 #ifdef LC3_32BIT
 #define Swap Swap32
@@ -15,7 +16,6 @@ static uint16_t Swap16(uint16_t val) {
 }
 #endif
 
-
 virtual LC3_Sim::IInputOutput::~IInputOutput()
 {
 }
@@ -25,8 +25,10 @@ virtual LC3_Sim::IVirtualMemory::~IVirtualMemory()
 }
 
 
-LC3_Sim::ProcessorConfig::ProcessorConfig(AddressType a_ExceptionHandlerAddress, AddressType a_ExceptionMask)
-    :m_ExceptionHandlerAddress(a_ExceptionHandlerAddress),m_ExceptionMask(a_ExceptionMask)
+LC3_Sim::ProcessorConfig::ProcessorConfig(AddressType a_ExceptionHandlerAddress, AddressType a_ExceptionInfoAddress, AddressType a_ExceptionMask)
+    :m_ExceptionHandlerAddress(a_ExceptionHandlerAddress),
+    m_ExceptionInfoAddress(a_ExceptionInfoAddress),
+    m_ExceptionMask(a_ExceptionMask)
 {
     m_ExceptionCount = 0;
 }
@@ -51,13 +53,6 @@ LC3_Sim::InstructionExecuter::InstructionExecuter(Registers* a_Registers, IVirtu
     :m_Registers(a_Registers),m_VirtualMemory(a_VirtualMemory),m_InputOutput(a_InputOutput)
 {
 }
-
-enum eConfig {
-    cAddressMAX     = LC3_MAX_MEMORY_ADDRES,
-    cAddressInitial = 0x3000,
-    cSignBit        = 1 << LC3_SIGN_BIT_INDEX,
-    cStatusBit      = 1 << LC3_STATUS_BIT_INDEX,
-};
 
 enum EOperCode
 {
@@ -137,7 +132,8 @@ static LC3_Sim::IVirtualMemory::Result MemoryWrite(LC3_Sim::RegType a_Value, LC3
     return a_VirtualMemory->Write(a_Value, a_Address);
 }
 
-static EFlags SignFlag(LC3_Sim::RegType a_Value) {
+static EFlags SignFlag(LC3_Sim::RegType a_Value)
+{
     if (a_Value == 0)
         return flagZero;
     else if (a_Value & VM_SIGN_BIT)
@@ -150,36 +146,6 @@ static void SetCC(Registers* a_Registers, LC3_Sim::RegNumType a_RegNum)
 {
     a_Registers->m_Reg[LC3_Sim::Registers::rnReg_PSR] = SignFlag(a_Registers->m_Reg[a_RegNum]);
 }
-
-#define INSTRUCTION_BIT_COUNT       16
-#define OPER_CODE_BIT_COUNT         4
-#defien REG_NUM_BIT_COUNT           3
-
-#define OPER_CODE_MOVE_BIT          (INSTRUCTION_BIT_COUNT - OPER_CODE_BIT_COUNT)
-#define OPER_CODE_MASK              ((1 << OPER_CODE_BIT_COUNT) - 1)
-#define REG_NUM_MASK                ((1 << REG_NUM_BIT_COUNT) - 1)
-        
-#define OPER_CODE(instr)            ((instr >> OPER_CODE_MOVE_BIT) & OPER_CODE_MASK)
-        
-#define REG_NUM1_MOVE_BIT           (OPER_CODE_MOVE_BIT - REG_NUM_BIT_COUNT)
-#define REG_NUM1_MASK               REG_NUM_MASK
-#define REG_NUM1(instr)             ((instr >> REG_NUM1_MOVE_BIT) & REG_NUM1_MASK)
-        
-#define REG_NUM2_MOVE_BIT           (REG_NUM1_MOVE_BIT - REG_NUM_BIT_COUNT)
-#define REG_NUM2_MASK               REG_NUM_MASK
-#define REG_NUM2(instr)             ((instr >> REG_NUM2_MOVE_BIT) & REG_NUM2_MASK)
-
-#define INT_AFTER_NUM1(instr)       IntValue(instr, REG_NUM1_MOVE_BIT)
-#define INT_AFTER_NUM1_FLAG(instr)  (instr & (1 << (REG_NUM1_MOVE_BIT - 1)))
-#define INT_AFTER_NUM1_WITH_FLAG(instr) IntValue(instr, REG_NUM1_MOVE_BIT - 1)
-        
-#define REG_NUM3_MOVE_BIT           0
-#define REG_NUM3_MASK               REG_NUM_MASK
-#define REG_NUM3(instr)             ((instr >> REG_NUM3_MOVE_BIT) & REG_NUM3_MASK)
-
-#define INT_AFTER_NUM2(instr)       IntValue(instr, REG_NUM2_MOVE_BIT)
-#define INT_AFTER_NUM2_FLAG(instr)  (instr & (1 << (REG_NUM2_MOVE_BIT - 1)))
-#define INT_AFTER_NUM2_WITH_FLAG(instr)  IntValue(instr, REG_NUM2_MOVE_BIT - 1)
 
 #define PZN_BIT_COUNT               3
 #define PZN_MASK                    ((1 << PZN_BIT_COUNT) - 1)
@@ -196,25 +162,22 @@ static void SetCC(Registers* a_Registers, LC3_Sim::RegNumType a_RegNum)
 #define MEMORY_WRITE(value, addr)   MemoryWrite(value, addr, m_VirtualMemory, m_InputOutrut)
 
 #define SET_CC_REG_NUM1(instr)      SetCC(a_Registers, REG_NUM1(instr))
-            
 
 LC3_Sim::InstructionExecuter::Exception LC3_Sim::InstructionExecuter::ExecuteOneInstruction(LC3_Sim::RegType a_Instruction)
 {
-    LC3_Sim::RegType oper_code = OPER_CODE(a_Instruction);
-    
-    switch (oper_code)
+    switch (OPER_CODE(a_Instruction))
     {
         case eOperCode_BR:
         {
+            if (a_Instruction == 0)
+                return EXCEPTION(etStop); // Прерывание выполнения процессора
+
             LC3_Sim::RegType cur_pzn = REG(LC3_Sim::Registers::rnReg_PSR) & PZN_MASK;
             LC3_Sim::RegType instr_pzn = REG_NUM1(a_Instruction) & PZN_MASK;
 
             if (cur_pzn & instr_pzn)
                 REG(LC3_Sim::Registers::rnReg_PC) += INT_AFTER_NUM1(a_Instruction);
 
-            if (a_Instruction == 0)
-                return EXCEPTION(etNop);
-            
             break;
         }
         case eOperCode_ADD: 
@@ -385,11 +348,51 @@ LC3_Sim::InstructionExecuter::Exception LC3_Sim::InstructionExecuter::ExecuteOne
 }
 
 LC3_Sim::Processor::Processor(Registers* a_Registers, IVirtualMemory* a_VirtualMemory, IInputOutput* a_InputOutput, ProcessorConfig* a_ProcessorConfig)
-    :m_Registers(a_Registers), m_VirtualMemory(a_VirtualMemory), m_InputOutput(a_InputOutput), m_ProcessorConfig(a_ProcessorConfig)
+    :m_Registers(a_Registers), 
+    m_VirtualMemory(a_VirtualMemory), 
+    m_InputOutput(a_InputOutput), 
+    m_ProcessorConfig(a_ProcessorConfig),
+    m_Executer(m_Registers, m_VirtualMemory, m_InputOutput)
 {
 }
-void LC3_Sim::Processor::Run(InstructionIndex* a_ExecutedInsructionsCount, InstructionIndex a_MaxExecuteInsructCount)
+Bool LC3_Sim::Processor::Run(InstructionIndex* a_ExecutedInsructionsCount, InstructionIndex a_MaxExecuteInsructCount)
 {
+    LC3_Sim::InstructionExecuter::Exception exception;
+    int* exec_instruct = a_ExecutedInsructionsCount;
+    for (*exec_instruct = 0; *exec_instruct < a_MaxExecuteInsructCount; ++*exec_instruct)
+    {
+        LC3_Sim::AddressType addr = REG(LC3_Sim::Registers::rnReg_PC);
+        LC3_Sim::RegType instruction = 0;
+        LC3_Sim::IVirtualMemory::Result res =
+            MEMORY_READ(&instruction, addr);
+            
+        if (res != LC3_Sim::IVirtualMemory::Result::rSuccess)
+        {
+            exception = EXCEPTION_A(etErrorRead, addr);
+            break;
+        }
+
+        ++REG(LC3_Sim::Registers::rnReg_PC);
+        
+        exception = m_Executer.ExecuteOneInstruction(instruction);
+        
+        if (exception.m_Type == LC3_Sim::InstructionExecuter::Exception::etSuccess)
+            continue;
+        
+        if (exception.m_Type == LC3_Sim::InstructionExecuter::Exception::etStop)
+            break;
+        
+        // Exception handler
+        ++m_ProcessorConfig->m_ExceptionCount;
+        LC3_Sim::AddressType addr_of_exception = addr;
+        if (!(m_ProcessorConfig->m_ExceptionMask & exception.m_Type))
+            continue;
+
+        MEMORY_WRITE(m_ProcessorConfig->m_ExceptionInfoAddress, addr);
+        REG(LC3_Sim::Registers::rnReg_PC) = m_ProcessorConfig->m_ExceptionHandlerAddress;        
+    }
+    
+    return (exception.m_Type == LC3_Sim::InstructionExecuter::Exception::etStop) ? true : false;
 }
 
 LC3_Sim::Processor::LoadResult LC3_Sim::Processor::LoadObjFile(const char* a_FileName)

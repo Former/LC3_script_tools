@@ -66,16 +66,18 @@ struct Registers
 // Параметры конфигурации процессора.
 struct ProcessorConfig
 {
-    ProcessorConfig(AddressType a_ExceptionHandlerAddress, AddressType a_ExceptionMask);
+    ProcessorConfig(AddressType a_ExceptionHandlerAddress, AddressType a_ExceptionInfoAddress, AddressType a_ExceptionMask);
     
     AddressType m_ExceptionHandlerAddress;
+    AddressType m_ExceptionInfoAddress;
     RegType     m_ExceptionMask;
-    RegType     m_ExceptionCount;
+    RegType     m_ExceptionCount;    
 };
 
 // InstructionExecuter выполняет одну инструкцию
 class InstructionExecuter
 {
+    friend class Processor;
 private:
     struct Exception
     {
@@ -83,7 +85,7 @@ private:
         {
             // Программа завершилась успешно
             etSuccess          = 0x00,
-            etNop              = 0x01,
+            etStop             = 0x01,
             // Ошибки - необходимо запустить exception handler
             etNotImplemented   = 0x02,
             etErrorRead        = 0x04,
@@ -113,7 +115,7 @@ class Processor
 public:
     Processor(Registers* a_Registers, IVirtualMemory* a_VirtualMemory, IInputOutput* a_InputOutput, ProcessorConfig* a_ProcessorConfig);
     
-    void Run(InstructionIndex* a_ExecutedInsructionsCount, InstructionIndex a_MaxExecuteInsructCount);
+    Bool Run(InstructionIndex* a_ExecutedInsructionsCount, InstructionIndex a_MaxExecuteInsructCount);
 
     LoadResult LoadObjFile(const char* a_FileName);
 
@@ -132,6 +134,7 @@ private:
     IVirtualMemory*  m_VirtualMemory;
     IInputOutput*    m_InputOutput;
     ProcessorConfig* m_ProcessorConfig;
+    InstructionExecuter m_Executer;
 };
 
 } // namespace LC3_Sim

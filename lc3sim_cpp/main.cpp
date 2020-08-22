@@ -1,8 +1,12 @@
 // Copyright 2020 by Alexei Bezborodov <AlexeiBv@narod.ru>
 
-#include <lc3sim_cpp/lc3sim.h>
+#include <lc3sim.h>
 #include <stdio.h>
 #include <vector>
+
+#include <sys/stat.h>
+#include <sys/time.h>
+#include <sys/mman.h>
 
 #ifdef LC3_32BIT
 extern unsigned char lc3os32_obj[];
@@ -72,7 +76,7 @@ private:
     std::vector<LC3_Sim::RegType> m_Memory;
 };
 
-int main(int argc, const char * argv[])
+int main(int argc, const char* argv[])
 {
     if (argc != 2)
     {
@@ -84,7 +88,7 @@ int main(int argc, const char * argv[])
     SimpleVM simplevm;
     LC3_Sim::Registers reg;
 
-    LC3_Sim::ProcessorConfig config(0, 0);
+    LC3_Sim::ProcessorConfig config(0, 0xfffe, 0);
     LC3_Sim::Processor proc(&reg, &simplevm, &simpleio, &config)
     
     LC3_Sim::Processor::LoadResult res = proc.LoadData(lc3os_bin_data, lc3os_bin_data_len);
@@ -92,7 +96,8 @@ int main(int argc, const char * argv[])
     if (res == LC3_Sim::Processor::lrSuccess)
         res = proc.LoadObjFile(argv[1]);
 
-    switch (res) {
+    switch (res)
+    {
         case LC3_Sim::Processor::lrSuccess:
             break;
 
@@ -106,7 +111,7 @@ int main(int argc, const char * argv[])
     }
 
     LC3_Sim::InstructionIndex instr = 0;
-    proc.Run(&instr, 0xFFFF);
+    proc.Run(&instr, 0xFFFFFF);
 
     return 0;
 }
