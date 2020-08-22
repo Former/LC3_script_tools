@@ -28,9 +28,6 @@ static uint16_t Swap16(uint16_t val) {
 }
 #endif
 
-#define LC3_SIGN_BIT_INDEX (sizeof(LC3_Sim::RegType) * 8 - 1)
-#define LC3_STATUS_BIT_INDEX (sizeof(LC3_Sim::RegType) * 8 - 1)
-
 #define SING_BIT (1 << LC3_SIGN_BIT_INDEX)
 #define STATUS_BIT (1 << LC3_STATUS_BIT_INDEX)
 

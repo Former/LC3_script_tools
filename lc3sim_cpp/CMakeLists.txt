@@ -29,6 +29,7 @@ set(SOURCES
     ${CMAKE_CURRENT_BINARY_DIR}/lc3os.c
     ${CMAKE_CURRENT_BINARY_DIR}/lc3os32.c
     lc3sim.h
+    types.h
     instr_config.h
     lc3sim.cpp
     )

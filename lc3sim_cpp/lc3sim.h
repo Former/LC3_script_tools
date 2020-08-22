@@ -1,17 +1,17 @@
 // Copyright 2020 by Alexei Bezborodov <AlexeiBv@narod.ru>
 #pragma once
 
-#include <stdint.h>
+#include <types.h>
 
 namespace LC3_Sim
 {
 
 typedef char        Char;
 typedef bool        Bool;
-typedef uint16_t    RegType;
-typedef uint32_t    RegNumType;
-typedef uint32_t    InstructionIndex;
-typedef RegType     AddressType;
+typedef unsigned int RegNumType;
+typedef unsigned int InstructionIndex;
+typedef LC3_Sim::LC3_RegisterType RegType;
+typedef LC3_Sim::LC3MemAddressType AddressType;
 
 class IInputOutput
 {

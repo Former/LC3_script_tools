@@ -7,6 +7,9 @@ set(LC3SIM ${INSTALL_DIR}/lc3sim)
 set(LC3SIM_C16 ${INSTALL_DIR}/lc3sim-c16) 
 set(LC3SIM_C32 ${INSTALL_DIR}/lc3sim-c32) 
 
+set(LC3SIM_CPP16 ${INSTALL_DIR}/lc3sim_cpp16) 
+set(LC3SIM_CPP32 ${INSTALL_DIR}/lc3sim_cpp32) 
+
 set(CORRECT_EXE ${CMAKE_CURRENT_SOURCE_DIR}/../correct_obj_file)
 set(CORRECT32_EXE ${CMAKE_CURRENT_SOURCE_DIR}/../correct_obj32_file)
 

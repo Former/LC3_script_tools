@@ -58,7 +58,7 @@ class SimpleVM: public LC3_Sim::IVirtualMemory
 public:
     SimpleVM()
     {
-        m_Memory.resize(65536);
+        m_Memory.resize(LC3_MAX_MEMORY_ADDRESS);
     }
     
     virtual LC3_Sim::IVirtualMemory::Result Read(LC3_Sim::RegType* a_Value, LC3_Sim::AddressType a_Address) const override
@@ -106,11 +106,11 @@ int main(int argc, const char* argv[])
             break;
 
         case LC3_Sim::Processor::lrFileNotFound:
-            printf("%s: Failed to load input\n", argv[0]);
+            printf("%s: Failed to load input.\n", argv[0]);
             return 1;
 
         case LC3_Sim::Processor::lrFileTooLarge:
-            printf("%s: Failed to load input: Input exceeded memory space\n", argv[0]);
+            printf("%s: Failed to load input: Input exceeded memory space.\n", argv[0]);
             return 1;
     }
 
