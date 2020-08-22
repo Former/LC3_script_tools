@@ -1,7 +1,7 @@
 // Copyright 2020 by Alexei Bezborodov <AlexeiBv@narod.ru>
 #pragma once
 
-#include <types.h>
+#include "sim_types.h"
 
 #ifdef TRACE
 #   define DEBUG_TRACE printf

@@ -393,7 +393,7 @@ LC3_Sim::Bool LC3_Sim::Processor::Run(InstructionIndex* a_ExecutedInsructionsCou
 {
     LC3_Sim::InstructionExecuter::Exception exception;
     InstructionIndex* exec_instruct = a_ExecutedInsructionsCount;
-    for (*exec_instruct = 0; *exec_instruct < a_MaxExecuteInsructCount; ++*exec_instruct)
+    for (*exec_instruct = 1; *exec_instruct <= a_MaxExecuteInsructCount; ++*exec_instruct)
     {
         LC3_Sim::AddressType addr = REG(LC3_Sim::Registers::rnReg_PC);
         LC3_Sim::RegType instruction = 0;
