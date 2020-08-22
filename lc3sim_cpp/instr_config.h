@@ -3,7 +3,7 @@
 
 #define INSTRUCTION_BIT_COUNT       16
 #define OPER_CODE_BIT_COUNT         4
-#defien REG_NUM_BIT_COUNT           3
+#define REG_NUM_BIT_COUNT           3
 
 #define OPER_CODE_MOVE_BIT          (INSTRUCTION_BIT_COUNT - OPER_CODE_BIT_COUNT)
 #define OPER_CODE_MASK              ((1 << OPER_CODE_BIT_COUNT) - 1)

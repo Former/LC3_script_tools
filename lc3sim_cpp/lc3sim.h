@@ -1,14 +1,16 @@
 // Copyright 2020 by Alexei Bezborodov <AlexeiBv@narod.ru>
 #pragma once
 
+#include <stdint.h>
+
 namespace LC3_Sim
 {
 
 typedef char        Char;
 typedef bool        Bool;
 typedef uint16_t    RegType;
-typedef size_t      RegNumType;
-typedef size_t      InstructionIndex;
+typedef uint32_t    RegNumType;
+typedef uint32_t    InstructionIndex;
 typedef RegType     AddressType;
 
 class IInputOutput
@@ -96,7 +98,7 @@ private:
         AddressType     m_ExecuteAddress;
 
         Exception();
-        Exception(ExceptionType a_Type, AddressType a_ExecuteAddress, AddressType a_AccessAddress);
+        Exception(Type a_Type, AddressType a_ExecuteAddress, AddressType a_AccessAddress);
     };
 public:
     InstructionExecuter(Registers* a_Registers, IVirtualMemory* a_VirtualMemory, IInputOutput* a_InputOutput);
@@ -113,14 +115,6 @@ private:
 class Processor
 {
 public:
-    Processor(Registers* a_Registers, IVirtualMemory* a_VirtualMemory, IInputOutput* a_InputOutput, ProcessorConfig* a_ProcessorConfig);
-    
-    Bool Run(InstructionIndex* a_ExecutedInsructionsCount, InstructionIndex a_MaxExecuteInsructCount);
-
-    LoadResult LoadObjFile(const char* a_FileName);
-
-    LoadResult LoadData(const unsigned uint8_t* a_Data, size_t a_DataLen);
-
     enum LoadResult
     {
         lrSuccess,
@@ -128,6 +122,14 @@ public:
         lrFileTooLarge,
         lrWriteError,
     };
+    
+    Processor(Registers* a_Registers, IVirtualMemory* a_VirtualMemory, IInputOutput* a_InputOutput, ProcessorConfig* a_ProcessorConfig);
+    
+    Bool Run(InstructionIndex* a_ExecutedInsructionsCount, InstructionIndex a_MaxExecuteInsructCount);
+
+    LoadResult LoadObjFile(const char* a_FileName);
+
+    LoadResult LoadData(const uint8_t* a_Data, uint32_t a_DataLen);
     
 private:
     Registers*       m_Registers;

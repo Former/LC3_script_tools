@@ -2,6 +2,18 @@
 #include "lc3sim.h"
 #include "instr_config.h"
 
+#include <stdio.h>
+#include <fcntl.h>
+#include <stdlib.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
+
+
+#include <assert.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/time.h>
+
 #ifdef LC3_32BIT
 #define Swap Swap32
 
@@ -16,11 +28,17 @@ static uint16_t Swap16(uint16_t val) {
 }
 #endif
 
-virtual LC3_Sim::IInputOutput::~IInputOutput()
+#define LC3_SIGN_BIT_INDEX (sizeof(LC3_Sim::RegType) * 8 - 1)
+#define LC3_STATUS_BIT_INDEX (sizeof(LC3_Sim::RegType) * 8 - 1)
+
+#define SING_BIT (1 << LC3_SIGN_BIT_INDEX)
+#define STATUS_BIT (1 << LC3_STATUS_BIT_INDEX)
+
+LC3_Sim::IInputOutput::~IInputOutput()
 {
 }
 
-virtual LC3_Sim::IVirtualMemory::~IVirtualMemory()
+LC3_Sim::IVirtualMemory::~IVirtualMemory()
 {
 }
 
@@ -40,14 +58,23 @@ LC3_Sim::InstructionExecuter::Exception::Exception()
     m_ExecuteAddress = 0;
 }
 
-LC3_Sim::InstructionExecuter::Exception::Exception(ExceptionType a_Type, AddressType a_ExecuteAddress, AddressType a_AccessAddress)
+LC3_Sim::InstructionExecuter::Exception::Exception(Type a_Type, AddressType a_ExecuteAddress, AddressType a_AccessAddress)
     :m_Type(a_Type), m_AccessAddress(a_ExecuteAddress), m_ExecuteAddress(a_AccessAddress)
 {
 }
 
 LC3_Sim::Registers::Registers()
 {
-    m_Reg = {0};
+    m_Reg[rnReg_0] = 0;
+    m_Reg[rnReg_1] = 0;
+    m_Reg[rnReg_2] = 0;
+    m_Reg[rnReg_3] = 0;
+    m_Reg[rnReg_4] = 0;
+    m_Reg[rnReg_5] = 0;
+    m_Reg[rnReg_6] = 0;
+    m_Reg[rnReg_7] = 0;
+    m_Reg[rnReg_PC] = 0;
+    m_Reg[rnReg_PSR] = 0;
 }
 LC3_Sim::InstructionExecuter::InstructionExecuter(Registers* a_Registers, IVirtualMemory* a_VirtualMemory, IInputOutput* a_InputOutput)
     :m_Registers(a_Registers),m_VirtualMemory(a_VirtualMemory),m_InputOutput(a_InputOutput)
@@ -101,13 +128,13 @@ static LC3_Sim::IVirtualMemory::Result MemoryRead(LC3_Sim::RegType* a_Out, LC3_S
     switch (a_Address)
     {
         case sAddressKBSR:
-            *a_Out = a_InputOutrut->CheckKeyboard() ? VM_STATUS_BIT : 0;
+            *a_Out = a_InputOutrut->CheckKeyboard() ? STATUS_BIT : 0;
             return LC3_Sim::IVirtualMemory::rSuccess;
         case sAddressKBDR:
             *a_Out = a_InputOutrut->CheckKeyboard() ? a_InputOutrut->GetChar() : 0;
             return LC3_Sim::IVirtualMemory::rSuccess;
         case sAddressDSR:
-            *a_Out = VM_STATUS_BIT;
+            *a_Out = STATUS_BIT;
             return LC3_Sim::IVirtualMemory::rSuccess;
         case sAddressDDR:
             *a_Out = 0;
@@ -128,6 +155,7 @@ static LC3_Sim::IVirtualMemory::Result MemoryWrite(LC3_Sim::RegType a_Value, LC3
        case sAddressDDR:
             a_InputOutrut->PutChar(a_Value);
             return LC3_Sim::IVirtualMemory::rSuccess;
+    }
 
     return a_VirtualMemory->Write(a_Value, a_Address);
 }
@@ -136,13 +164,13 @@ static EFlags SignFlag(LC3_Sim::RegType a_Value)
 {
     if (a_Value == 0)
         return flagZero;
-    else if (a_Value & VM_SIGN_BIT)
+    else if (a_Value & SING_BIT)
         return flagNegative;
     else
         return flagPositive;
 }
 
-static void SetCC(Registers* a_Registers, LC3_Sim::RegNumType a_RegNum)
+static void SetCC(LC3_Sim::Registers* a_Registers, LC3_Sim::RegNumType a_RegNum)
 {
     a_Registers->m_Reg[LC3_Sim::Registers::rnReg_PSR] = SignFlag(a_Registers->m_Reg[a_RegNum]);
 }
@@ -151,17 +179,17 @@ static void SetCC(Registers* a_Registers, LC3_Sim::RegNumType a_RegNum)
 #define PZN_MASK                    ((1 << PZN_BIT_COUNT) - 1)
 
 #define REG(reg_num)                m_Registers->m_Reg[reg_num]
-#define EXCEPTION(type)             Exception(Exception::type, REG(LC3_Sim::Registers::rnReg_PC), 0)
-#define EXCEPTION_A(type, addr)     Exception(Exception::type, REG(LC3_Sim::Registers::rnReg_PC), addr)
+#define EXCEPTION(type)             LC3_Sim::InstructionExecuter::Exception(LC3_Sim::InstructionExecuter::Exception::type, REG(LC3_Sim::Registers::rnReg_PC), 0)
+#define EXCEPTION_A(type, addr)     LC3_Sim::InstructionExecuter::Exception(LC3_Sim::InstructionExecuter::Exception::type, REG(LC3_Sim::Registers::rnReg_PC), addr)
 
 #define REG_WITH_NUM1(instr)        REG(REG_NUM1(instr))
 #define REG_WITH_NUM2(instr)        REG(REG_NUM2(instr))
 #define REG_WITH_NUM3(instr)        REG(REG_NUM3(instr))
 
-#define MEMORY_READ(out, addr)      MemoryRead(out, addr, m_VirtualMemory, m_InputOutrut)
-#define MEMORY_WRITE(value, addr)   MemoryWrite(value, addr, m_VirtualMemory, m_InputOutrut)
+#define MEMORY_READ(out, addr)      MemoryRead(out, addr, m_VirtualMemory, m_InputOutput)
+#define MEMORY_WRITE(value, addr)   MemoryWrite(value, addr, m_VirtualMemory, m_InputOutput)
 
-#define SET_CC_REG_NUM1(instr)      SetCC(a_Registers, REG_NUM1(instr))
+#define SET_CC_REG_NUM1(instr)      SetCC(m_Registers, REG_NUM1(instr))
 
 LC3_Sim::InstructionExecuter::Exception LC3_Sim::InstructionExecuter::ExecuteOneInstruction(LC3_Sim::RegType a_Instruction)
 {
@@ -355,10 +383,11 @@ LC3_Sim::Processor::Processor(Registers* a_Registers, IVirtualMemory* a_VirtualM
     m_Executer(m_Registers, m_VirtualMemory, m_InputOutput)
 {
 }
-Bool LC3_Sim::Processor::Run(InstructionIndex* a_ExecutedInsructionsCount, InstructionIndex a_MaxExecuteInsructCount)
+
+LC3_Sim::Bool LC3_Sim::Processor::Run(InstructionIndex* a_ExecutedInsructionsCount, InstructionIndex a_MaxExecuteInsructCount)
 {
     LC3_Sim::InstructionExecuter::Exception exception;
-    int* exec_instruct = a_ExecutedInsructionsCount;
+    InstructionIndex* exec_instruct = a_ExecutedInsructionsCount;
     for (*exec_instruct = 0; *exec_instruct < a_MaxExecuteInsructCount; ++*exec_instruct)
     {
         LC3_Sim::AddressType addr = REG(LC3_Sim::Registers::rnReg_PC);
@@ -388,7 +417,7 @@ Bool LC3_Sim::Processor::Run(InstructionIndex* a_ExecutedInsructionsCount, Instr
         if (!(m_ProcessorConfig->m_ExceptionMask & exception.m_Type))
             continue;
 
-        MEMORY_WRITE(m_ProcessorConfig->m_ExceptionInfoAddress, addr);
+        MEMORY_WRITE(m_ProcessorConfig->m_ExceptionInfoAddress, addr_of_exception);
         REG(LC3_Sim::Registers::rnReg_PC) = m_ProcessorConfig->m_ExceptionHandlerAddress;        
     }
     
@@ -399,18 +428,18 @@ LC3_Sim::Processor::LoadResult LC3_Sim::Processor::LoadObjFile(const char* a_Fil
 {
     int file_id;
     struct stat stat_buf;
-    unsigned char* data;
+    uint8_t* data;
 
     if ((file_id = open(a_FileName, O_RDONLY)) < 0)
         return lrFileNotFound;
 
-    if (fstat(fd, &statbuf) < 0)
+    if (fstat(file_id, &stat_buf) < 0)
         return lrFileNotFound;
 
-    if ((data = mmap(0, stat_buf.st_size, PROT_READ, MAP_SHARED, file_id, 0)) == MAP_FAILED)
+    if ((data = (uint8_t*)mmap(0, stat_buf.st_size, PROT_READ, MAP_SHARED, file_id, 0)) == MAP_FAILED)
         return lrFileNotFound;
 
-    LoadResult res = vm_load_data(vm, data, statbuf.st_size);
+    LoadResult res = LoadData(data, stat_buf.st_size);
 
     munmap(data, stat_buf.st_size);
     close(file_id);
@@ -418,7 +447,7 @@ LC3_Sim::Processor::LoadResult LC3_Sim::Processor::LoadObjFile(const char* a_Fil
     return res;
 }
 
-LC3_Sim::Processor::LoadResult LC3_Sim::Processor::LoadData(const unsigned uint8_t* a_Data, size_t a_DataLen)
+LC3_Sim::Processor::LoadResult LC3_Sim::Processor::LoadData(const uint8_t* a_Data, uint32_t a_DataLen)
 {
     typedef LC3_Sim::RegType RegLoadType;
     size_t load_reg_size = sizeof(RegLoadType);
@@ -427,7 +456,7 @@ LC3_Sim::Processor::LoadResult LC3_Sim::Processor::LoadData(const unsigned uint8
     LC3_Sim::AddressType load_addr = Swap(*(load_data++));
     LC3_Sim::AddressType load_length = (a_DataLen - load_reg_size) / load_reg_size;
 
-    for (LC3_Sim::AddressType i = 0; i < load_length; i)
+    for (LC3_Sim::AddressType i = 0; i < load_length; ++i)
     {
         IVirtualMemory::Result res = m_VirtualMemory->Write(Swap(load_data[i]), load_addr + i);
         if (res != IVirtualMemory::rSuccess)
@@ -437,5 +466,4 @@ LC3_Sim::Processor::LoadResult LC3_Sim::Processor::LoadData(const unsigned uint8
     m_Registers->m_Reg[Registers::rnReg_PC] = load_addr;
 
     return lrSuccess;
-
 }
