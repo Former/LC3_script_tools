@@ -144,6 +144,7 @@ vm_result vm_mem_read(vm_ctx vm, vm_addr addr, vm_byte* out)
 
 vm_result vm_read(vm_ctx vm, vm_addr addr, vm_byte* out) {
     assert(vm != NULL);
+    DEBUG_TRACE("MemoryRead %x\n", addr);
 
     if (addr == VM_ADDR_KBSR) {
         static fd_set readfds;
@@ -184,6 +185,7 @@ vm_result vm_read(vm_ctx vm, vm_addr addr, vm_byte* out) {
 
 static vm_result vm_write(vm_ctx vm, vm_addr addr, vm_byte val) {
     assert(vm != NULL);
+    DEBUG_TRACE("MemoryWrite %x, val = %x\n", addr, val);
 
     if (addr == VM_ADDR_KBSR || addr == VM_ADDR_KBDR || addr == VM_ADDR_DSR) {
         return VM_SUCCESS;

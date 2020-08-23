@@ -15,6 +15,8 @@ echo "Run ctest"
 time ctest -j $1
 
 # Run unit test
-./unittest_16
-./unittest_32
+./unittest_sim_c_16
+./unittest_sim_c_32
+./unittest_sim_cpp_16
+./unittest_sim_cpp_32
 

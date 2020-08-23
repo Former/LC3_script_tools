@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
-project(lc3sim-c
-    DESCRIPTION "lc3sim-c project"
+project(lc3sim_cpp
+    DESCRIPTION "lc3sim_cpp project"
 )
 
 set(INSTALL_DIR "${CMAKE_BINARY_DIR}/bin")
@@ -28,45 +28,46 @@ ADD_CUSTOM_COMMAND(
 set(SOURCES
     ${CMAKE_CURRENT_BINARY_DIR}/lc3os.c
     ${CMAKE_CURRENT_BINARY_DIR}/lc3os32.c
-    vm.h
-    vm.c
+    lc3sim.h
+    sim_types.h
+    instr_config.h
+    lc3sim.cpp
     )
 
 function(SetOptionts a_TargetName a_Definitions)
     target_compile_definitions(${a_TargetName} PRIVATE ${a_Definitions})
-    target_compile_options(${a_TargetName} PRIVATE ${OPTIMIZE_COMPILE_OPTION} -Wall -g --std=c11)
+    target_compile_options(${a_TargetName} PRIVATE ${OPTIMIZE_COMPILE_OPTION} -Wall -g)
     set_target_properties(${a_TargetName} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${INSTALL_DIR}/")
 endfunction()
 
-set(CMAKE_C_COMPILER gcc)
-
 # 16 bit
-add_executable(lc3sim_c16trace 
+add_executable(lc3sim_cpp16 
     ${SOURCES}
-    main.c
+    main.cpp
     )
-SetOptionts(lc3sim_c16trace LC3_16BIT)
-target_compile_definitions(lc3sim_c16trace PRIVATE LC3_16BIT TRACE)
+SetOptionts(lc3sim_cpp16 LC3_16BIT)
 
-add_library(liblc3sim_c16 STATIC 
+add_executable(lc3sim_cpp16trace 
+    ${SOURCES}
+    main.cpp
+    )
+SetOptionts(lc3sim_cpp16trace LC3_16BIT)
+target_compile_definitions(lc3sim_cpp16trace PRIVATE LC3_16BIT TRACE)
+
+add_library(liblc3sim_cpp16 STATIC 
     ${SOURCES}
     )
-SetOptionts(liblc3sim_c16 LC3_16BIT)
-
-add_executable(lc3sim-c16 
-    main.c
-    )
-SetOptionts(lc3sim-c16 LC3_16BIT)
-target_link_libraries(lc3sim-c16 liblc3sim_c16)
+SetOptionts(liblc3sim_cpp16 LC3_16BIT)
 
 # 32 bit
-add_library(liblc3sim_c32 STATIC 
+add_executable(lc3sim_cpp32
+    ${SOURCES}
+    main.cpp
+    )
+SetOptionts(lc3sim_cpp32 LC3_32BIT)
+
+add_library(liblc3sim_cpp32 STATIC 
     ${SOURCES}
     )
-SetOptionts(liblc3sim_c32 LC3_32BIT)
+SetOptionts(liblc3sim_cpp32 LC3_32BIT)
 
-add_executable(lc3sim-c32 
-    main.c
-    )
-SetOptionts(lc3sim-c32 LC3_32BIT)
-target_link_libraries(lc3sim-c32 liblc3sim_c32)
