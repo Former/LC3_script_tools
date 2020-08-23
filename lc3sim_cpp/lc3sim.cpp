@@ -113,13 +113,6 @@ enum EFlags {
     flagNegative = 0b100,
 };
 
-static LC3_Sim::RegType IntValue(LC3_Sim::RegType a_Instruct, LC3_Sim::RegType a_nBit)
-{
-    LC3_Sim::RegType mask = 1 << (a_nBit - 1);
-    a_Instruct &= ((1 << a_nBit) - 1);
-    return (a_Instruct ^ mask) - mask;
-}
-
 static LC3_Sim::IVirtualMemory::Result MemoryRead(LC3_Sim::RegType* a_Out, LC3_Sim::AddressType a_Address, LC3_Sim::IVirtualMemory* a_VirtualMemory, LC3_Sim::IInputOutput* a_InputOutrut)
 {
     DEBUG_TRACE("MemoryRead %x\n", a_Address);
