@@ -80,22 +80,22 @@ LC3_Sim::InstructionExecuter::InstructionExecuter(Registers* a_Registers, IVirtu
 
 enum EOperCode
 {
-    eOperCode_BR   = 0b0000,
-    eOperCode_ADD  = 0b0001,
-    eOperCode_LD   = 0b0010,
-    eOperCode_ST   = 0b0011,
-    eOperCode_JSR  = 0b0100,
-    eOperCode_AND  = 0b0101,
-    eOperCode_LDR  = 0b0110,
-    eOperCode_STR  = 0b0111,
-    eOperCode_RTI  = 0b1000,
-    eOperCode_NOT  = 0b1001,
-    eOperCode_LDI  = 0b1010,
-    eOperCode_STI  = 0b1011,
-    eOperCode_JMP  = 0b1100,
-    eOperCode_RESERVED = 0b1101,
-    eOperCode_LEA  = 0b1110,
-    eOperCode_TRAP = 0b1111,
+    eOperCode_BR   = OPCODE_BR,  
+    eOperCode_ADD  = OPCODE_ADD, 
+    eOperCode_LD   = OPCODE_LD,
+    eOperCode_ST   = OPCODE_ST,
+    eOperCode_JSR  = OPCODE_JSR,
+    eOperCode_AND  = OPCODE_AND,
+    eOperCode_LDR  = OPCODE_LDR,
+    eOperCode_STR  = OPCODE_STR,
+    eOperCode_RTI  = OPCODE_RTI,
+    eOperCode_NOT  = OPCODE_NOT,
+    eOperCode_LDI  = OPCODE_LDI,
+    eOperCode_STI  = OPCODE_STI,
+    eOperCode_JMP  = OPCODE_JMP,
+    eOperCode_RES  = OPCODE_RES,
+    eOperCode_LEA  = OPCODE_LEA,
+    eOperCode_TRAP = OPCODE_TRAP,
 };
 
 enum ESpecAddr
@@ -336,7 +336,7 @@ LC3_Sim::InstructionExecuter::Exception LC3_Sim::InstructionExecuter::ExecuteOne
             REG(LC3_Sim::Registers::rnReg_PC) = REG_WITH_NUM2(a_Instruction);
             break;
         }
-        CASE(RESERVED)
+        CASE(RES)
             return EXCEPTION(etNotImplemented);
         CASE(LEA)
         {
@@ -347,7 +347,7 @@ LC3_Sim::InstructionExecuter::Exception LC3_Sim::InstructionExecuter::ExecuteOne
         }
         CASE(TRAP)
         {
-            LC3_Sim::AddressType addr = a_Instruction & 0xff;
+            LC3_Sim::AddressType addr = a_Instruction & TRAP_MASK;
 
             if (addr == 0x20)
             {
