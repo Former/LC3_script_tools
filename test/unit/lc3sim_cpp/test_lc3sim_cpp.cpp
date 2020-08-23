@@ -195,7 +195,7 @@ TEST(LC3SIM_CPP, RunNopOn0)
     LC3_Sim::InstructionIndex instr = 0;
     proc.Run(&instr, 0xFFF);
 
-    EXPECT_EQ(instr, 1); // Stop on NOP=0u
+    EXPECT_EQ(instr, 1u); // Stop on NOP=0u
     EXPECT_EQ(res, LC3_Sim::Processor::lrSuccess);
 }
 
@@ -217,6 +217,6 @@ TEST(LC3SIM_CPP, RunNopOn100)
     LC3_Sim::InstructionIndex instr = 0;
     proc.Run(&instr, 0xFFF);
 
-    EXPECT_EQ(instr, 1); // Stop on NOP=0u
+    EXPECT_EQ(instr, 1u); // Stop on NOP=0u
     EXPECT_EQ(res, LC3_Sim::Processor::lrSuccess);
 }
