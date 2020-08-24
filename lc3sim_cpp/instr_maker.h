@@ -1,60 +1,62 @@
 // Copyright 2020 by Alexei Bezborodov <AlexeiBv@narod.ru>
 #pragma once
 
+#include <cassert>
+
 #include "instr_config.h"
 
-#define STATIC_ASSERT(cond) ((cond) ? : int a [-1];)
-#define CHECK_OPCODE(opcode) STATIC_ASSERT(!(opcode & ~OPER_CODE_MASK))
-#define CHECK_REGNUM(reg_num) STATIC_ASSERT(!(reg_num & ~REG_NUM_MASK))
-#define CHECK_INT_AFTER_OPER_WITH_FLAG(int_val) STATIC_ASSERT(!(int_val & ~INT_AFTER_OPER_WITH_FLAG_MASK))
-#define CHECK_INT_AFTER_NUM1(int_val) STATIC_ASSERT(!(int_val & ~INT_AFTER_NUM1_MASK))
-#define CHECK_INT_AFTER_NUM2(int_val) STATIC_ASSERT(!(int_val & ~INT_AFTER_NUM2_MASK))
-#define CHECK_INT_AFTER_NUM1_WITH_FLAG(int_val) STATIC_ASSERT(!(int_val & ~INT_AFTER_NUM1_WITH_FLAG_MASK))
-#define CHECK_INT_AFTER_NUM2_WITH_FLAG(int_val) STATIC_ASSERT(!(int_val & ~INT_AFTER_NUM2_WITH_FLAG_MASK))
-#define CHECK_INT_TRAP(int_val) STATIC_ASSERT(!(int_val & ~TRAP_MASK))
+#define VALUE_ASSERT(cond) assert(cond) // TODO Make static_assert
+#define CHECK_OPCODE(opcode) VALUE_ASSERT(!(opcode & ~OPER_CODE_MASK))
+#define CHECK_REGNUM(reg_num) VALUE_ASSERT(!(reg_num & ~REG_NUM_MASK))
+#define CHECK_INT_AFTER_OPER_WITH_FLAG(int_val) VALUE_ASSERT(!(int_val & ~INT_AFTER_OPER_WITH_FLAG_MASK))
+#define CHECK_INT_AFTER_NUM1(int_val) VALUE_ASSERT(!(int_val & ~INT_AFTER_NUM1_MASK))
+#define CHECK_INT_AFTER_NUM2(int_val) VALUE_ASSERT(!(int_val & ~INT_AFTER_NUM2_MASK))
+#define CHECK_INT_AFTER_NUM1_WITH_FLAG(int_val) VALUE_ASSERT(!(int_val & ~INT_AFTER_NUM1_WITH_FLAG_MASK))
+#define CHECK_INT_AFTER_NUM2_WITH_FLAG(int_val) VALUE_ASSERT(!(int_val & ~INT_AFTER_NUM2_WITH_FLAG_MASK))
+#define CHECK_INT_TRAP(int_val) VALUE_ASSERT(!(int_val & ~TRAP_MASK))
 
 #define MAKE_INSTR_RRR(opcode, reg_num1, reg_num2, reg_num3) \
-    ( CHECK_OPCODE(opcode), CHECK_REGNUM(reg_num1), CHECK_REGNUM(reg_num2), CHECK_REGNUM(reg_num3), \
+    (LC3_Sim::RegType)( CHECK_OPCODE(opcode), CHECK_REGNUM(reg_num1), CHECK_REGNUM(reg_num2), CHECK_REGNUM(reg_num3), \
     (opcode << OPER_CODE_MOVE_BIT) | (reg_num1 << REG_NUM1_MOVE_BIT) | (reg_num2 << REG_NUM2_MOVE_BIT) | (reg_num3 << REG_NUM3_MOVE_BIT) \
     )
 
 #define MAKE_INSTR_RRI(opcode, reg_num1, reg_num2, int_val) \
-    ( CHECK_OPCODE(opcode), CHECK_REGNUM(reg_num1), CHECK_REGNUM(reg_num2), CHECK_INT_AFTER_NUM2(int_val), \
+    (LC3_Sim::RegType)( CHECK_OPCODE(opcode), CHECK_REGNUM(reg_num1), CHECK_REGNUM(reg_num2), CHECK_INT_AFTER_NUM2(int_val), \
     (opcode << OPER_CODE_MOVE_BIT) | (reg_num1 << REG_NUM1_MOVE_BIT) | (reg_num2 << REG_NUM2_MOVE_BIT) | int_val \
     )
 
 #define MAKE_INSTR_RRI_WITH_FLAG(opcode, reg_num1, reg_num2, int_val) \
-    ( CHECK_OPCODE(opcode), CHECK_REGNUM(reg_num1), CHECK_REGNUM(reg_num2), CHECK_INT_AFTER_NUM2_WITH_FLAG(int_val), \
+    (LC3_Sim::RegType)( CHECK_OPCODE(opcode), CHECK_REGNUM(reg_num1), CHECK_REGNUM(reg_num2), CHECK_INT_AFTER_NUM2_WITH_FLAG(int_val), \
     (opcode << OPER_CODE_MOVE_BIT) | (reg_num1 << REG_NUM1_MOVE_BIT) | (reg_num2 << REG_NUM2_MOVE_BIT) | (1 << (REG_NUM2_MOVE_BIT - 1)) | int_val \
     )
 
 #define MAKE_INSTR_RR(opcode, reg_num1, reg_num2) \
-    ( CHECK_OPCODE(opcode), CHECK_REGNUM(reg_num1), CHECK_REGNUM(reg_num2), \
+    (LC3_Sim::RegType)( CHECK_OPCODE(opcode), CHECK_REGNUM(reg_num1), CHECK_REGNUM(reg_num2), \
     (opcode << OPER_CODE_MOVE_BIT) | (reg_num1 << REG_NUM1_MOVE_BIT) | (reg_num2 << REG_NUM2_MOVE_BIT) \
     )
 
 #define MAKE_INSTR_RI(opcode, reg_num1, int_val) \
-    ( CHECK_OPCODE(opcode), CHECK_REGNUM(reg_num1), CHECK_INT_AFTER_NUM1(int_val), \
+    (LC3_Sim::RegType)( CHECK_OPCODE(opcode), CHECK_REGNUM(reg_num1), CHECK_INT_AFTER_NUM1(int_val), \
     (opcode << OPER_CODE_MOVE_BIT) | (reg_num1 << REG_NUM1_MOVE_BIT) | int_val \
     )
 
 #define MAKE_INSTR_RI_WITH_FLAG(opcode, reg_num1, int_val) \
-    ( CHECK_OPCODE(opcode), CHECK_REGNUM(reg_num1), CHECK_INT_AFTER_NUM1_WITH_FLAG(int_val), \
+    (LC3_Sim::RegType)( CHECK_OPCODE(opcode), CHECK_REGNUM(reg_num1), CHECK_INT_AFTER_NUM1_WITH_FLAG(int_val), \
     (opcode << OPER_CODE_MOVE_BIT) | (reg_num1 << REG_NUM1_MOVE_BIT) | (1 << (REG_NUM1_MOVE_BIT - 1)) | int_val \
     )
 
 #define MAKE_INSTR_R2(opcode, reg_num2) \
-    ( CHECK_OPCODE(opcode), CHECK_REGNUM(reg_num2), \
+    (LC3_Sim::RegType)( CHECK_OPCODE(opcode), CHECK_REGNUM(reg_num2), \
     (opcode << OPER_CODE_MOVE_BIT) | (reg_num2 << REG_NUM2_MOVE_BIT) \
     )
 
 #define MAKE_INSTR_I_WITH_FLAG(opcode, int_val) \
-    ( CHECK_OPCODE(opcode), CHECK_INT_AFTER_OPER_WITH_FLAG(int_val), \
+    (LC3_Sim::RegType)( CHECK_OPCODE(opcode), CHECK_INT_AFTER_OPER_WITH_FLAG(int_val), \
     (opcode << OPER_CODE_MOVE_BIT) | (1 << INT_AFTER_OPER_FLAG_BIT) | int_val \
     )
 
 #define MAKE_INSTR_T(opcode, int_val) \
-    ( CHECK_OPCODE(opcode), CHECK_INT_TRAP(int_val), \
+    (LC3_Sim::RegType)( CHECK_OPCODE(opcode), CHECK_INT_TRAP(int_val), \
     (opcode << OPER_CODE_MOVE_BIT) | int_val \
     )
 

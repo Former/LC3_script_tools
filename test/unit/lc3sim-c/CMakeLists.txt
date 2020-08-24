@@ -32,7 +32,10 @@ endforeach()
 
 set(BIN_DIR "${CMAKE_BINARY_DIR}/")
 
-AddTest("unittest_sim_c_16" ${src_16bit_file_list} liblc3sim_c16 LC3_16BIT)
-AddTest("unittest_sim_c_32" ${src_32bit_file_list} liblc3sim_c32 LC3_32BIT)
+add_executable(unittest_sim_c_16 ${src_16bit_file_list} ../main.cpp)
+ConfigTestExe(unittest_sim_c_16 liblc3sim_c16 LC3_16BIT)
+
+add_executable(unittest_sim_c_32 ${src_32bit_file_list} ../main.cpp)
+ConfigTestExe(unittest_sim_c_32 liblc3sim_c32 LC3_32BIT)
 
 

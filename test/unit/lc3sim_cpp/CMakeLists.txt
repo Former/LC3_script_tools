@@ -30,7 +30,10 @@ foreach (cur_templete ${source_32bit_file_templates})
     list(APPEND src_32bit_file_list ${cur_list})
 endforeach()
 
-AddTest("unittest_sim_cpp_16" ${src_16bit_file_list} liblc3sim_cpp16 LC3_16BIT)
-AddTest("unittest_sim_cpp_32" ${src_32bit_file_list} liblc3sim_cpp32 LC3_32BIT)
+add_executable(unittest_sim_cpp_16 ${src_16bit_file_list} ../main.cpp)
+ConfigTestExe(unittest_sim_cpp_16  liblc3sim_cpp16 LC3_16BIT)
+
+add_executable(unittest_sim_cpp_32 ${src_32bit_file_list} ../main.cpp)
+ConfigTestExe(unittest_sim_cpp_32 liblc3sim_cpp32 LC3_32BIT)
 
 
