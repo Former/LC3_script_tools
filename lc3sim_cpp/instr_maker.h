@@ -85,7 +85,7 @@
 #define MAKE_INSTR_JSR_I(int_val)                       /* reg[7] = reg_pc; reg_pc += int_val; */ \
     MAKE_INSTR_I_WITH_FLAG(OPCODE_JSR, int_val)
 
-#define MAKE_INSTR_JSR_R(reg_num2)                      /* swap(reg[reg_num2], reg_pc); */ \
+#define MAKE_INSTR_JSR_R(reg_num2)                      /* swap(&reg[reg_num2], &reg_pc); */ \
     MAKE_INSTR_R2(OPCODE_JMP, reg_num2)
 
 #define MAKE_INSTR_AND_I(reg_num1, reg_num2, int_val)   /* reg[reg_num1] = reg[reg_num2] & int_val; */ \

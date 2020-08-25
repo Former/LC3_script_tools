@@ -231,7 +231,7 @@ TEST_F(TestInstrMaker, TestADDr)
         MAKE_INSTR_ADD_R(2, 0, 1), // reg[2] = reg[0] + reg[1]; // 30
         MAKE_INSTR_ADD_R(3, 1, 0), // reg[3] = reg[1] + reg[0]; // 30
 #ifndef LC3_32BIT
-// TO DO: Error - segmentation fault 
+// TODO: Error - segmentation fault 
         MAKE_INSTR_ADD_R(4, 2, 3), // reg[4] = reg[2] + reg[3]; // 60
         MAKE_INSTR_ADD_R(5, 4, 4), // reg[5] = reg[4] + reg[4]; // 120
         MAKE_INSTR_ADD_R(6, 4, 5), // reg[6] = reg[4] + reg[5]; // 180
@@ -309,6 +309,189 @@ TEST_F(TestInstrMaker, TestST)
     
     reg.m_Reg[LC3_Sim::Registers::rnReg_PC] += instr;
     reg.m_Reg[LC3_Sim::Registers::rnReg_0] = 10;
+    reg.m_Reg[LC3_Sim::Registers::rnReg_PSR] = LC3_Sim::Registers::flagPositive;
+
+    vm.m_Memory[START_ADDRESS + instr] = 10u;
+    
+    CHECK_LOCAL_VAR
+}
+
+TEST_F(TestInstrMaker, TestJSR_I)
+{
+    LC3_Sim::RegType data[] = 
+    {
+        START_ADDRESS, 
+        MAKE_INSTR_JSR_I(1), // reg_pc += 1;
+        MAKE_INSTR_ADD_I(0, 1, 10), // reg[0] = reg[1] + 10; // 10
+        MAKE_INSTR_NOP,
+    };  
+    
+    LoadData(data, sizeof(data));
+    
+    LOCAL_VAR_COPY
+
+    LC3_Sim::InstructionIndex instr = ARRAY_SIZE(data) - 1;
+    Run(instr - 1);
+
+    reg.m_Reg[LC3_Sim::Registers::rnReg_7] += START_ADDRESS + 1;
+    reg.m_Reg[LC3_Sim::Registers::rnReg_PC] += instr;
+
+    CHECK_LOCAL_VAR
+}
+
+TEST_F(TestInstrMaker, TestJSR_Im)
+{
+    LC3_Sim::RegType data[] = 
+    {
+        START_ADDRESS, 
+        MAKE_INSTR_JSR_I(-3), // reg_pc += 1;
+        MAKE_INSTR_ADD_I(0, 1, 10), // reg[0] = reg[1] + 10; // 10
+        MAKE_INSTR_NOP,
+    };  
+    
+    LoadData(data, sizeof(data));
+    
+    LOCAL_VAR_COPY
+
+    Run(2);
+
+    reg.m_Reg[LC3_Sim::Registers::rnReg_7] += START_ADDRESS + 1;
+    reg.m_Reg[LC3_Sim::Registers::rnReg_PC] = START_ADDRESS - 1;
+
+    CHECK_LOCAL_VAR
+}
+
+TEST_F(TestInstrMaker, TestJSR_R)
+{
+    LC3_Sim::RegType data[] = 
+    {
+        START_ADDRESS, 
+        MAKE_INSTR_LEA(0, 3), // reg[0] = reg_pc + 3;
+        MAKE_INSTR_JSR_R(0), // swap(&reg[0], &reg_pc);
+        MAKE_INSTR_ADD_I(0, 1, 10), // reg[0] = reg[1] + 10; // 10
+        MAKE_INSTR_NOP,
+    };  
+    
+    LoadData(data, sizeof(data));
+    
+    LOCAL_VAR_COPY
+
+    LC3_Sim::InstructionIndex instr = ARRAY_SIZE(data) - 1;
+    Run(instr - 1);
+    
+    reg.m_Reg[LC3_Sim::Registers::rnReg_0] += START_ADDRESS + 4;
+    reg.m_Reg[LC3_Sim::Registers::rnReg_PC] += instr + 1;
+    reg.m_Reg[LC3_Sim::Registers::rnReg_PSR] = LC3_Sim::Registers::flagPositive;
+
+    CHECK_LOCAL_VAR
+}
+
+TEST_F(TestInstrMaker, TestANDi)
+{
+    LC3_Sim::RegType data[] = 
+    {
+        START_ADDRESS, 
+        MAKE_INSTR_ADD_I(0, 1, 10), // reg[0] = reg[1] + 10; // 10
+        MAKE_INSTR_AND_I(1, 0, 6), // reg[1] = reg[0] & 6; // 10 & 6
+        MAKE_INSTR_AND_I(5, 0, -5), // reg[5] = reg[0] & -5; 10 & -5
+        MAKE_INSTR_AND_I(2, 3, -15), // reg[2] = reg[3] & - 15; // 10 & -15
+        MAKE_INSTR_NOP
+    };  
+    
+    LoadData(data, sizeof(data));
+    
+    LOCAL_VAR_COPY
+
+    LC3_Sim::InstructionIndex instr = ARRAY_SIZE(data) - 1;
+    Run(instr);
+    
+    reg.m_Reg[LC3_Sim::Registers::rnReg_PC] += instr;
+    reg.m_Reg[LC3_Sim::Registers::rnReg_0] = 10;
+    reg.m_Reg[LC3_Sim::Registers::rnReg_1] = 10 & 6;
+    reg.m_Reg[LC3_Sim::Registers::rnReg_5] = 10 & -5;
+    reg.m_Reg[LC3_Sim::Registers::rnReg_2] = 10 & -15 ;
+    reg.m_Reg[LC3_Sim::Registers::rnReg_PSR] = LC3_Sim::Registers::flagZero;
+    
+    CHECK_LOCAL_VAR
+}
+
+TEST_F(TestInstrMaker, TestANDr)
+{
+    LC3_Sim::RegType data[] = 
+    {
+        START_ADDRESS, 
+        MAKE_INSTR_ADD_I(0, 1, 10), // reg[0] = reg[1] + 10; // 10
+        MAKE_INSTR_ADD_I(1, 2, 6), // reg[1] = reg[2] + 6; // 6
+        MAKE_INSTR_AND_R(2, 0, 1), // reg[2] = reg[0] & reg[1]; // 10 & 6
+        MAKE_INSTR_NOP
+    };  
+    
+    LoadData(data, sizeof(data));
+    
+    LOCAL_VAR_COPY
+
+    LC3_Sim::InstructionIndex instr = ARRAY_SIZE(data) - 1;
+    Run(instr);
+    
+    reg.m_Reg[LC3_Sim::Registers::rnReg_PC] += instr;
+    reg.m_Reg[LC3_Sim::Registers::rnReg_0] = 10;
+    reg.m_Reg[LC3_Sim::Registers::rnReg_1] = 6;
+    reg.m_Reg[LC3_Sim::Registers::rnReg_2] = 10 & 6;
+    reg.m_Reg[LC3_Sim::Registers::rnReg_PSR] = LC3_Sim::Registers::flagPositive;
+    
+    CHECK_LOCAL_VAR
+}
+
+TEST_F(TestInstrMaker, TestLDR)
+{
+    LC3_Sim::RegType data[] = 
+    {
+        START_ADDRESS,
+        MAKE_INSTR_LEA(4, 2), // reg[4] = reg_pc + 2;
+        MAKE_INSTR_ADD_I(0, 1, 10), // reg[0] = reg[1] + 10; // 10
+        MAKE_INSTR_LDR(1, 4, 1), // reg[1] = *(reg[4] + 1);
+        MAKE_INSTR_NOP,
+        123u,
+    };  
+    
+    LoadData(data, sizeof(data));
+    
+    LOCAL_VAR_COPY
+
+    LC3_Sim::InstructionIndex instr = ARRAY_SIZE(data) - 1 - 1;
+    Run(instr);
+    
+    reg.m_Reg[LC3_Sim::Registers::rnReg_PC] += instr;
+    reg.m_Reg[LC3_Sim::Registers::rnReg_0] = 10;
+    reg.m_Reg[LC3_Sim::Registers::rnReg_1] = 123u;
+    reg.m_Reg[LC3_Sim::Registers::rnReg_4] = START_ADDRESS + 3;
+    reg.m_Reg[LC3_Sim::Registers::rnReg_PSR] = LC3_Sim::Registers::flagPositive;
+    
+    CHECK_LOCAL_VAR
+}
+
+TEST_F(TestInstrMaker, TestSTR)
+{
+    LC3_Sim::RegType data[] = 
+    {
+        START_ADDRESS,
+        MAKE_INSTR_LEA(4, 2), // reg[4] = reg_pc + 2;
+        MAKE_INSTR_ADD_I(0, 1, 10), // reg[0] = reg[1] + 10; // 10
+        MAKE_INSTR_STR(0, 4, 1), // *(reg[4] + 1) = reg[0];
+        MAKE_INSTR_NOP,
+        123u,
+    };  
+    
+    LoadData(data, sizeof(data));
+    
+    LOCAL_VAR_COPY
+
+    LC3_Sim::InstructionIndex instr = ARRAY_SIZE(data) - 1 - 1;
+    Run(instr);
+    
+    reg.m_Reg[LC3_Sim::Registers::rnReg_PC] += instr;
+    reg.m_Reg[LC3_Sim::Registers::rnReg_0] = 10;
+    reg.m_Reg[LC3_Sim::Registers::rnReg_4] = START_ADDRESS + 3;
     reg.m_Reg[LC3_Sim::Registers::rnReg_PSR] = LC3_Sim::Registers::flagPositive;
 
     vm.m_Memory[START_ADDRESS + instr] = 10u;
