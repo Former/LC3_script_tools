@@ -60,6 +60,9 @@
     (opcode << OPER_CODE_MOVE_BIT) | int_val \
     )
 
+#define MAKE_INSTR_NOP                                  /* Not operation */ \
+    MAKE_INSTR_BR(0, 0)
+
 #define MAKE_INSTR_BR(flag_pzn, int_val)                /* if (cur_pzn == flag_pzn) reg_pc += int_val; */ \
     MAKE_INSTR_RI(OPCODE_BR, flag_pzn, int_val)
 
