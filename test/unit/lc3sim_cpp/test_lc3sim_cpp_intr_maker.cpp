@@ -29,7 +29,7 @@ protected:
         for (size_t i = 0; i < a_DataSize; ++i)
             a_Data[i] = swap(a_Data[i]);
 
-        LC3_Sim::Processor::LoadResult res = m_Proc->LoadData((uint8_t*)a_Data, a_DataSize);
+        LC3_Sim::Processor::LoadResult res = m_Proc->LoadData((uint8_t*)a_Data, sizeof(LC3_Sim::RegType) * a_DataSize);
 
         EXPECT_EQ(res, LC3_Sim::Processor::lrSuccess);
     }
@@ -51,7 +51,7 @@ protected:
 };
 
 #define LOCAL_VAR_COPY \
-    TestIO io = *m_SimpleIO; \
+    /*TestIO io = *m_SimpleIO;*/ \
     TestVM vm = *m_SimpleVM; \
     LC3_Sim::Registers reg = *m_Reg; \
     LC3_Sim::ProcessorConfig config = *m_Config;
@@ -80,7 +80,7 @@ TEST_F(TestInstrMaker, TestNop)
 {
     LC3_Sim::RegType data[] = {START_ADDRESS, MAKE_INSTR_NOP, 0xFFu, 0xFFFu, 0u};  
     
-    LoadData(data, sizeof(data));
+    LoadData(data, ARRAY_SIZE(data));
     
     LOCAL_VAR_COPY
 
@@ -103,7 +103,7 @@ TEST_F(TestInstrMaker, TestBR_pos)
         MAKE_INSTR_NOP
     };  
     
-    LoadData(data, sizeof(data));
+    LoadData(data, ARRAY_SIZE(data));
     
     LOCAL_VAR_COPY
 
@@ -128,7 +128,7 @@ TEST_F(TestInstrMaker, TestBR_neg)
         MAKE_INSTR_NOP
     };  
     
-    LoadData(data, sizeof(data));
+    LoadData(data, ARRAY_SIZE(data));
     
     LOCAL_VAR_COPY
 
@@ -153,7 +153,7 @@ TEST_F(TestInstrMaker, TestBR_zero)
         MAKE_INSTR_NOP
     };  
     
-    LoadData(data, sizeof(data));
+    LoadData(data, ARRAY_SIZE(data));
     
     LOCAL_VAR_COPY
 
@@ -178,7 +178,7 @@ TEST_F(TestInstrMaker, TestBR_zero1)
         MAKE_INSTR_NOP
     };  
     
-    LoadData(data, sizeof(data));
+    LoadData(data, ARRAY_SIZE(data));
     
     LOCAL_VAR_COPY
 
@@ -204,7 +204,7 @@ TEST_F(TestInstrMaker, TestADDi)
         MAKE_INSTR_NOP
     };  
     
-    LoadData(data, sizeof(data));
+    LoadData(data, ARRAY_SIZE(data));
     
     LOCAL_VAR_COPY
 
@@ -240,7 +240,7 @@ TEST_F(TestInstrMaker, TestADDr)
         MAKE_INSTR_NOP
     };  
     
-    LoadData(data, sizeof(data));
+    LoadData(data, ARRAY_SIZE(data));
     
     LOCAL_VAR_COPY
 
@@ -274,7 +274,7 @@ TEST_F(TestInstrMaker, TestLD)
         123u,
     };  
     
-    LoadData(data, sizeof(data));
+    LoadData(data, ARRAY_SIZE(data));
     
     LOCAL_VAR_COPY
 
@@ -300,7 +300,7 @@ TEST_F(TestInstrMaker, TestST)
         123u,
     };  
     
-    LoadData(data, sizeof(data));
+    LoadData(data, ARRAY_SIZE(data));
     
     LOCAL_VAR_COPY
 
@@ -326,7 +326,7 @@ TEST_F(TestInstrMaker, TestJSR_I)
         MAKE_INSTR_NOP,
     };  
     
-    LoadData(data, sizeof(data));
+    LoadData(data, ARRAY_SIZE(data));
     
     LOCAL_VAR_COPY
 
@@ -349,7 +349,7 @@ TEST_F(TestInstrMaker, TestJSR_Im)
         MAKE_INSTR_NOP,
     };  
     
-    LoadData(data, sizeof(data));
+    LoadData(data, ARRAY_SIZE(data));
     
     LOCAL_VAR_COPY
 
@@ -372,7 +372,7 @@ TEST_F(TestInstrMaker, TestJSR_R)
         MAKE_INSTR_NOP,
     };  
     
-    LoadData(data, sizeof(data));
+    LoadData(data, ARRAY_SIZE(data));
     
     LOCAL_VAR_COPY
 
@@ -398,7 +398,7 @@ TEST_F(TestInstrMaker, TestANDi)
         MAKE_INSTR_NOP
     };  
     
-    LoadData(data, sizeof(data));
+    LoadData(data, ARRAY_SIZE(data));
     
     LOCAL_VAR_COPY
 
@@ -426,7 +426,7 @@ TEST_F(TestInstrMaker, TestANDr)
         MAKE_INSTR_NOP
     };  
     
-    LoadData(data, sizeof(data));
+    LoadData(data, ARRAY_SIZE(data));
     
     LOCAL_VAR_COPY
 
@@ -454,7 +454,7 @@ TEST_F(TestInstrMaker, TestLDR)
         123u,
     };  
     
-    LoadData(data, sizeof(data));
+    LoadData(data, ARRAY_SIZE(data));
     
     LOCAL_VAR_COPY
 
@@ -482,7 +482,7 @@ TEST_F(TestInstrMaker, TestSTR)
         123u,
     };  
     
-    LoadData(data, sizeof(data));
+    LoadData(data, ARRAY_SIZE(data));
     
     LOCAL_VAR_COPY
 
@@ -509,7 +509,7 @@ TEST_F(TestInstrMaker, TestNOT)
         MAKE_INSTR_NOP
     };  
     
-    LoadData(data, sizeof(data));
+    LoadData(data, ARRAY_SIZE(data));
     
     LOCAL_VAR_COPY
 
@@ -536,7 +536,7 @@ TEST_F(TestInstrMaker, TestLDI)
         123u,
     };  
     
-    LoadData(data, sizeof(data));
+    LoadData(data, ARRAY_SIZE(data));
     
     LOCAL_VAR_COPY
 
@@ -563,7 +563,7 @@ TEST_F(TestInstrMaker, TestSTI)
         123u,
     };  
     
-    LoadData(data, sizeof(data));
+    LoadData(data, ARRAY_SIZE(data));
     
     LOCAL_VAR_COPY
 
@@ -590,7 +590,7 @@ TEST_F(TestInstrMaker, TestJMP)
         MAKE_INSTR_NOP,
     };  
     
-    LoadData(data, sizeof(data));
+    LoadData(data, ARRAY_SIZE(data));
     
     LOCAL_VAR_COPY
 
@@ -615,7 +615,7 @@ TEST_F(TestInstrMaker, TestLEA)
         MAKE_INSTR_NOP,
     };  
     
-    LoadData(data, sizeof(data));
+    LoadData(data, ARRAY_SIZE(data));
     
     LOCAL_VAR_COPY
 

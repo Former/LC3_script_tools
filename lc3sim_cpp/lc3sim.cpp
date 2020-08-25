@@ -39,7 +39,6 @@ LC3_Sim::IVirtualMemory::~IVirtualMemory()
 {
 }
 
-
 LC3_Sim::ProcessorConfig::ProcessorConfig(AddressType a_ExceptionHandlerAddress, AddressType a_ExceptionInfoAddress, AddressType a_ExceptionMask)
     :m_ExceptionHandlerAddress(a_ExceptionHandlerAddress),
     m_ExceptionInfoAddress(a_ExceptionInfoAddress),

@@ -7,6 +7,8 @@ enable_testing()
 
 set(BIN_DIR "${CMAKE_BINARY_DIR}/")
 
+set(OPTIMIZE_COMPILE_OPTION -O0)
+
 macro(ConfigTestExe a_TestName a_Lib a_Definitions)
     target_compile_definitions(${a_TestName} PRIVATE ${a_Definitions})
     target_compile_options(${a_TestName} PRIVATE ${OPTIMIZE_COMPILE_OPTION} -Wall -g)

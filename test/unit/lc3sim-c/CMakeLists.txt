@@ -8,8 +8,6 @@ enable_testing()
 include_directories(".")
 include_directories("../../../lc3sim-c")
 
-set(OPTIMIZE_COMPILE_OPTION -O2)
-
 set(source_16bit_file_templates
     "*.cpp"
     )
