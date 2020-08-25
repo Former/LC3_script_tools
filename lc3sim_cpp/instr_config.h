@@ -44,7 +44,7 @@
 #define REG_NUM1(instr)             ((instr >> REG_NUM1_MOVE_BIT) & REG_NUM1_MASK)
 
 #define INT_AFTER_NUM1_MASK         ((1 << REG_NUM1_MOVE_BIT) - 1)
-#define INT_AFTER_NUM1_WITH_FLAG_MASK (((1 << REG_NUM1_MOVE_BIT) - 1) - 1)
+#define INT_AFTER_NUM1_WITH_FLAG_MASK ((1 << (REG_NUM1_MOVE_BIT - 1)) - 1)
 #define INT_AFTER_NUM1(instr)       INT_VALUE(instr, REG_NUM1_MOVE_BIT)
 #define INT_AFTER_NUM1_FLAG_BIT     (REG_NUM1_MOVE_BIT - 1)
 #define INT_AFTER_NUM1_FLAG(instr)  (instr & (1 << INT_AFTER_NUM1_FLAG_BIT))
@@ -59,7 +59,7 @@
 #define REG_NUM3(instr)             ((instr >> REG_NUM3_MOVE_BIT) & REG_NUM3_MASK)
 
 #define INT_AFTER_NUM2_MASK         ((1 << REG_NUM2_MOVE_BIT) - 1)
-#define INT_AFTER_NUM2_WITH_FLAG_MASK (((1 << REG_NUM2_MOVE_BIT) - 1) - 1)
+#define INT_AFTER_NUM2_WITH_FLAG_MASK ((1 << (REG_NUM2_MOVE_BIT - 1)) - 1)
 #define INT_AFTER_NUM2(instr)       INT_VALUE(instr, REG_NUM2_MOVE_BIT)
 #define INT_AFTER_NUM2_FLAG_BIT     (REG_NUM2_MOVE_BIT - 1)
 #define INT_AFTER_NUM2_FLAG(instr)  (instr & (1 << INT_AFTER_NUM2_FLAG_BIT))

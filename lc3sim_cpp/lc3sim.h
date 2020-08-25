@@ -53,6 +53,13 @@ struct Registers
 {
     Registers();
     
+    enum EFlags
+    {
+        flagPositive = 0b001,
+        flagZero     = 0b010,
+        flagNegative = 0b100,
+    };
+    
     enum RegName
     {
         rnReg_0 = 0,
@@ -64,7 +71,7 @@ struct Registers
         rnReg_6,
         rnReg_7,
         rnReg_PC,  // Командный регистр
-        rnReg_PSR, // Регистр флагов
+        rnReg_PSR, // Регистр флагов см. EFlags
         rnCount,
     };
     

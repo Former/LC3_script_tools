@@ -107,12 +107,6 @@ enum ESpecAddr
     sAddressMCR  = 0xfffe,
 };
 
-enum EFlags {
-    flagPositive = 0b001,
-    flagZero     = 0b010,
-    flagNegative = 0b100,
-};
-
 static LC3_Sim::IVirtualMemory::Result MemoryRead(LC3_Sim::RegType* a_Out, LC3_Sim::AddressType a_Address, LC3_Sim::IVirtualMemory* a_VirtualMemory, LC3_Sim::IInputOutput* a_InputOutrut)
 {
     DEBUG_TRACE("MemoryRead %x\n", a_Address);
@@ -152,14 +146,14 @@ static LC3_Sim::IVirtualMemory::Result MemoryWrite(LC3_Sim::RegType a_Value, LC3
     return a_VirtualMemory->Write(a_Value, a_Address);
 }
 
-static EFlags SignFlag(LC3_Sim::RegType a_Value)
+static LC3_Sim::Registers::EFlags SignFlag(LC3_Sim::RegType a_Value)
 {
     if (a_Value == 0)
-        return flagZero;
+        return LC3_Sim::Registers::flagZero;
     else if (a_Value & SING_BIT)
-        return flagNegative;
+        return LC3_Sim::Registers::flagNegative;
     else
-        return flagPositive;
+        return LC3_Sim::Registers::flagPositive;
 }
 
 static void SetCC(LC3_Sim::Registers* a_Registers, LC3_Sim::RegNumType a_RegNum)
@@ -183,7 +177,7 @@ static void SetCC(LC3_Sim::Registers* a_Registers, LC3_Sim::RegNumType a_RegNum)
 
 #define SET_CC_REG_NUM1(instr)      SetCC(m_Registers, REG_NUM1(instr))
 
-#define CASE(instr_name) case eOperCode_##instr_name: DEBUG_TRACE("Operation %s\n", #instr_name);
+#define CASE(instr_name)            case eOperCode_##instr_name: DEBUG_TRACE("Operation %s\n", #instr_name);
 
 LC3_Sim::InstructionExecuter::Exception LC3_Sim::InstructionExecuter::ExecuteOneInstruction(LC3_Sim::RegType a_Instruction)
 {
