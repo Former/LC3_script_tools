@@ -394,7 +394,7 @@ LC3_Sim::Bool LC3_Sim::Processor::Run(InstructionIndex* a_ExecutedInsructionsCou
         if (!(m_ProcessorConfig->m_ExceptionMask & exception.m_Type))
             continue;
 
-        MEMORY_WRITE(m_ProcessorConfig->m_ExceptionInfoAddress, addr_of_exception);
+        MEMORY_WRITE(addr_of_exception, m_ProcessorConfig->m_ExceptionInfoAddress);
         REG(LC3_Sim::Registers::rnReg_PC) = m_ProcessorConfig->m_ExceptionHandlerAddress;        
     }
     

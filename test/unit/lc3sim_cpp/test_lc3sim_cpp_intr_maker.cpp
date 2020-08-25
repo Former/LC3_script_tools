@@ -3,6 +3,9 @@
 #include "common.h"
 #include "instr_maker.h"
 
+#define INFO_EXCEPTION_HANDLER 0x1u
+#define START_EXCEPTION_HANDLER 20u
+
 class TestInstrMaker : public ::testing::Test
 {
 protected:
@@ -11,7 +14,7 @@ protected:
         m_SimpleIO  = new TestIO;
         m_SimpleVM  = new TestVM;
         m_Reg       = new LC3_Sim::Registers;
-        m_Config    = new LC3_Sim::ProcessorConfig(0, 0xfffe, 0);
+        m_Config    = new LC3_Sim::ProcessorConfig(START_EXCEPTION_HANDLER, INFO_EXCEPTION_HANDLER, 0xFFF);
         m_Proc      = new LC3_Sim::Processor(m_Reg, m_SimpleVM, m_SimpleIO, m_Config);
     }
 
@@ -628,5 +631,88 @@ TEST_F(TestInstrMaker, TestLEA)
     reg.m_Reg[LC3_Sim::Registers::rnReg_PC] += instr;
     reg.m_Reg[LC3_Sim::Registers::rnReg_PSR] = LC3_Sim::Registers::flagPositive;
 
+    CHECK_LOCAL_VAR
+}
+
+TEST_F(TestInstrMaker, Test_EXCEPTION_HANDLER)
+{
+    LC3_Sim::RegType data[] = 
+    {
+        START_ADDRESS, 
+        MAKE_INSTR_ADD_I(0, 1, 10), // reg[0] = reg[1] + 10; // 10
+        MAKE_INSTR_LDI(1, 2), // reg[1] = **(reg_pc + 2);
+        MAKE_INSTR_ADD_I(4, 0, 1), // reg[4] = reg[0] + 1; // 11
+        MAKE_INSTR_NOP,
+        LC3_Sim::RegType(m_SimpleVM->m_Memory.size() + 1),
+    };  
+
+    LC3_Sim::RegType ex_handler_data[] = 
+    {
+        START_EXCEPTION_HANDLER, 
+        MAKE_INSTR_LDI(1, 2), // reg[1] = **(reg_pc + 2);
+        MAKE_INSTR_ADD_I(1, 1, 1), // reg[1] += 1;
+        MAKE_INSTR_JMP(1), // reg_pc = reg[1];
+        INFO_EXCEPTION_HANDLER,
+    };  
+
+    LoadData(ex_handler_data, ARRAY_SIZE(ex_handler_data));
+    
+    LoadData(data, ARRAY_SIZE(data));
+    
+    LOCAL_VAR_COPY
+
+    LC3_Sim::InstructionIndex instr = ARRAY_SIZE(data) - 1 - 1;
+    Run(instr + ARRAY_SIZE(ex_handler_data) - 2);
+    
+    reg.m_Reg[LC3_Sim::Registers::rnReg_PC] += instr;
+    reg.m_Reg[LC3_Sim::Registers::rnReg_0] = 10;
+    reg.m_Reg[LC3_Sim::Registers::rnReg_1] = START_ADDRESS + 2;
+    reg.m_Reg[LC3_Sim::Registers::rnReg_4] = 11u;
+    reg.m_Reg[LC3_Sim::Registers::rnReg_PSR] = LC3_Sim::Registers::flagPositive;
+    config.m_ExceptionCount = 1;
+    vm.m_Memory[INFO_EXCEPTION_HANDLER] = START_ADDRESS + 1;    
+    
+    CHECK_LOCAL_VAR
+}
+
+TEST_F(TestInstrMaker, Test_EXCEPTION_HANDLER_mask)
+{
+    LC3_Sim::RegType data[] = 
+    {
+        START_ADDRESS, 
+        MAKE_INSTR_ADD_I(0, 1, 10), // reg[0] = reg[1] + 10; // 10
+        MAKE_INSTR_LDI(1, 2), // reg[1] = **(reg_pc + 2);
+        MAKE_INSTR_ADD_I(4, 0, 1), // reg[4] = reg[0] + 1; // 11
+        MAKE_INSTR_NOP,
+        LC3_Sim::RegType(m_SimpleVM->m_Memory.size() + 1),
+    };  
+
+    LC3_Sim::RegType ex_handler_data[] = 
+    {
+        START_EXCEPTION_HANDLER, 
+        MAKE_INSTR_LDI(1, 2), // reg[1] = **(reg_pc + 2);
+        MAKE_INSTR_ADD_I(1, 1, 1), // reg[1] += 1;
+        MAKE_INSTR_JMP(1), // reg_pc = reg[1];
+        INFO_EXCEPTION_HANDLER,
+    };  
+
+    LoadData(ex_handler_data, ARRAY_SIZE(ex_handler_data));
+    
+    LoadData(data, ARRAY_SIZE(data));
+
+    m_Config->m_ExceptionMask = 0;
+
+    LOCAL_VAR_COPY
+
+    LC3_Sim::InstructionIndex instr = ARRAY_SIZE(data) - 1 - 1;
+    Run(instr);
+    
+    reg.m_Reg[LC3_Sim::Registers::rnReg_PC] += instr;
+    reg.m_Reg[LC3_Sim::Registers::rnReg_0] = 10;
+    reg.m_Reg[LC3_Sim::Registers::rnReg_1] = 0;
+    reg.m_Reg[LC3_Sim::Registers::rnReg_4] = 11u;
+    reg.m_Reg[LC3_Sim::Registers::rnReg_PSR] = LC3_Sim::Registers::flagPositive;
+    config.m_ExceptionCount = 1;
+    
     CHECK_LOCAL_VAR
 }
