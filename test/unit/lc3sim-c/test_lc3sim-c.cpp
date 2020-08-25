@@ -2,23 +2,9 @@
 
 #include "vm.h"
 
-#ifdef LC3_32BIT
-#define swap swap32
-
-static uint32_t swap32(uint32_t val) {
-    return (val << 8 * 3) | ((val << 8) & 0x00FF0000) | ((val >> 8) & 0x0000FF00) | (val >> 8 * 3);
-}
-#else
-#define swap swap16
-
-static uint16_t swap16(uint16_t val) {
-    return (val << 8) | (val >> 8);
-}
-#endif
-
 #define ARRAY_SIZE(a) (sizeof(a)/sizeof(a[0]))
 
-#define ARRAY_SWAP(data) do { for (size_t i = 0; i < ARRAY_SIZE(data); ++i) data[i] = swap(data[i]); } while(0)
+#define ARRAY_SWAP(data) do { for (size_t i = 0; i < ARRAY_SIZE(data); ++i) data[i] = LC3_SWAP(data[i]); } while(0)
 
 TEST(LC3SIM_C, Create_Destroy)
 {

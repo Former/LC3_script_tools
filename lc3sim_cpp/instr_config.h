@@ -1,9 +1,9 @@
 // Copyright 2020 by Alexei Bezborodov <AlexeiBv@narod.ru>
 #pragma once
 
+#include "sim_types.h"
 
-
-#define INSTRUCTION_BIT_COUNT       16
+#define INSTRUCTION_BIT_COUNT       LC3_INSTRUCTION_BIT_COUNT
 #define OPER_CODE_BIT_COUNT         4
 #define REG_NUM_BIT_COUNT           3
 
@@ -24,30 +24,32 @@
 #define OPCODE_LEA                  0b1110
 #define OPCODE_TRAP                 0b1111
 
-#define INT_VALUE(instr, bit_count) ((((instr) & ((1 << (bit_count)) - 1)) ^ (1 << ((bit_count) - 1))) - (1 << ((bit_count) - 1)))
+#define I1                          1ul
+
+#define INT_VALUE(instr, bit_count) ((((instr) & ((I1 << (bit_count)) - 1)) ^ (I1 << ((bit_count) - 1))) - (I1 << ((bit_count) - 1)))
 
 #define OPER_CODE_MOVE_BIT          (INSTRUCTION_BIT_COUNT - OPER_CODE_BIT_COUNT)
-#define OPER_CODE_MASK              ((1 << OPER_CODE_BIT_COUNT) - 1)
-#define REG_NUM_MASK                ((1 << REG_NUM_BIT_COUNT) - 1)
+#define OPER_CODE_MASK              ((I1 << OPER_CODE_BIT_COUNT) - 1)
+#define REG_NUM_MASK                ((I1 << REG_NUM_BIT_COUNT) - 1)
 
 #define OPER_CODE(instr)            ((instr >> OPER_CODE_MOVE_BIT) & OPER_CODE_MASK)
 
-#define INT_AFTER_OPER_MASK         ((1 << OPER_CODE_MOVE_BIT) - 1)
-#define INT_AFTER_OPER_WITH_FLAG_MASK ((1 << (OPER_CODE_MOVE_BIT - 1)) - 1)
+#define INT_AFTER_OPER_MASK         ((I1 << OPER_CODE_MOVE_BIT) - 1)
+#define INT_AFTER_OPER_WITH_FLAG_MASK ((I1 << (OPER_CODE_MOVE_BIT - 1)) - 1)
 #define INT_AFTER_OPER(instr)       INT_VALUE(instr, OPER_CODE_MOVE_BIT)
 #define INT_AFTER_OPER_FLAG_BIT     (OPER_CODE_MOVE_BIT - 1)
-#define INT_AFTER_OPER_FLAG(instr)  (instr & (1 << INT_AFTER_OPER_FLAG_BIT))
+#define INT_AFTER_OPER_FLAG(instr)  (instr & (I1 << INT_AFTER_OPER_FLAG_BIT))
 #define INT_AFTER_OPER_WITH_FLAG(instr) INT_VALUE(instr, OPER_CODE_MOVE_BIT - 1)
 
 #define REG_NUM1_MOVE_BIT           (OPER_CODE_MOVE_BIT - REG_NUM_BIT_COUNT)
 #define REG_NUM1_MASK               REG_NUM_MASK
 #define REG_NUM1(instr)             ((instr >> REG_NUM1_MOVE_BIT) & REG_NUM1_MASK)
 
-#define INT_AFTER_NUM1_MASK         ((1 << REG_NUM1_MOVE_BIT) - 1)
-#define INT_AFTER_NUM1_WITH_FLAG_MASK ((1 << (REG_NUM1_MOVE_BIT - 1)) - 1)
+#define INT_AFTER_NUM1_MASK         ((I1 << REG_NUM1_MOVE_BIT) - 1)
+#define INT_AFTER_NUM1_WITH_FLAG_MASK ((I1 << (REG_NUM1_MOVE_BIT - 1)) - 1)
 #define INT_AFTER_NUM1(instr)       INT_VALUE(instr, REG_NUM1_MOVE_BIT)
 #define INT_AFTER_NUM1_FLAG_BIT     (REG_NUM1_MOVE_BIT - 1)
-#define INT_AFTER_NUM1_FLAG(instr)  (instr & (1 << INT_AFTER_NUM1_FLAG_BIT))
+#define INT_AFTER_NUM1_FLAG(instr)  (instr & (I1 << INT_AFTER_NUM1_FLAG_BIT))
 #define INT_AFTER_NUM1_WITH_FLAG(instr) INT_VALUE(instr, REG_NUM1_MOVE_BIT - 1)
 
 #define REG_NUM2_MOVE_BIT           (REG_NUM1_MOVE_BIT - REG_NUM_BIT_COUNT)
@@ -58,11 +60,11 @@
 #define REG_NUM3_MASK               REG_NUM_MASK
 #define REG_NUM3(instr)             ((instr >> REG_NUM3_MOVE_BIT) & REG_NUM3_MASK)
 
-#define INT_AFTER_NUM2_MASK         ((1 << REG_NUM2_MOVE_BIT) - 1)
-#define INT_AFTER_NUM2_WITH_FLAG_MASK ((1 << (REG_NUM2_MOVE_BIT - 1)) - 1)
+#define INT_AFTER_NUM2_MASK         ((I1 << REG_NUM2_MOVE_BIT) - 1)
+#define INT_AFTER_NUM2_WITH_FLAG_MASK ((I1 << (REG_NUM2_MOVE_BIT - 1)) - 1)
 #define INT_AFTER_NUM2(instr)       INT_VALUE(instr, REG_NUM2_MOVE_BIT)
 #define INT_AFTER_NUM2_FLAG_BIT     (REG_NUM2_MOVE_BIT - 1)
-#define INT_AFTER_NUM2_FLAG(instr)  (instr & (1 << INT_AFTER_NUM2_FLAG_BIT))
+#define INT_AFTER_NUM2_FLAG(instr)  (instr & (I1 << INT_AFTER_NUM2_FLAG_BIT))
 #define INT_AFTER_NUM2_WITH_FLAG(instr)  INT_VALUE(instr, REG_NUM2_MOVE_BIT - 1)
 
 #define TRAP_MASK                   0xFF

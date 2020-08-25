@@ -41,11 +41,16 @@ function(SetOptionts a_TargetName a_Definitions)
 endfunction()
 
 # 16 bit
-add_executable(lc3sim_cpp16 
+add_library(liblc3sim_cpp16 STATIC 
     ${SOURCES}
+    )
+SetOptionts(liblc3sim_cpp16 LC3_16BIT)
+
+add_executable(lc3sim_cpp16 
     main.cpp
     )
 SetOptionts(lc3sim_cpp16 LC3_16BIT)
+target_link_libraries(lc3sim_cpp16 liblc3sim_cpp16)
 
 add_executable(lc3sim_cpp16trace 
     ${SOURCES}
@@ -53,11 +58,6 @@ add_executable(lc3sim_cpp16trace
     )
 SetOptionts(lc3sim_cpp16trace LC3_16BIT)
 target_compile_definitions(lc3sim_cpp16trace PRIVATE LC3_16BIT TRACE)
-
-add_library(liblc3sim_cpp16 STATIC 
-    ${SOURCES}
-    )
-SetOptionts(liblc3sim_cpp16 LC3_16BIT)
 
 # 32 bit
 add_executable(lc3sim_cpp32
@@ -71,3 +71,14 @@ add_library(liblc3sim_cpp32 STATIC
     )
 SetOptionts(liblc3sim_cpp32 LC3_32BIT)
 
+# 32 bit wide
+add_library(liblc3sim_cpp32w STATIC 
+    ${SOURCES}
+    )
+SetOptionts(liblc3sim_cpp32w LC3_32BIT_WIDE)
+
+add_executable(lc3sim_cpp32w 
+    main.cpp
+    )
+SetOptionts(lc3sim_cpp32w LC3_32BIT_WIDE TRACE)
+target_link_libraries(lc3sim_cpp32w liblc3sim_cpp32w)

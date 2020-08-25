@@ -34,4 +34,6 @@ ConfigTestExe(unittest_sim_cpp_16  liblc3sim_cpp16 LC3_16BIT)
 add_executable(unittest_sim_cpp_32 ${src_32bit_file_list} ../main.cpp)
 ConfigTestExe(unittest_sim_cpp_32 liblc3sim_cpp32 LC3_32BIT)
 
+add_executable(unittest_sim_cpp_32w ${src_32bit_file_list} ../main.cpp)
+ConfigTestExe(unittest_sim_cpp_32w liblc3sim_cpp32w LC3_32BIT_WIDE)
 

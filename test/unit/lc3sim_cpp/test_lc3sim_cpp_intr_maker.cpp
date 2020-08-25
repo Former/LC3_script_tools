@@ -27,7 +27,7 @@ protected:
     void LoadData(LC3_Sim::RegType* a_Data, size_t a_DataSize)
     {
         for (size_t i = 0; i < a_DataSize; ++i)
-            a_Data[i] = swap(a_Data[i]);
+            a_Data[i] = LC3_SWAP(a_Data[i]);
 
         LC3_Sim::Processor::LoadResult res = m_Proc->LoadData((uint8_t*)a_Data, sizeof(LC3_Sim::RegType) * a_DataSize);
 

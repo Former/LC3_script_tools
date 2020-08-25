@@ -14,20 +14,6 @@
 #include <unistd.h>
 #include <sys/time.h>
 
-#ifdef LC3_32BIT
-#define Swap Swap32
-
-static uint32_t Swap32(uint32_t val) {
-    return (val << 8 * 3) | ((val << 8) & 0x00FF0000) | ((val >> 8) & 0x0000FF00) | (val >> 8 * 3);
-}
-#else
-#define Swap Swap16
-
-static uint16_t Swap16(uint16_t val) {
-    return (val << 8) | (val >> 8);
-}
-#endif
-
 #define SING_BIT (1 << LC3_SIGN_BIT_INDEX)
 #define STATUS_BIT (1 << LC3_STATUS_BIT_INDEX)
 
@@ -444,12 +430,13 @@ LC3_Sim::Processor::LoadResult LC3_Sim::Processor::LoadData(const uint8_t* a_Dat
     size_t load_reg_size = sizeof(RegLoadType);
 
     RegLoadType* load_data = (RegLoadType*)a_Data;
-    LC3_Sim::AddressType load_addr = Swap(*(load_data++));
+    LC3_Sim::AddressType load_addr = LC3_SWAP(*(load_data));
+    ++load_data;
     LC3_Sim::AddressType load_length = (a_DataLen - load_reg_size) / load_reg_size;
 
     for (LC3_Sim::AddressType i = 0; i < load_length; ++i)
     {
-        IVirtualMemory::Result res = m_VirtualMemory->Write(Swap(load_data[i]), load_addr + i);
+        IVirtualMemory::Result res = m_VirtualMemory->Write(LC3_SWAP(load_data[i]), load_addr + i);
         if (res != IVirtualMemory::rSuccess)
             return lrFileTooLarge;
     }

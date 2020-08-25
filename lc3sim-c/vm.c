@@ -23,28 +23,10 @@
 #   define DEBUG_TRACE(...)
 #endif
 
-#ifdef LC3_32BIT
 extern unsigned char lc3os32_obj[];
 extern unsigned int lc3os32_obj_len;
-#define lc3os_bin_data lc3os32_obj
-#define lc3os_bin_data_len lc3os32_obj_len
-#define swap swap32
-
-static uint32_t swap32(uint32_t val) {
-    return (val << 8 * 3) | ((val << 8) & 0x00FF0000) | ((val >> 8) & 0x0000FF00) | (val >> 8 * 3);
-}
-#else
 extern unsigned char lc3os_obj[];
 extern unsigned int lc3os_obj_len;
-#define lc3os_bin_data lc3os_obj
-#define lc3os_bin_data_len lc3os_obj_len
-#define swap swap16
-
-static uint16_t swap16(uint16_t val) {
-    return (val << 8) | (val >> 8);
-}
-#endif
-
 
 // MARK: - Types
 
@@ -238,7 +220,7 @@ vm_load_result vm_load_data(vm_ctx vm, unsigned const char *data, size_t length)
     typedef vm_byte vm_byte_load;
     assert(vm != NULL);
 
-    vm_addr load_addr = swap(*((vm_byte_load*)data));
+    vm_addr load_addr = LC3_SWAP(*((vm_byte_load*)data));
     size_t load_length = (length - sizeof(vm_byte_load)) / sizeof(vm_byte_load);
 
     assert(load_addr + load_length < VM_ADDR_MAX);
@@ -251,7 +233,8 @@ vm_load_result vm_load_data(vm_ctx vm, unsigned const char *data, size_t length)
     }
 
     while (load_length-- > 0) {
-        *(dest++) = swap(*(source++));
+        *(dest++) = LC3_SWAP(*(source));
+        ++source;
     }
 
     vm->reg[VM_REG_PC] = load_addr;

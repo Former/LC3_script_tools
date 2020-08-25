@@ -2,19 +2,9 @@
 
 #include "lc3sim.h"
 
-#ifdef LC3_32BIT
-#define swap swap32
-
-uint32_t swap32(uint32_t val);
-#else
-#define swap swap16
-
-uint16_t swap16(uint16_t val);
-#endif
-
 #define ARRAY_SIZE(a) (sizeof(a)/sizeof(a[0]))
 
-#define ARRAY_SWAP(data) do { for (size_t i = 0; i < ARRAY_SIZE(data); ++i) data[i] = swap(data[i]); } while(0)
+#define ARRAY_SWAP(data) do { for (size_t i = 0; i < ARRAY_SIZE(data); ++i) data[i] = LC3_SWAP(data[i]); } while(0)
 
 class TestIO: public LC3_Sim::IInputOutput
 {
@@ -38,14 +28,15 @@ public:
     std::vector<LC3_Sim::RegType> m_Memory;
 };
 
-#ifdef LC3_32BIT
 extern unsigned char lc3os32_obj[];
 extern unsigned int lc3os32_obj_len;
+extern unsigned char lc3os_obj[];
+extern unsigned int lc3os_obj_len;
+
+#if defined(LC3_32BIT) || defined(LC3_32BIT_WIDE)
 #define lc3os_bin_data lc3os32_obj
 #define lc3os_bin_data_len lc3os32_obj_len
 #else
-extern unsigned char lc3os_obj[];
-extern unsigned int lc3os_obj_len;
 #define lc3os_bin_data lc3os_obj
 #define lc3os_bin_data_len lc3os_obj_len
 #endif

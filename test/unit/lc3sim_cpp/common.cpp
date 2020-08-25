@@ -1,18 +1,6 @@
 #include "../gtest/gtest.h"
 #include "common.h"
 
-#ifdef LC3_32BIT
-uint32_t swap32(uint32_t val)
-{
-    return (val << 8 * 3) | ((val << 8) & 0x00FF0000) | ((val >> 8) & 0x0000FF00) | (val >> 8 * 3);
-}
-#else
-uint16_t swap16(uint16_t val)
-{
-    return (val << 8) | (val >> 8);
-}
-#endif
-
 LC3_Sim::Char TestIO::GetChar() const
 {
     LC3_Sim::Char ret = getchar();
