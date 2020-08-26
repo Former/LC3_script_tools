@@ -3,6 +3,7 @@
 
 #include "sim_types.h"
 #include "instr_parser.h"
+#include "instr_maker.h"
 
 #define INSTRUCTION_BIT_COUNT           LC3_INSTRUCTION_BIT_COUNT
 #define OPER_CODE_BIT_COUNT             4
@@ -65,3 +66,41 @@
 #define INT_AFTER_NUM2_WITH_FLAG(instr) LC3_INT_AFTER_NUM2_WITH_FLAG(instr, INSTRUCTION_BIT_COUNT, OPER_CODE_BIT_COUNT, REG_NUM_BIT_COUNT)
 
 #define TRAP_MASK                       LC3_TRAP_MASK
+
+
+#define MAKE_INSTR_NOP \
+                                        LC3_MAKE_INSTR_NOP(INSTRUCTION_BIT_COUNT, OPER_CODE_BIT_COUNT, REG_NUM_BIT_COUNT)
+#define MAKE_INSTR_BR(flag_pzn, int_val) \
+                                        LC3_MAKE_INSTR_BR(flag_pzn, int_val, INSTRUCTION_BIT_COUNT, OPER_CODE_BIT_COUNT, REG_NUM_BIT_COUNT)
+#define MAKE_INSTR_ADD_I(reg_num1, reg_num2, int_val) \
+                                        LC3_MAKE_INSTR_ADD_I(reg_num1, reg_num2, int_val, INSTRUCTION_BIT_COUNT, OPER_CODE_BIT_COUNT, REG_NUM_BIT_COUNT)
+#define MAKE_INSTR_ADD_R(reg_num1, reg_num2, reg_num3) \
+                                        LC3_MAKE_INSTR_ADD_R(reg_num1, reg_num2, reg_num3, INSTRUCTION_BIT_COUNT, OPER_CODE_BIT_COUNT, REG_NUM_BIT_COUNT)
+#define MAKE_INSTR_LD(reg_num1, int_val) \
+                                        LC3_MAKE_INSTR_LD(reg_num1, int_val, INSTRUCTION_BIT_COUNT, OPER_CODE_BIT_COUNT, REG_NUM_BIT_COUNT)
+#define MAKE_INSTR_ST(reg_num1, int_val) \
+                                        LC3_MAKE_INSTR_ST(reg_num1, int_val, INSTRUCTION_BIT_COUNT, OPER_CODE_BIT_COUNT, REG_NUM_BIT_COUNT)
+#define MAKE_INSTR_JSR_I(int_val) \
+                                        LC3_MAKE_INSTR_JSR_I(int_val, INSTRUCTION_BIT_COUNT, OPER_CODE_BIT_COUNT)
+#define MAKE_INSTR_JSR_R(reg_num2) \
+                                        LC3_MAKE_INSTR_JSR_R(reg_num2, INSTRUCTION_BIT_COUNT, OPER_CODE_BIT_COUNT, REG_NUM_BIT_COUNT)
+#define MAKE_INSTR_AND_I(reg_num1, reg_num2, int_val) \
+                                        LC3_MAKE_INSTR_AND_I(reg_num1, reg_num2, int_val, INSTRUCTION_BIT_COUNT, OPER_CODE_BIT_COUNT, REG_NUM_BIT_COUNT)
+#define MAKE_INSTR_AND_R(reg_num1, reg_num2, reg_num3) \
+                                        LC3_MAKE_INSTR_AND_R(reg_num1, reg_num2, reg_num3, INSTRUCTION_BIT_COUNT, OPER_CODE_BIT_COUNT, REG_NUM_BIT_COUNT)
+#define MAKE_INSTR_LDR(reg_num1, reg_num2, int_val) \
+                                        LC3_MAKE_INSTR_LDR(reg_num1, reg_num2, int_val, INSTRUCTION_BIT_COUNT, OPER_CODE_BIT_COUNT, REG_NUM_BIT_COUNT)
+#define MAKE_INSTR_STR(reg_num1, reg_num2, int_val) \
+                                        LC3_MAKE_INSTR_STR(reg_num1, reg_num2, int_val, INSTRUCTION_BIT_COUNT, OPER_CODE_BIT_COUNT, REG_NUM_BIT_COUNT)
+#define MAKE_INSTR_NOT(reg_num1, reg_num2) \
+                                        LC3_MAKE_INSTR_NOT(reg_num1, reg_num2, INSTRUCTION_BIT_COUNT, OPER_CODE_BIT_COUNT, REG_NUM_BIT_COUNT)
+#define MAKE_INSTR_LDI(reg_num1, int_val) \
+                                        LC3_MAKE_INSTR_LDI(reg_num1, int_val, INSTRUCTION_BIT_COUNT, OPER_CODE_BIT_COUNT, REG_NUM_BIT_COUNT)
+#define MAKE_INSTR_STI(reg_num1, int_val) \
+                                        LC3_MAKE_INSTR_STI(reg_num1, int_val, INSTRUCTION_BIT_COUNT, OPER_CODE_BIT_COUNT, REG_NUM_BIT_COUNT)
+#define MAKE_INSTR_JMP(reg_num2) \
+                                        LC3_MAKE_INSTR_JMP(reg_num2, INSTRUCTION_BIT_COUNT, OPER_CODE_BIT_COUNT, REG_NUM_BIT_COUNT)
+#define MAKE_INSTR_LEA(reg_num1, int_val) \
+                                        LC3_MAKE_INSTR_LEA(reg_num1, int_val, INSTRUCTION_BIT_COUNT, OPER_CODE_BIT_COUNT, REG_NUM_BIT_COUNT)
+#define MAKE_INSTR_TRAP(trap_val) \
+                                        LC3_MAKE_INSTR_TRAP(trap_val, INSTRUCTION_BIT_COUNT, OPER_CODE_BIT_COUNT)

@@ -1,7 +1,7 @@
 #include "../gtest/gtest.h"
 
 #include "common.h"
-#include "instr_maker.h"
+#include "instr_config.h"
 
 #define INFO_EXCEPTION_HANDLER 0x1u
 #define START_EXCEPTION_HANDLER 20u
