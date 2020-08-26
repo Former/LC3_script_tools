@@ -166,7 +166,7 @@ static void SetCC(LC3_Sim::Registers* a_Registers, LC3_Sim::RegNumType a_RegNum)
 
 LC3_Sim::InstructionExecuter::Exception LC3_Sim::InstructionExecuter::ExecuteOneInstruction(LC3_Sim::RegType a_Instruction)
 {
-    DEBUG_TRACE("Instruction %x\n", a_Instruction);
+    DEBUG_TRACE("Instruction %x addr %x\n", a_Instruction, REG(LC3_Sim::Registers::rnReg_PC));
     
     switch (OPER_CODE(a_Instruction))
     {
