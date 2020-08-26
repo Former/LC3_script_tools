@@ -124,7 +124,7 @@ int main(int argc, const char* argv[])
     }
 
     LC3_Sim::InstructionIndex instr = 0;
-    proc.Run(&instr, 0xFFFFFFF);
+    proc.Run(&instr, 0x2FFFFFFF);
 
     return 0;
 }
