@@ -12,12 +12,10 @@ time make -j $1
 
 # Run test
 echo "Run ctest"
-time ctest -j $1
+time ctest -R regress -j $1
 
 # Run unit test
-./unittest_sim_c_16
-./unittest_sim_c_32
-./unittest_sim_cpp_16
-./unittest_sim_cpp_32
-./unittest_sim_cpp_32w
+ctest -R unittest -V -j
 
+# Run speed test
+ctest -R speed_test 

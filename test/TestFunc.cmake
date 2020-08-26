@@ -78,8 +78,8 @@ function(BuildObjFiles a_OutObjFileList a_InputFileList a_TargetName a_AsmExe a_
     set(${a_OutObjFileList} ${out_list} PARENT_SCOPE)
 endfunction()
 
-function(AndRegressTest a_SimExe a_ObjFile a_SourceFile a_AppendForNameTempFiles a_DefaultOutFile a_TypeOut)
-    add_test(NAME regress_test_${a_AppendForNameTempFiles}__${a_SourceFile}
+function(AddTest a_TestType a_SimExe a_ObjFile a_SourceFile a_AppendForNameTempFiles a_DefaultOutFile a_TypeOut)
+    add_test(NAME ${a_TestType}_${a_AppendForNameTempFiles}__${a_SourceFile}
         COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/../run_regress_test 
             ${a_SimExe}
             ${a_ObjFile}
@@ -89,4 +89,12 @@ function(AndRegressTest a_SimExe a_ObjFile a_SourceFile a_AppendForNameTempFiles
             ${a_DefaultOutFile} 
             ${a_TypeOut}
         )
+endfunction()
+
+function(AddRegressTest a_SimExe a_ObjFile a_SourceFile a_AppendForNameTempFiles a_DefaultOutFile a_TypeOut)
+    AddTest(regress_test ${a_SimExe} ${a_ObjFile} ${a_SourceFile} ${a_AppendForNameTempFiles} ${a_DefaultOutFile} ${a_TypeOut})
+endfunction()
+
+function(AddSpeedTest a_SimExe a_ObjFile a_SourceFile a_AppendForNameTempFiles a_DefaultOutFile a_TypeOut)
+    AddTest(speed_test ${a_SimExe} ${a_ObjFile} ${a_SourceFile} ${a_AppendForNameTempFiles} ${a_DefaultOutFile} ${a_TypeOut})
 endfunction()
