@@ -30,7 +30,7 @@ LC3_Sim::Bool TestIO::CheckKeyboard() const
 
 TestVM::TestVM()
 {
-    m_Memory.resize(LC3_MAX_MEMORY_ADDRESS);
+    m_Memory.resize(60000);
 }
 
 LC3_Sim::IVirtualMemory::Result TestVM::Read(LC3_Sim::RegType* a_Value, LC3_Sim::AddressType a_Address) const
