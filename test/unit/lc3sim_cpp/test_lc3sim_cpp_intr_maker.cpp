@@ -383,6 +383,7 @@ TEST_F(TestInstrMaker, TestJSR_R)
     Run(instr - 1);
     
     reg.m_Reg[LC3_Sim::Registers::rnReg_0] += START_ADDRESS + 4;
+    reg.m_Reg[LC3_Sim::Registers::rnReg_7] += START_ADDRESS + 2;
     reg.m_Reg[LC3_Sim::Registers::rnReg_PC] += instr + 1;
     reg.m_Reg[LC3_Sim::Registers::rnReg_PSR] = LC3_Sim::Registers::flagPositive;
 

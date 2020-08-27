@@ -40,8 +40,8 @@
 #define LC3_CHECK_INT_AFTER_NUM1_WITH_FLAG(int_val, instr_bc, op_bc, rn_bc) \
     LC3_CHECK_INT_WITH_MASK(int_val, LC3_INT_AFTER_NUM1_WITH_FLAG_MASK(instr_bc, op_bc, rn_bc))
 
-#define LC3_CHECK_INT_AFTER_NUM2(int_val, rn_bc) \
-    LC3_CHECK_INT_WITH_MASK(int_val, LC3_REG_NUM2_MASK(rn_bc))
+#define LC3_CHECK_INT_AFTER_NUM2(int_val, instr_bc, op_bc, rn_bc) \
+    LC3_CHECK_INT_WITH_MASK(int_val, LC3_INT_AFTER_NUM2_WITH_FLAG_MASK(instr_bc, op_bc, rn_bc))
 
 #define LC3_CHECK_INT_AFTER_NUM2_WITH_FLAG(int_val, instr_bc, op_bc, rn_bc) \
     LC3_CHECK_INT_WITH_MASK(int_val, LC3_INT_AFTER_NUM2_WITH_FLAG_MASK(instr_bc, op_bc, rn_bc))
@@ -56,7 +56,7 @@
     )
 
 #define LC3_MAKE_INSTR_RRI(opcode, reg_num1, reg_num2, int_val, instr_bc, op_bc, rn_bc) \
-    (LC3_Sim::RegType)( LC3_CHECK_OPCODE(opcode, op_bc), LC3_CHECK_REGNUM(reg_num1, rn_bc), LC3_CHECK_REGNUM(reg_num2, rn_bc), LC3_CHECK_INT_AFTER_NUM2(int_val, rn_bc), \
+    (LC3_Sim::RegType)( LC3_CHECK_OPCODE(opcode, op_bc), LC3_CHECK_REGNUM(reg_num1, rn_bc), LC3_CHECK_REGNUM(reg_num2, rn_bc), LC3_CHECK_INT_AFTER_NUM2(int_val, instr_bc, op_bc, rn_bc), \
     (opcode << LC3_OPER_CODE_MOVE_BIT(instr_bc, op_bc)) | (reg_num1 << LC3_REG_NUM1_MOVE_BIT(instr_bc, op_bc, rn_bc)) | (reg_num2 << LC3_REG_NUM2_MOVE_BIT(instr_bc, op_bc, rn_bc)) | (int_val & LC3_INT_AFTER_NUM2_MASK(instr_bc, op_bc, rn_bc)) \
     )
 
@@ -117,7 +117,7 @@
     LC3_MAKE_INSTR_I_WITH_FLAG(OPCODE_JSR, int_val, instr_bc, op_bc)
 
 #define LC3_MAKE_INSTR_JSR_R(reg_num2, instr_bc, op_bc, rn_bc)                      /* swap(&reg[reg_num2], &reg_pc); */ \
-    LC3_MAKE_INSTR_R2(OPCODE_JMP, reg_num2, instr_bc, op_bc, rn_bc)
+    LC3_MAKE_INSTR_R2(OPCODE_JSR, reg_num2, instr_bc, op_bc, rn_bc)
 
 #define LC3_MAKE_INSTR_AND_I(reg_num1, reg_num2, int_val, instr_bc, op_bc, rn_bc)   /* reg[reg_num1] = reg[reg_num2] & int_val; */ \
     LC3_MAKE_INSTR_RRI_WITH_FLAG(OPCODE_AND, reg_num1, reg_num2, int_val, instr_bc, op_bc, rn_bc)
