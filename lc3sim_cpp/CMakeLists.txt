@@ -25,12 +25,15 @@ ADD_CUSTOM_COMMAND(
         COMMENT "Generating lc3os32.c"
     )
     
-set(SOURCES
+set(SOURCES_LC3SIM_CPP
     ${CMAKE_CURRENT_BINARY_DIR}/lc3os.c
     ${CMAKE_CURRENT_BINARY_DIR}/lc3os32.c
     lc3sim.h
     sim_types.h
     instr_config.h
+    instr_converter.h
+    instr_parser.h
+    instr_maker.h
     lc3sim.cpp
     )
 
@@ -42,7 +45,7 @@ endfunction()
 
 # 16 bit
 add_library(liblc3sim_cpp16 STATIC 
-    ${SOURCES}
+    ${SOURCES_LC3SIM_CPP}
     )
 SetOptionts(liblc3sim_cpp16 LC3_16BIT)
 
@@ -53,7 +56,7 @@ SetOptionts(lc3sim_cpp16 LC3_16BIT)
 target_link_libraries(lc3sim_cpp16 liblc3sim_cpp16)
 
 add_executable(lc3sim_cpp16trace 
-    ${SOURCES}
+    ${SOURCES_LC3SIM_CPP}
     main.cpp
     )
 SetOptionts(lc3sim_cpp16trace LC3_16BIT)
@@ -61,19 +64,19 @@ target_compile_definitions(lc3sim_cpp16trace PRIVATE LC3_16BIT TRACE)
 
 # 32 bit
 add_executable(lc3sim_cpp32
-    ${SOURCES}
+    ${SOURCES_LC3SIM_CPP}
     main.cpp
     )
 SetOptionts(lc3sim_cpp32 LC3_32BIT)
 
 add_library(liblc3sim_cpp32 STATIC 
-    ${SOURCES}
+    ${SOURCES_LC3SIM_CPP}
     )
 SetOptionts(liblc3sim_cpp32 LC3_32BIT)
 
 # 32 bit wide
 add_library(liblc3sim_cpp32w STATIC 
-    ${SOURCES}
+    ${SOURCES_LC3SIM_CPP}
     )
 SetOptionts(liblc3sim_cpp32w LC3_32BIT_WIDE)
 

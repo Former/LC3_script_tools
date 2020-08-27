@@ -1,8 +1,9 @@
 // Copyright 2020 by Alexei Bezborodov <AlexeiBv@narod.ru>
 #pragma once
 
-#include <cassert>
-
+#include "instr_parser.h"
+#include "instr_maker.h"
+/*
 #define OPCODE_BR                       0b0000
 #define OPCODE_ADD                      0b0001
 #define OPCODE_LD                       0b0010
@@ -19,37 +20,49 @@
 #define OPCODE_RES                      0b1101
 #define OPCODE_LEA                      0b1110
 #define OPCODE_TRAP                     0b1111
+*/
 
-#define VALUE_ASSERT(cond) assert(cond) // TODO: Make static_assert
+#define INT_VALUE_TO_SIGNED(val) (int(val))
 
-#define LC3_CHECK_OPCODE(opcode, op_bc) \
-    VALUE_ASSERT(!(opcode & ~LC3_OPER_CODE_MASK(op_bc)))
+#define LC3_CHECK_OPCODE_RI(instr, instr_bc, op_bc) \
+            ( \
+                (LC3_OPER_CODE(instr, instr_bc, op_bc) == OPCODE_BR) || \
+                (LC3_OPER_CODE(instr, instr_bc, op_bc) == OPCODE_LD) || \
+                (LC3_OPER_CODE(instr, instr_bc, op_bc) == OPCODE_ST) || \
+                (LC3_OPER_CODE(instr, instr_bc, op_bc) == OPCODE_LDI) || \
+                (LC3_OPER_CODE(instr, instr_bc, op_bc) == OPCODE_STI) || \
+                (LC3_OPER_CODE(instr, instr_bc, op_bc) == OPCODE_LEA) \
+            )
 
-#define LC3_CHECK_REGNUM(reg_num, rn_bc) \
-    VALUE_ASSERT(!(reg_num & ~LC3_REG_NUM_MASK(rn_bc)))
+#define LC3_INSTR_CONVERT_RI(instr, instr_bc_from, op_bc_from, rn_bc_from, instr_bc_to, op_bc_to, rn_bc_to) \
+            LC3_MAKE_INSTR_RI(LC3_OPER_CODE(instr, instr_bc_from, op_bc_from), LC3_REG_NUM1(instr, instr_bc_from, op_bc_from, rn_bc_from), INT_VALUE_TO_SIGNED(LC3_INT_AFTER_NUM1(instr, instr_bc_from, op_bc_from, rn_bc_from)), instr_bc_to, op_bc_to, rn_bc_to)
 
-#define LC3_CHECK_INT_WITH_MASK(int_val, mask) \
-    VALUE_ASSERT(!( (((int_val) < 0) ? (-int_val) : (int_val)) & ~mask))
+#define LC3_CHECK_OPCODE_RRR_RRI(instr, instr_bc, op_bc) \
+            ( \
+                (LC3_OPER_CODE(instr, instr_bc, op_bc) == OPCODE_ADD) || \
+                (LC3_OPER_CODE(instr, instr_bc, op_bc) == OPCODE_AND) \
+            )
 
-#define LC3_CHECK_INT_AFTER_OPER_WITH_FLAG(int_val, instr_bc, op_bc) \
-    LC3_CHECK_INT_WITH_MASK(int_val, LC3_INT_AFTER_OPER_WITH_FLAG_MASK(instr_bc, op_bc))
+#define LC3_INSTR_CONVERT_RRR_RRI(instr, instr_bc_from, op_bc_from, rn_bc_from, instr_bc_to, op_bc_to, rn_bc_to) \
+            ( \
+                LC3_INT_AFTER_NUM2_FLAG(instr, instr_bc_from, op_bc_from, rn_bc_from) ? \
+                    LC3_MAKE_INSTR_RRI_WITH_FLAG(LC3_OPER_CODE(instr, instr_bc_from, op_bc_from), LC3_REG_NUM1(instr, instr_bc_from, op_bc_from, rn_bc_from), LC3_REG_NUM2(instr, instr_bc_from, op_bc_from, rn_bc_from), INT_VALUE_TO_SIGNED(LC3_INT_AFTER_NUM2_WITH_FLAG(instr, instr_bc_from, op_bc_from, rn_bc_from)), instr_bc_to, op_bc_to, rn_bc_to) \
+                    : \
+                    LC3_MAKE_INSTR_RRR(LC3_OPER_CODE(instr, instr_bc_from, op_bc_from), LC3_REG_NUM1(instr, instr_bc_from, op_bc_from, rn_bc_from), LC3_REG_NUM2(instr, instr_bc_from, op_bc_from, rn_bc_from), LC3_REG_NUM3(instr, rn_bc_from), instr_bc_to, op_bc_to, rn_bc_to) \
+            )
 
-#define LC3_CHECK_INT_AFTER_NUM1(int_val, instr_bc, op_bc, rn_bc) \
-    LC3_CHECK_INT_WITH_MASK(int_val, LC3_INT_AFTER_NUM1_MASK(instr_bc, op_bc, rn_bc))
+#define LC3_INSTR_CONVERT(instr, instr_bc_from, op_bc_from, rn_bc_from, instr_bc_to, op_bc_to, rn_bc_to) \
+    ( \
+        (LC3_CHECK_OPCODE_RI(instr, instr_bc_from, op_bc_from)) ? \
+            LC3_INSTR_CONVERT_RI(instr, instr_bc_from, op_bc_from, rn_bc_from, instr_bc_to, op_bc_to, rn_bc_to) \
+        : \
+        (LC3_CHECK_OPCODE_RRR_RRI(instr, instr_bc_from, op_bc_from)) ? \
+            LC3_INSTR_CONVERT_RRR_RRI(instr, instr_bc_from, op_bc_from, rn_bc_from, instr_bc_to, op_bc_to, rn_bc_to) \
+        : \
+        (VALUE_ASSERT((LC3_OPER_CODE(instr, instr_bc_from, op_bc_from), 0)), 0) \
+    )
 
-#define LC3_CHECK_INT_AFTER_NUM1_WITH_FLAG(int_val, instr_bc, op_bc, rn_bc) \
-    LC3_CHECK_INT_WITH_MASK(int_val, LC3_INT_AFTER_NUM1_WITH_FLAG_MASK(instr_bc, op_bc, rn_bc))
-
-#define LC3_CHECK_INT_AFTER_NUM2(int_val, rn_bc) \
-    LC3_CHECK_INT_WITH_MASK(int_val, LC3_REG_NUM2_MASK(rn_bc))
-
-#define LC3_CHECK_INT_AFTER_NUM2_WITH_FLAG(int_val, instr_bc, op_bc, rn_bc) \
-    LC3_CHECK_INT_WITH_MASK(int_val, LC3_INT_AFTER_NUM2_WITH_FLAG_MASK(instr_bc, op_bc, rn_bc))
-
-#define LC3_CHECK_INT_TRAP(int_val) \
-    VALUE_ASSERT(!(int_val & ~LC3_TRAP_MASK))
-
-
+/*
 #define LC3_MAKE_INSTR_RRR(opcode, reg_num1, reg_num2, reg_num3, instr_bc, op_bc, rn_bc) \
     (LC3_Sim::RegType)( LC3_CHECK_OPCODE(opcode, op_bc), LC3_CHECK_REGNUM(reg_num1, rn_bc), LC3_CHECK_REGNUM(reg_num2, rn_bc), LC3_CHECK_REGNUM(reg_num3, rn_bc), \
     (opcode << LC3_OPER_CODE_MOVE_BIT(instr_bc, op_bc)) | (reg_num1 << LC3_REG_NUM1_MOVE_BIT(instr_bc, op_bc, rn_bc)) | (reg_num2 << LC3_REG_NUM2_MOVE_BIT(instr_bc, op_bc, rn_bc)) | (reg_num3 << LC3_REG_NUM3_MOVE_BIT) \
@@ -95,6 +108,8 @@
     (opcode << LC3_OPER_CODE_MOVE_BIT(instr_bc, op_bc)) | (int_val & LC3_TRAP_MASK) \
     )
 
+*/
+#if 0
 #define LC3_MAKE_INSTR_NOP(instr_bc, op_bc, rn_bc)                                  /* Not operation */ \
     LC3_MAKE_INSTR_BR(0, 0, instr_bc, op_bc, rn_bc)
 
@@ -149,5 +164,5 @@
 #define LC3_MAKE_INSTR_TRAP(trap_val, instr_bc, op_bc)                              /* trap(trap_val); */ \
     LC3_MAKE_INSTR_T(OPCODE_TRAP, trap_val, instr_bc, op_bc)
 
-
+#endif
 
