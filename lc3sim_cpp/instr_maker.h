@@ -46,8 +46,8 @@
 #define LC3_CHECK_INT_AFTER_NUM2_WITH_FLAG(int_val, instr_bc, op_bc, rn_bc) \
     LC3_CHECK_INT_WITH_MASK(int_val, LC3_INT_AFTER_NUM2_WITH_FLAG_MASK(instr_bc, op_bc, rn_bc))
 
-#define LC3_CHECK_INT_TRAP(int_val) \
-    VALUE_ASSERT(!(int_val & ~LC3_TRAP_MASK))
+#define LC3_CHECK_INT_TRAP(int_val, instr_bc, op_bc) \
+    VALUE_ASSERT(!(int_val & ~LC3_TRAP_MASK(instr_bc, op_bc)))
 
 
 #define LC3_MAKE_INSTR_RRR(opcode, reg_num1, reg_num2, reg_num3, instr_bc, op_bc, rn_bc) \
@@ -91,8 +91,8 @@
     )
 
 #define LC3_MAKE_INSTR_T(opcode, int_val, instr_bc, op_bc) \
-    (LC3_Sim::RegType)( LC3_CHECK_OPCODE(opcode, op_bc), LC3_CHECK_INT_TRAP(int_val), \
-    (opcode << LC3_OPER_CODE_MOVE_BIT(instr_bc, op_bc)) | (int_val & LC3_TRAP_MASK) \
+    (LC3_Sim::RegType)( LC3_CHECK_OPCODE(opcode, op_bc), LC3_CHECK_INT_TRAP(int_val, instr_bc, op_bc), \
+    (opcode << LC3_OPER_CODE_MOVE_BIT(instr_bc, op_bc)) | (int_val & LC3_TRAP_MASK(instr_bc, op_bc)) \
     )
 
 #define LC3_MAKE_INSTR_NOP(instr_bc, op_bc, rn_bc)                                  /* Not operation */ \
@@ -149,5 +149,10 @@
 #define LC3_MAKE_INSTR_TRAP(trap_val, instr_bc, op_bc)                              /* trap(trap_val); */ \
     LC3_MAKE_INSTR_T(OPCODE_TRAP, trap_val, instr_bc, op_bc)
 
+#define LC3_MAKE_INSTR_RTI(val, instr_bc, op_bc)                                    /* RTI(val); */ \
+    LC3_MAKE_INSTR_T(OPCODE_RTI, val, instr_bc, op_bc)
+
+#define LC3_MAKE_INSTR_RES(val, instr_bc, op_bc)                                    /* RES(val); */ \
+    LC3_MAKE_INSTR_T(OPCODE_RES, val, instr_bc, op_bc)
 
 

@@ -326,7 +326,7 @@ LC3_Sim::InstructionExecuter::Exception LC3_Sim::InstructionExecuter::ExecuteOne
         }
         CASE(TRAP)
         {
-            LC3_Sim::AddressType addr = a_Instruction & TRAP_MASK;
+            LC3_Sim::AddressType addr = TRAP(a_Instruction);
 
             if (addr == 0x20)
             {

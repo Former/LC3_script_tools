@@ -76,4 +76,8 @@
 #define LC3_INT_AFTER_NUM2_WITH_FLAG(instr, instr_bc, op_bc, rn_bc) \
                                 INT_VALUE(instr, LC3_REG_NUM2_MOVE_BIT(instr_bc, op_bc, rn_bc) - 1)
 
-#define LC3_TRAP_MASK           0xFF
+#define LC3_TRAP_MASK(instr_bc, op_bc) \
+                                LC3_INT_AFTER_OPER_MASK(instr_bc, op_bc)
+
+#define LC3_TRAP(instr, instr_bc, op_bc) \
+                                LC3_INT_AFTER_OPER(instr, instr_bc, op_bc)
