@@ -51,16 +51,45 @@
                     LC3_MAKE_INSTR_RRR(LC3_OPER_CODE(instr, instr_bc_from, op_bc_from), LC3_REG_NUM1(instr, instr_bc_from, op_bc_from, rn_bc_from), LC3_REG_NUM2(instr, instr_bc_from, op_bc_from, rn_bc_from), LC3_REG_NUM3(instr, rn_bc_from), instr_bc_to, op_bc_to, rn_bc_to) \
             )
 
+#define LC3_CHECK_OPCODE_R2_I(instr, instr_bc, op_bc) \
+            ( \
+                (LC3_OPER_CODE(instr, instr_bc, op_bc) == OPCODE_JSR) \
+            )
+
+#define LC3_INSTR_CONVERT_R2_I(instr, instr_bc_from, op_bc_from, rn_bc_from, instr_bc_to, op_bc_to, rn_bc_to) \
+            ( \
+                LC3_INT_AFTER_OPER_FLAG(instr, instr_bc_from, op_bc_from) ? \
+                    LC3_MAKE_INSTR_I_WITH_FLAG(LC3_OPER_CODE(instr, instr_bc_from, op_bc_from), INT_VALUE_TO_SIGNED(LC3_INT_AFTER_OPER_WITH_FLAG(instr, instr_bc_from, op_bc_from)), instr_bc_to, op_bc_to) \
+                    : \
+                    LC3_MAKE_INSTR_R2(LC3_OPER_CODE(instr, instr_bc_from, op_bc_from), LC3_REG_NUM2(instr, instr_bc_from, op_bc_from, rn_bc_from), instr_bc_to, op_bc_to, rn_bc_to) \
+            )
+
+#define LC3_CHECK_OPCODE_RRI(instr, instr_bc, op_bc) \
+            ( \
+                (LC3_OPER_CODE(instr, instr_bc, op_bc) == OPCODE_LDR) || \
+                (LC3_OPER_CODE(instr, instr_bc, op_bc) == OPCODE_STR) \
+            )
+
+#define LC3_INSTR_CONVERT_RRI(instr, instr_bc_from, op_bc_from, rn_bc_from, instr_bc_to, op_bc_to, rn_bc_to) \
+            LC3_MAKE_INSTR_RRI(LC3_OPER_CODE(instr, instr_bc_from, op_bc_from), LC3_REG_NUM1(instr, instr_bc_from, op_bc_from, rn_bc_from), LC3_REG_NUM2(instr, instr_bc_from, op_bc_from, rn_bc_from), INT_VALUE_TO_SIGNED(LC3_INT_AFTER_NUM2(instr, instr_bc_from, op_bc_from, rn_bc_from)), instr_bc_to, op_bc_to, rn_bc_to)
+
+
 #define LC3_INSTR_CONVERT(instr, instr_bc_from, op_bc_from, rn_bc_from, instr_bc_to, op_bc_to, rn_bc_to) \
-    ( \
-        (LC3_CHECK_OPCODE_RI(instr, instr_bc_from, op_bc_from)) ? \
-            LC3_INSTR_CONVERT_RI(instr, instr_bc_from, op_bc_from, rn_bc_from, instr_bc_to, op_bc_to, rn_bc_to) \
-        : \
-        (LC3_CHECK_OPCODE_RRR_RRI(instr, instr_bc_from, op_bc_from)) ? \
-            LC3_INSTR_CONVERT_RRR_RRI(instr, instr_bc_from, op_bc_from, rn_bc_from, instr_bc_to, op_bc_to, rn_bc_to) \
-        : \
-        (VALUE_ASSERT((LC3_OPER_CODE(instr, instr_bc_from, op_bc_from), 0)), 0) \
-    )
+            ( \
+                (LC3_CHECK_OPCODE_RI(instr, instr_bc_from, op_bc_from)) ? \
+                    LC3_INSTR_CONVERT_RI(instr, instr_bc_from, op_bc_from, rn_bc_from, instr_bc_to, op_bc_to, rn_bc_to) \
+                : \
+                (LC3_CHECK_OPCODE_RRR_RRI(instr, instr_bc_from, op_bc_from)) ? \
+                    LC3_INSTR_CONVERT_RRR_RRI(instr, instr_bc_from, op_bc_from, rn_bc_from, instr_bc_to, op_bc_to, rn_bc_to) \
+                : \
+                (LC3_CHECK_OPCODE_R2_I(instr, instr_bc_from, op_bc_from)) ? \
+                    LC3_INSTR_CONVERT_R2_I(instr, instr_bc_from, op_bc_from, rn_bc_from, instr_bc_to, op_bc_to, rn_bc_to) \
+                : \
+                (LC3_CHECK_OPCODE_RRI(instr, instr_bc_from, op_bc_from)) ? \
+                    LC3_INSTR_CONVERT_RRI(instr, instr_bc_from, op_bc_from, rn_bc_from, instr_bc_to, op_bc_to, rn_bc_to) \
+                : \
+                (VALUE_ASSERT(((void)"This operation not implemented", LC3_OPER_CODE(instr, instr_bc_from, op_bc_from), 0)), 0) \
+            )
 
 /*
 #define LC3_MAKE_INSTR_RRR(opcode, reg_num1, reg_num2, reg_num3, instr_bc, op_bc, rn_bc) \
@@ -110,35 +139,6 @@
 
 */
 #if 0
-#define LC3_MAKE_INSTR_NOP(instr_bc, op_bc, rn_bc)                                  /* Not operation */ \
-    LC3_MAKE_INSTR_BR(0, 0, instr_bc, op_bc, rn_bc)
-
-#define LC3_MAKE_INSTR_BR(flag_pzn, int_val, instr_bc, op_bc, rn_bc)                /* if (cur_pzn == flag_pzn) reg_pc += int_val; */ \
-    LC3_MAKE_INSTR_RI(OPCODE_BR, flag_pzn, int_val, instr_bc, op_bc, rn_bc)
-
-#define LC3_MAKE_INSTR_ADD_I(reg_num1, reg_num2, int_val, instr_bc, op_bc, rn_bc)   /* reg[reg_num1] = reg[reg_num2] + int_val; */ \
-    LC3_MAKE_INSTR_RRI_WITH_FLAG(OPCODE_ADD, reg_num1, reg_num2, int_val, instr_bc, op_bc, rn_bc)
-
-#define LC3_MAKE_INSTR_ADD_R(reg_num1, reg_num2, reg_num3, instr_bc, op_bc, rn_bc)  /* reg[reg_num1] = reg[reg_num2] + reg[reg_num3]; */ \
-    LC3_MAKE_INSTR_RRR(OPCODE_ADD, reg_num1, reg_num2, reg_num3, instr_bc, op_bc, rn_bc)
-
-#define LC3_MAKE_INSTR_LD(reg_num1, int_val, instr_bc, op_bc, rn_bc)                /* reg[reg_num1] = *(reg_pc + int_val); */ \
-    LC3_MAKE_INSTR_RI(OPCODE_LD, reg_num1, int_val, instr_bc, op_bc, rn_bc)
-
-#define LC3_MAKE_INSTR_ST(reg_num1, int_val, instr_bc, op_bc, rn_bc)                /* *(reg_pc + int_val) = reg[reg_num1]; */ \
-    LC3_MAKE_INSTR_RI(OPCODE_ST, reg_num1, int_val, instr_bc, op_bc, rn_bc)
-
-#define LC3_MAKE_INSTR_JSR_I(int_val, instr_bc, op_bc)                              /* reg[7] = reg_pc; reg_pc += int_val; */ \
-    LC3_MAKE_INSTR_I_WITH_FLAG(OPCODE_JSR, int_val, instr_bc, op_bc)
-
-#define LC3_MAKE_INSTR_JSR_R(reg_num2, instr_bc, op_bc, rn_bc)                      /* swap(&reg[reg_num2], &reg_pc); */ \
-    LC3_MAKE_INSTR_R2(OPCODE_JMP, reg_num2, instr_bc, op_bc, rn_bc)
-
-#define LC3_MAKE_INSTR_AND_I(reg_num1, reg_num2, int_val, instr_bc, op_bc, rn_bc)   /* reg[reg_num1] = reg[reg_num2] & int_val; */ \
-    LC3_MAKE_INSTR_RRI_WITH_FLAG(OPCODE_AND, reg_num1, reg_num2, int_val, instr_bc, op_bc, rn_bc)
-
-#define LC3_MAKE_INSTR_AND_R(reg_num1, reg_num2, reg_num3, instr_bc, op_bc, rn_bc)  /* reg[reg_num1] = reg[reg_num2] & reg[reg_num3]; */ \
-    LC3_MAKE_INSTR_RRR(OPCODE_AND, reg_num1, reg_num2, reg_num3, instr_bc, op_bc, rn_bc)
 
 #define LC3_MAKE_INSTR_LDR(reg_num1, reg_num2, int_val, instr_bc, op_bc, rn_bc)     /* reg[reg_num1] = *(reg[reg_num2] + int_val); */ \
     LC3_MAKE_INSTR_RRI(OPCODE_LDR, reg_num1, reg_num2, int_val, instr_bc, op_bc, rn_bc)
@@ -149,17 +149,8 @@
 #define LC3_MAKE_INSTR_NOT(reg_num1, reg_num2, instr_bc, op_bc, rn_bc)              /* reg[reg_num1] = ~reg[reg_num2]; */ \
     LC3_MAKE_INSTR_RR(OPCODE_NOT, reg_num1, reg_num2, instr_bc, op_bc, rn_bc)
 
-#define LC3_MAKE_INSTR_LDI(reg_num1, int_val, instr_bc, op_bc, rn_bc)               /* reg[reg_num1] = *(*(reg_pc + int_val)); */ \
-    LC3_MAKE_INSTR_RI(OPCODE_LDI, reg_num1, int_val, instr_bc, op_bc, rn_bc)
-
-#define LC3_MAKE_INSTR_STI(reg_num1, int_val, instr_bc, op_bc, rn_bc)               /* *(*(reg_pc + int_val)) = reg[reg_num1]; */ \
-    LC3_MAKE_INSTR_RI(OPCODE_STI, reg_num1, int_val, instr_bc, op_bc, rn_bc)
-
 #define LC3_MAKE_INSTR_JMP(reg_num2, instr_bc, op_bc, rn_bc)                        /* reg_pc = reg[reg_num2]; */ \
     LC3_MAKE_INSTR_R2(OPCODE_JMP, reg_num2, instr_bc, op_bc, rn_bc)
-
-#define LC3_MAKE_INSTR_LEA(reg_num1, int_val, instr_bc, op_bc, rn_bc)               /* reg[reg_num1] = reg_pc + int_val; */ \
-    LC3_MAKE_INSTR_RI(OPCODE_LEA, reg_num1, int_val, instr_bc, op_bc, rn_bc)
 
 #define LC3_MAKE_INSTR_TRAP(trap_val, instr_bc, op_bc)                              /* trap(trap_val); */ \
     LC3_MAKE_INSTR_T(OPCODE_TRAP, trap_val, instr_bc, op_bc)
