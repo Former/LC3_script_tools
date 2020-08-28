@@ -71,7 +71,7 @@ struct Registers
         rnReg_6,
         rnReg_7,
         rnReg_PC,  // Командный регистр
-        rnReg_PSR, // Регистр флагов см. EFlags
+        rnReg_NumCC, // Номер последнего изменённого регистра
         rnCount,
     };
     

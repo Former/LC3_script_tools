@@ -71,7 +71,7 @@ protected:
     EXPECT_EQ(m_Reg->m_Reg[LC3_Sim::Registers::rnReg_6], reg.m_Reg[LC3_Sim::Registers::rnReg_6]); \
     EXPECT_EQ(m_Reg->m_Reg[LC3_Sim::Registers::rnReg_7], reg.m_Reg[LC3_Sim::Registers::rnReg_7]); \
     EXPECT_EQ(m_Reg->m_Reg[LC3_Sim::Registers::rnReg_PC], reg.m_Reg[LC3_Sim::Registers::rnReg_PC]); \
-    EXPECT_EQ(m_Reg->m_Reg[LC3_Sim::Registers::rnReg_PSR], reg.m_Reg[LC3_Sim::Registers::rnReg_PSR]); \
+    EXPECT_EQ(m_Reg->m_Reg[LC3_Sim::Registers::rnReg_NumCC], reg.m_Reg[LC3_Sim::Registers::rnReg_NumCC]); \
     EXPECT_EQ(m_Config->m_ExceptionHandlerAddress, config.m_ExceptionHandlerAddress); \
     EXPECT_EQ(m_Config->m_ExceptionInfoAddress, config.m_ExceptionInfoAddress); \
     EXPECT_EQ(m_Config->m_ExceptionMask, config.m_ExceptionMask); \
@@ -115,7 +115,7 @@ TEST_F(TestInstrMaker, TestBR_pos)
     
     reg.m_Reg[LC3_Sim::Registers::rnReg_PC] += instr;
     reg.m_Reg[LC3_Sim::Registers::rnReg_0] = 10;
-    reg.m_Reg[LC3_Sim::Registers::rnReg_PSR] = LC3_Sim::Registers::flagPositive;
+    reg.m_Reg[LC3_Sim::Registers::rnReg_NumCC] = 0;
     
     CHECK_LOCAL_VAR
 }
@@ -140,7 +140,7 @@ TEST_F(TestInstrMaker, TestBR_neg)
     
     reg.m_Reg[LC3_Sim::Registers::rnReg_PC] += instr;
     reg.m_Reg[LC3_Sim::Registers::rnReg_0] = -1;
-    reg.m_Reg[LC3_Sim::Registers::rnReg_PSR] = LC3_Sim::Registers::flagNegative;
+    reg.m_Reg[LC3_Sim::Registers::rnReg_NumCC] = 0;
     
     CHECK_LOCAL_VAR
 }
@@ -165,7 +165,7 @@ TEST_F(TestInstrMaker, TestBR_zero)
     
     reg.m_Reg[LC3_Sim::Registers::rnReg_PC] += instr;
     reg.m_Reg[LC3_Sim::Registers::rnReg_0] = 9;
-    reg.m_Reg[LC3_Sim::Registers::rnReg_PSR] = LC3_Sim::Registers::flagPositive;
+    reg.m_Reg[LC3_Sim::Registers::rnReg_NumCC] = 0;
     
     CHECK_LOCAL_VAR
 }
@@ -190,7 +190,7 @@ TEST_F(TestInstrMaker, TestBR_zero1)
     
     reg.m_Reg[LC3_Sim::Registers::rnReg_PC] += instr;
     reg.m_Reg[LC3_Sim::Registers::rnReg_0] = 0;
-    reg.m_Reg[LC3_Sim::Registers::rnReg_PSR] = LC3_Sim::Registers::flagZero;
+    reg.m_Reg[LC3_Sim::Registers::rnReg_NumCC] = 0;
     
     CHECK_LOCAL_VAR
 }
@@ -219,7 +219,7 @@ TEST_F(TestInstrMaker, TestADDi)
     reg.m_Reg[LC3_Sim::Registers::rnReg_1] = 15;
     reg.m_Reg[LC3_Sim::Registers::rnReg_5] = 5;
     reg.m_Reg[LC3_Sim::Registers::rnReg_2] = -15 ;
-    reg.m_Reg[LC3_Sim::Registers::rnReg_PSR] = LC3_Sim::Registers::flagNegative;
+    reg.m_Reg[LC3_Sim::Registers::rnReg_NumCC] = 2;
     
     CHECK_LOCAL_VAR
 }
@@ -233,13 +233,10 @@ TEST_F(TestInstrMaker, TestADDr)
         MAKE_INSTR_ADD_R(1, 0, 0), // reg[1] = reg[0] + reg[0]; // 20
         MAKE_INSTR_ADD_R(2, 0, 1), // reg[2] = reg[0] + reg[1]; // 30
         MAKE_INSTR_ADD_R(3, 1, 0), // reg[3] = reg[1] + reg[0]; // 30
-#ifndef LC3_32BIT
-// TODO: Error - segmentation fault 
         MAKE_INSTR_ADD_R(4, 2, 3), // reg[4] = reg[2] + reg[3]; // 60
         MAKE_INSTR_ADD_R(5, 4, 4), // reg[5] = reg[4] + reg[4]; // 120
         MAKE_INSTR_ADD_R(6, 4, 5), // reg[6] = reg[4] + reg[5]; // 180
         MAKE_INSTR_ADD_R(7, 0, 7), // reg[7] = reg[0] + reg[7]; // 10
-#endif
         MAKE_INSTR_NOP
     };  
     
@@ -255,13 +252,11 @@ TEST_F(TestInstrMaker, TestADDr)
     reg.m_Reg[LC3_Sim::Registers::rnReg_1] = 20;
     reg.m_Reg[LC3_Sim::Registers::rnReg_2] = 30;
     reg.m_Reg[LC3_Sim::Registers::rnReg_3] = 30;
-#ifndef LC3_32BIT
     reg.m_Reg[LC3_Sim::Registers::rnReg_4] = 60;
     reg.m_Reg[LC3_Sim::Registers::rnReg_5] = 120;
     reg.m_Reg[LC3_Sim::Registers::rnReg_6] = 180;
     reg.m_Reg[LC3_Sim::Registers::rnReg_7] = 10;
-#endif
-    reg.m_Reg[LC3_Sim::Registers::rnReg_PSR] = LC3_Sim::Registers::flagPositive;
+    reg.m_Reg[LC3_Sim::Registers::rnReg_NumCC] = 7;
     
     CHECK_LOCAL_VAR
 }
@@ -287,7 +282,7 @@ TEST_F(TestInstrMaker, TestLD)
     reg.m_Reg[LC3_Sim::Registers::rnReg_PC] += instr;
     reg.m_Reg[LC3_Sim::Registers::rnReg_0] = 10;
     reg.m_Reg[LC3_Sim::Registers::rnReg_1] = 123u;
-    reg.m_Reg[LC3_Sim::Registers::rnReg_PSR] = LC3_Sim::Registers::flagPositive;
+    reg.m_Reg[LC3_Sim::Registers::rnReg_NumCC] = 1;
     
     CHECK_LOCAL_VAR
 }
@@ -312,7 +307,7 @@ TEST_F(TestInstrMaker, TestST)
     
     reg.m_Reg[LC3_Sim::Registers::rnReg_PC] += instr;
     reg.m_Reg[LC3_Sim::Registers::rnReg_0] = 10;
-    reg.m_Reg[LC3_Sim::Registers::rnReg_PSR] = LC3_Sim::Registers::flagPositive;
+    reg.m_Reg[LC3_Sim::Registers::rnReg_NumCC] = 0;
 
     vm.m_Memory[START_ADDRESS + instr] = 10u;
     
@@ -385,7 +380,7 @@ TEST_F(TestInstrMaker, TestJSR_R)
     reg.m_Reg[LC3_Sim::Registers::rnReg_0] += START_ADDRESS + 4;
     reg.m_Reg[LC3_Sim::Registers::rnReg_7] += START_ADDRESS + 2;
     reg.m_Reg[LC3_Sim::Registers::rnReg_PC] += instr + 1;
-    reg.m_Reg[LC3_Sim::Registers::rnReg_PSR] = LC3_Sim::Registers::flagPositive;
+    reg.m_Reg[LC3_Sim::Registers::rnReg_NumCC] = 0;
 
     CHECK_LOCAL_VAR
 }
@@ -414,7 +409,7 @@ TEST_F(TestInstrMaker, TestANDi)
     reg.m_Reg[LC3_Sim::Registers::rnReg_1] = 10 & 6;
     reg.m_Reg[LC3_Sim::Registers::rnReg_5] = 10 & -5;
     reg.m_Reg[LC3_Sim::Registers::rnReg_2] = 10 & -15 ;
-    reg.m_Reg[LC3_Sim::Registers::rnReg_PSR] = LC3_Sim::Registers::flagZero;
+    reg.m_Reg[LC3_Sim::Registers::rnReg_NumCC] = 2;
     
     CHECK_LOCAL_VAR
 }
@@ -441,7 +436,7 @@ TEST_F(TestInstrMaker, TestANDr)
     reg.m_Reg[LC3_Sim::Registers::rnReg_0] = 10;
     reg.m_Reg[LC3_Sim::Registers::rnReg_1] = 6;
     reg.m_Reg[LC3_Sim::Registers::rnReg_2] = 10 & 6;
-    reg.m_Reg[LC3_Sim::Registers::rnReg_PSR] = LC3_Sim::Registers::flagPositive;
+    reg.m_Reg[LC3_Sim::Registers::rnReg_NumCC] = 2;
     
     CHECK_LOCAL_VAR
 }
@@ -469,7 +464,7 @@ TEST_F(TestInstrMaker, TestLDR)
     reg.m_Reg[LC3_Sim::Registers::rnReg_0] = 10;
     reg.m_Reg[LC3_Sim::Registers::rnReg_1] = 123u;
     reg.m_Reg[LC3_Sim::Registers::rnReg_4] = START_ADDRESS + 3;
-    reg.m_Reg[LC3_Sim::Registers::rnReg_PSR] = LC3_Sim::Registers::flagPositive;
+    reg.m_Reg[LC3_Sim::Registers::rnReg_NumCC] = 1;
     
     CHECK_LOCAL_VAR
 }
@@ -496,7 +491,7 @@ TEST_F(TestInstrMaker, TestSTR)
     reg.m_Reg[LC3_Sim::Registers::rnReg_PC] += instr;
     reg.m_Reg[LC3_Sim::Registers::rnReg_0] = 10;
     reg.m_Reg[LC3_Sim::Registers::rnReg_4] = START_ADDRESS + 3;
-    reg.m_Reg[LC3_Sim::Registers::rnReg_PSR] = LC3_Sim::Registers::flagPositive;
+    reg.m_Reg[LC3_Sim::Registers::rnReg_NumCC] = 0;
 
     vm.m_Memory[START_ADDRESS + instr] = 10u;
     
@@ -523,7 +518,7 @@ TEST_F(TestInstrMaker, TestNOT)
     reg.m_Reg[LC3_Sim::Registers::rnReg_PC] += instr;
     reg.m_Reg[LC3_Sim::Registers::rnReg_0] = 5;
     reg.m_Reg[LC3_Sim::Registers::rnReg_1] = ~5;
-    reg.m_Reg[LC3_Sim::Registers::rnReg_PSR] = LC3_Sim::Registers::flagNegative;
+    reg.m_Reg[LC3_Sim::Registers::rnReg_NumCC] = 1;
     
     CHECK_LOCAL_VAR
 }
@@ -550,7 +545,7 @@ TEST_F(TestInstrMaker, TestLDI)
     reg.m_Reg[LC3_Sim::Registers::rnReg_PC] += instr;
     reg.m_Reg[LC3_Sim::Registers::rnReg_0] = 10;
     reg.m_Reg[LC3_Sim::Registers::rnReg_1] = 123u;
-    reg.m_Reg[LC3_Sim::Registers::rnReg_PSR] = LC3_Sim::Registers::flagPositive;
+    reg.m_Reg[LC3_Sim::Registers::rnReg_NumCC] = 1;
     
     CHECK_LOCAL_VAR
 }
@@ -576,7 +571,7 @@ TEST_F(TestInstrMaker, TestSTI)
     
     reg.m_Reg[LC3_Sim::Registers::rnReg_PC] += instr;
     reg.m_Reg[LC3_Sim::Registers::rnReg_0] = 10;
-    reg.m_Reg[LC3_Sim::Registers::rnReg_PSR] = LC3_Sim::Registers::flagPositive;
+    reg.m_Reg[LC3_Sim::Registers::rnReg_NumCC] = 0;
 
     vm.m_Memory[START_ADDRESS + instr + 1] = 10u;
     
@@ -603,7 +598,7 @@ TEST_F(TestInstrMaker, TestJMP)
     
     reg.m_Reg[LC3_Sim::Registers::rnReg_0] += START_ADDRESS + 4;
     reg.m_Reg[LC3_Sim::Registers::rnReg_PC] += instr + 1;
-    reg.m_Reg[LC3_Sim::Registers::rnReg_PSR] = LC3_Sim::Registers::flagPositive;
+    reg.m_Reg[LC3_Sim::Registers::rnReg_NumCC] = 0;
 
     CHECK_LOCAL_VAR
 }
@@ -630,7 +625,7 @@ TEST_F(TestInstrMaker, TestLEA)
     reg.m_Reg[LC3_Sim::Registers::rnReg_1] += START_ADDRESS - 1;
     reg.m_Reg[LC3_Sim::Registers::rnReg_2] += START_ADDRESS + 3;
     reg.m_Reg[LC3_Sim::Registers::rnReg_PC] += instr;
-    reg.m_Reg[LC3_Sim::Registers::rnReg_PSR] = LC3_Sim::Registers::flagPositive;
+    reg.m_Reg[LC3_Sim::Registers::rnReg_NumCC] = 2;
 
     CHECK_LOCAL_VAR
 }
@@ -669,7 +664,7 @@ TEST_F(TestInstrMaker, Test_EXCEPTION_HANDLER)
     reg.m_Reg[LC3_Sim::Registers::rnReg_0] = 10;
     reg.m_Reg[LC3_Sim::Registers::rnReg_1] = START_ADDRESS + 2;
     reg.m_Reg[LC3_Sim::Registers::rnReg_4] = 11u;
-    reg.m_Reg[LC3_Sim::Registers::rnReg_PSR] = LC3_Sim::Registers::flagPositive;
+    reg.m_Reg[LC3_Sim::Registers::rnReg_NumCC] = 4;
     config.m_ExceptionCount = 1;
     vm.m_Memory[INFO_EXCEPTION_HANDLER] = START_ADDRESS + 1;    
     
@@ -712,7 +707,7 @@ TEST_F(TestInstrMaker, Test_EXCEPTION_HANDLER_mask)
     reg.m_Reg[LC3_Sim::Registers::rnReg_0] = 10;
     reg.m_Reg[LC3_Sim::Registers::rnReg_1] = 0;
     reg.m_Reg[LC3_Sim::Registers::rnReg_4] = 11u;
-    reg.m_Reg[LC3_Sim::Registers::rnReg_PSR] = LC3_Sim::Registers::flagPositive;
+    reg.m_Reg[LC3_Sim::Registers::rnReg_NumCC] = 4;
     config.m_ExceptionCount = 1;
     
     CHECK_LOCAL_VAR

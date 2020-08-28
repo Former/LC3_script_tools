@@ -56,7 +56,7 @@ LC3_Sim::Registers::Registers()
     m_Reg[rnReg_6] = 0;
     m_Reg[rnReg_7] = 0;
     m_Reg[rnReg_PC] = 0;
-    m_Reg[rnReg_PSR] = 0;
+    m_Reg[rnReg_NumCC] = 0;
 }
 LC3_Sim::InstructionExecuter::InstructionExecuter(Registers* a_Registers, IVirtualMemory* a_VirtualMemory, IInputOutput* a_InputOutput)
     :m_Registers(a_Registers),m_VirtualMemory(a_VirtualMemory),m_InputOutput(a_InputOutput)
@@ -141,11 +141,6 @@ static LC3_Sim::Registers::EFlags SignFlag(LC3_Sim::RegType a_Value)
         return LC3_Sim::Registers::flagPositive;
 }
 
-static void SetCC(LC3_Sim::Registers* a_Registers, LC3_Sim::RegNumType a_RegNum)
-{
-    a_Registers->m_Reg[LC3_Sim::Registers::rnReg_PSR] = SignFlag(a_Registers->m_Reg[a_RegNum]);
-}
-
 #define PZN_BIT_COUNT               3
 #define PZN_MASK                    ((1 << PZN_BIT_COUNT) - 1)
 
@@ -160,7 +155,7 @@ static void SetCC(LC3_Sim::Registers* a_Registers, LC3_Sim::RegNumType a_RegNum)
 #define MEMORY_READ(out, addr)      MemoryRead(out, addr, m_VirtualMemory, m_InputOutput)
 #define MEMORY_WRITE(value, addr)   MemoryWrite(value, addr, m_VirtualMemory, m_InputOutput)
 
-#define SET_CC_REG_NUM1(instr)      SetCC(m_Registers, REG_NUM1(instr))
+#define SET_CC_REG_NUM1(instr)      REG(LC3_Sim::Registers::rnReg_NumCC) = REG_NUM1(instr)
 
 #define CASE(instr_name)            case eOperCode_##instr_name: DEBUG_TRACE("Operation %s\n", #instr_name);
 
@@ -175,7 +170,7 @@ LC3_Sim::InstructionExecuter::Exception LC3_Sim::InstructionExecuter::ExecuteOne
             if (a_Instruction == 0)
                 return EXCEPTION(etStop); // Прерывание выполнения процессора
 
-            LC3_Sim::RegType cur_pzn = REG(LC3_Sim::Registers::rnReg_PSR) & PZN_MASK;
+            LC3_Sim::RegType cur_pzn = SignFlag(REG(REG(LC3_Sim::Registers::rnReg_NumCC))) & PZN_MASK;
             LC3_Sim::RegType instr_pzn = REG_NUM1(a_Instruction) & PZN_MASK;
 
             if (cur_pzn & instr_pzn)
