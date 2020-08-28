@@ -63,26 +63,6 @@ LC3_Sim::InstructionExecuter::InstructionExecuter(Registers* a_Registers, IVirtu
 {
 }
 
-enum EOperCode
-{
-    eOperCode_BR   = OPCODE_BR,  
-    eOperCode_ADD  = OPCODE_ADD, 
-    eOperCode_LD   = OPCODE_LD,
-    eOperCode_ST   = OPCODE_ST,
-    eOperCode_JSR  = OPCODE_JSR,
-    eOperCode_AND  = OPCODE_AND,
-    eOperCode_LDR  = OPCODE_LDR,
-    eOperCode_STR  = OPCODE_STR,
-    eOperCode_RTI  = OPCODE_RTI,
-    eOperCode_NOT  = OPCODE_NOT,
-    eOperCode_LDI  = OPCODE_LDI,
-    eOperCode_STI  = OPCODE_STI,
-    eOperCode_JMP  = OPCODE_JMP,
-    eOperCode_RES  = OPCODE_RES,
-    eOperCode_LEA  = OPCODE_LEA,
-    eOperCode_TRAP = OPCODE_TRAP,
-};
-
 enum ESpecAddr
 {
     sAddressKBSR = 0xfe00,
@@ -157,7 +137,7 @@ static LC3_Sim::Registers::EFlags SignFlag(LC3_Sim::RegType a_Value)
 
 #define SET_CC_REG_NUM1(instr)      REG(LC3_Sim::Registers::rnReg_NumCC) = REG_NUM1(instr)
 
-#define CASE(instr_name)            case eOperCode_##instr_name: DEBUG_TRACE("Operation %s\n", #instr_name);
+#define CASE(instr_name)            case OPCODE_##instr_name: DEBUG_TRACE("Operation %s\n", #instr_name);
 
 LC3_Sim::InstructionExecuter::Exception LC3_Sim::InstructionExecuter::ExecuteOneInstruction(LC3_Sim::RegType a_Instruction)
 {
