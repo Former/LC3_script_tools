@@ -4,7 +4,7 @@ project(lc3sim_cpp
 )
 
 set(INSTALL_DIR "${CMAKE_BINARY_DIR}/bin")
-set(OPTIMIZE_COMPILE_OPTION -O2)
+set(OPTIMIZE_COMPILE_OPTION -O3)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
