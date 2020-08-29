@@ -24,10 +24,19 @@ ADD_CUSTOM_COMMAND(
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         COMMENT "Generating lc3os32.c"
     )
-    
+
+ADD_CUSTOM_COMMAND(
+        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/lc3os32w.c
+        SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/lc3os32w.obj
+        COMMAND xxd -i lc3os32w.obj > ${CMAKE_CURRENT_BINARY_DIR}/lc3os32w.c
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        COMMENT "Generating lc3os32w.c"
+    )
+
 set(SOURCES_LC3SIM_CPP
     ${CMAKE_CURRENT_BINARY_DIR}/lc3os.c
     ${CMAKE_CURRENT_BINARY_DIR}/lc3os32.c
+    ${CMAKE_CURRENT_BINARY_DIR}/lc3os32w.c
     lc3sim.h
     sim_types.h
     instr_config.h
@@ -74,6 +83,13 @@ add_library(liblc3sim_cpp32 STATIC
     )
 SetOptionts(liblc3sim_cpp32 LC3_32BIT)
 
+add_executable(lc3sim_cpp32trace 
+    ${SOURCES_LC3SIM_CPP}
+    main.cpp
+    )
+SetOptionts(lc3sim_cpp32trace LC3_32BIT)
+target_compile_definitions(lc3sim_cpp32trace PRIVATE LC3_32BIT TRACE)
+
 # 32 bit wide
 add_library(liblc3sim_cpp32w STATIC 
     ${SOURCES_LC3SIM_CPP}
@@ -85,3 +101,10 @@ add_executable(lc3sim_cpp32w
     )
 SetOptionts(lc3sim_cpp32w LC3_32BIT_WIDE TRACE)
 target_link_libraries(lc3sim_cpp32w liblc3sim_cpp32w)
+
+add_executable(lc3sim_cpp32wtrace 
+    ${SOURCES_LC3SIM_CPP}
+    main.cpp
+    )
+SetOptionts(lc3sim_cpp32wtrace LC3_32BIT_WIDE)
+target_compile_definitions(lc3sim_cpp32wtrace PRIVATE LC3_32BIT_WIDE TRACE)

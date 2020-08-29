@@ -12,16 +12,21 @@
 #include <string.h>
 #include <unistd.h>
 
-#ifdef LC3_32BIT
-extern unsigned char lc3os32_obj[];
-extern unsigned int lc3os32_obj_len;
-#define lc3os_bin_data lc3os32_obj
-#define lc3os_bin_data_len lc3os32_obj_len
+#if defined(LC3_32BIT)
+    extern unsigned char lc3os32_obj[];
+    extern unsigned int lc3os32_obj_len;
+    #define lc3os_bin_data lc3os32_obj
+    #define lc3os_bin_data_len lc3os32_obj_len
+#elif defined(LC3_32BIT_WIDE)
+    extern unsigned char lc3os32w_obj[];
+    extern unsigned int lc3os32w_obj_len;
+    #define lc3os_bin_data lc3os32w_obj
+    #define lc3os_bin_data_len lc3os32w_obj_len
 #else
-extern unsigned char lc3os_obj[];
-extern unsigned int lc3os_obj_len;
-#define lc3os_bin_data lc3os_obj
-#define lc3os_bin_data_len lc3os_obj_len
+    extern unsigned char lc3os_obj[];
+    extern unsigned int lc3os_obj_len;
+    #define lc3os_bin_data lc3os_obj
+    #define lc3os_bin_data_len lc3os_obj_len
 #endif
 
 

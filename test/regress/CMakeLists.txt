@@ -106,13 +106,19 @@ list(REMOVE_ITEM src_32bit_file_list ${exclude_src_32bit_files})
 
 # Make obj file list
 foreach (cur_file ${src_16bit_file_list})
-    BuildObjFile(out_file ${cur_file} ${LC3_TARGET_LCC_NAME} ${LC3AS} ${CORRECT_EXE} ${OUT_DIR}16) 
+    BuildAsmFile(out_asm_file ${cur_file} ${LC3_TARGET_LCC_NAME} ${OUT_DIR}16) 
+
+    BuildObjFile(out_file ${out_asm_file} ${cur_file} ${LC3AS} ${CORRECT_EXE} ${OUT_DIR}16) 
     list(APPEND obj_16bit_file_list ${out_file})
 endforeach()
 
 foreach (cur_file ${src_32bit_file_list})
-    BuildObjFile(out_file ${cur_file} ${LC3_32_TARGET_LCC_NAME} ${LC3AS32} ${CORRECT32_EXE} ${OUT_DIR}32) 
+    BuildAsmFile(out_asm_file ${cur_file} ${LC3_32_TARGET_LCC_NAME} ${OUT_DIR}32) 
+
+    BuildObjFile(out_file ${out_asm_file} ${cur_file} ${LC3AS32} ${CORRECT32_EXE} ${OUT_DIR}32) 
     list(APPEND obj_32bit_file_list ${out_file})
+    BuildObjFile(out_file ${out_asm_file} ${cur_file} ${LC3AS32W} ${CORRECT32W_EXE} ${OUT_DIR}32W) 
+    list(APPEND obj_32bit_wide_file_list ${out_file})
 endforeach()
 
 # Known errors 16 bit: Errors when execute
@@ -180,3 +186,19 @@ foreach (index RANGE 0 ${obj_32bit_file_count})
         AddRegressTest(${LC3SIM_CPP32} ${cur_obj_file} ${cur_src_file} "sim_cpp32" ${DEFAULT_OUT} ${TYPE_OUT_STDOUT})
     endif()
 endforeach()
+
+
+# Config test 32 bit wide
+list(LENGTH obj_32bit_wide_file_list obj_32bit_wide_file_count)
+math(EXPR obj_32bit_wide_file_count "${obj_32bit_wide_file_count} - 1")
+foreach (index RANGE 0 ${obj_32bit_wide_file_count})
+    list(GET obj_32bit_wide_file_list ${index} cur_obj_file)
+    list(GET src_32bit_file_list ${index} cur_src_file)
+
+    list(FIND exclude_src_files_for_lc3sim_c32 ${cur_src_file} find_src_file)
+    if (${find_src_file} EQUAL -1)
+        AddRegressTest(${LC3SIM_CPP32W} ${cur_obj_file} ${cur_src_file} "sim_cpp32w" ${DEFAULT_OUT} ${TYPE_OUT_STDOUT})
+    endif()
+endforeach()
+
+

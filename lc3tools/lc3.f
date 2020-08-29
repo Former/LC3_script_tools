@@ -1011,7 +1011,7 @@ generate_instruction (operands_t operands, const char* opstr)
 		code_loc = 0x3000; 
 	    else {
                 code_orig = code_loc;        /* remember orig to calculate size of code block */
-	        write_instruction_value (code_loc, 0);
+	        write_value (code_loc, 0);
 		code_loc--; /* Starting point doesn't count as code. */
 	    }
 	    saw_orig = 1;
@@ -1141,29 +1141,29 @@ generate_instruction (operands_t operands, const char* opstr)
 		val &= LC3_CODE_MASK;
 	    } else /* O_L */
 		val = find_label (o1, LC3_REG_BIT_COUNT);
-	    write_instruction_value (val,0);
+	    write_value (val,0);
     	    break;
 	case OP_RET:   
 	    write_instruction_value (0xC1C0,1); 
 	    break;
 	case OP_STRINGZ:
 	    /* We must count locations written in pass 1;
-	       write_instruction_value squashes the writes. */
+	       write_value squashes the writes. */
 	    for (str = o1 + 1; str[0] != '\"'; str++) {
 		if (str[0] == '\\') {
 		    switch (str[1]) {
-			case 'a': write_instruction_value ('\a', 0); str++; break;
-			case 'b': write_instruction_value ('\b', 0); str++; break;
-			case 'e': write_instruction_value ('\e', 0); str++; break;
-			case 'f': write_instruction_value ('\f', 0); str++; break;
-			case 'n': write_instruction_value ('\n', 0); str++; break;
-			case 'r': write_instruction_value ('\r', 0); str++; break;
-			case 't': write_instruction_value ('\t', 0); str++; break;
-			case 'v': write_instruction_value ('\v', 0); str++; break;
-			case '\\': write_instruction_value ('\\', 0); str++; break;
-			case '\"': write_instruction_value ('\"', 0); str++; break;
+			case 'a': write_value ('\a', 0); str++; break;
+			case 'b': write_value ('\b', 0); str++; break;
+			case 'e': write_value ('\e', 0); str++; break;
+			case 'f': write_value ('\f', 0); str++; break;
+			case 'n': write_value ('\n', 0); str++; break;
+			case 'r': write_value ('\r', 0); str++; break;
+			case 't': write_value ('\t', 0); str++; break;
+			case 'v': write_value ('\v', 0); str++; break;
+			case '\\': write_value ('\\', 0); str++; break;
+			case '\"': write_value ('\"', 0); str++; break;
 			/* FIXME: support others too? */
-			default: write_instruction_value (str[1],0); str++; break;
+			default: write_value (str[1],0); str++; break;
 		    }
 		} else {
                     if (str[0] == '\r') {
@@ -1172,17 +1172,17 @@ generate_instruction (operands_t operands, const char* opstr)
                         line_num++;
                     } else if (str[0] == '\n')
 		        line_num++;
-		    write_instruction_value (*str, 0);
+		    write_value (*str, 0);
 		}
 		last_cmd = NULL;	// To disable the source display for the next values
 	    }
-	    write_instruction_value (0, 0);
+	    write_value (0, 0);
 	    break;
 	case OP_BLKW:
 	    (void)read_val (o1, &val, LC3_REG_BIT_COUNT);
 	    val &= LC3_CODE_MASK;
 	    while (val-- > 0) {
-	        write_instruction_value (0x0000, 0);
+	        write_value (0x0000, 0);
 		last_cmd = NULL;	// To disable the source display for the next values
 	    }
 	    break;
@@ -1243,7 +1243,7 @@ generate_instruction (operands_t operands, const char* opstr)
                 num_errors++;
             } else {
 	        while (code_loc < val) {
-                    write_instruction_value (0x0000, 0);
+                    write_value (0x0000, 0);
 	            last_cmd = NULL;	// To disable the source display for the next values
                 }
             }
