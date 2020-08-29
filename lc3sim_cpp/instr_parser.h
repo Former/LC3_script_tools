@@ -1,7 +1,7 @@
 // Copyright 2020 by Alexei Bezborodov <AlexeiBv@narod.ru>
 #pragma once
 
-#define I1                      1ul
+#define I1                      1u
 
 #define INT_VALUE(instr, bit_count) \
                                 ((((instr) & ((I1 << (bit_count)) - 1)) ^ (I1 << ((bit_count) - 1))) - (I1 << ((bit_count) - 1)))
@@ -14,7 +14,7 @@
                                 ((I1 << reg_num_bit_count) - 1)
 
 #define LC3_OPER_CODE(instr, instr_bc, op_bc) \
-                                ((instr >> LC3_OPER_CODE_MOVE_BIT(instr_bc, op_bc)) & LC3_OPER_CODE_MASK(instr_bc))
+                                ((instr >> LC3_OPER_CODE_MOVE_BIT(instr_bc, op_bc)) & LC3_OPER_CODE_MASK(op_bc))
 
 #define LC3_INT_AFTER_OPER_MASK(instr_bc, op_bc) \
                                 ((I1 << LC3_OPER_CODE_MOVE_BIT(instr_bc, op_bc)) - 1)

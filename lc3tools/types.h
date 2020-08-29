@@ -36,31 +36,45 @@
 
 #include <stdint.h>
 
-#ifdef LC3_32BIT
+#if defined(LC3_32BIT)
 
-typedef uint32_t lc3_register_type;
-#define LC3_SWAP swap32
-#define LC3_CODE_MASK 0xFFFFFFFF
+    typedef uint32_t lc3_register_type;
+    #define LC3_SWAP swap32
+    #define LC3_CODE_MASK 0xFFFFFFFF
+    #define LC3_INSTR_BIT_COUNT 16
 
-#define HANDLES_64_BIT_LONGS_PROPERTY(value) 
+    #define HANDLES_64_BIT_LONGS_PROPERTY(value) 
 
-#define CHECK_OUT_OF_RANGE(bits) 0
-#define CHECK_OUT_OF_RANGE_UNSIGNED(bits) 0
+    #define CHECK_OUT_OF_RANGE(bits) 0
+    #define CHECK_OUT_OF_RANGE_UNSIGNED(bits) 0
+
+#elif defined(LC3_32BIT_WIDE)
+
+    typedef uint32_t lc3_register_type;
+    #define LC3_SWAP swap32
+    #define LC3_CODE_MASK 0xFFFFFFFF
+    #define LC3_INSTR_BIT_COUNT 32
+
+    #define HANDLES_64_BIT_LONGS_PROPERTY(value) 
+
+    #define CHECK_OUT_OF_RANGE(bits) 0
+    #define CHECK_OUT_OF_RANGE_UNSIGNED(bits) 0
 
 #else // LC3_16BIT
 
-typedef uint16_t lc3_register_type;
-#define LC3_SWAP swap16
-#define LC3_CODE_MASK 0x0000FFFF
+    typedef uint16_t lc3_register_type;
+    #define LC3_SWAP swap16
+    #define LC3_CODE_MASK 0x0000FFFF
+    #define LC3_INSTR_BIT_COUNT 16
 
-#define HANDLES_64_BIT_LONGS_PROPERTY(value) \
-    do { \
-    if (0x10000 > (value) && 0x8000 <= (value)) \
-        (value) |= -65536L; \
-    } while (0)
+    #define HANDLES_64_BIT_LONGS_PROPERTY(value) \
+        do { \
+        if (0x10000 > (value) && 0x8000 <= (value)) \
+            (value) |= -65536L; \
+        } while (0)
 
-#define CHECK_OUT_OF_RANGE(bits) ((v < -(1L << (bits - 1))) || (v >= (1L << (bits - 1))))
-#define CHECK_OUT_OF_RANGE_UNSIGNED(bits) (v >= (1L << (bits)))
+    #define CHECK_OUT_OF_RANGE(bits) ((v < -(1L << (bits - 1))) || (v >= (1L << (bits - 1))))
+    #define CHECK_OUT_OF_RANGE_UNSIGNED(bits) (v >= (1L << (bits)))
 
 #endif // LC3_32BIT and LC3_16BIT
 

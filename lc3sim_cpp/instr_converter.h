@@ -4,7 +4,7 @@
 #include "instr_parser.h"
 #include "instr_maker.h"
 
-#define INT_VALUE_TO_SIGNED(val) (int(val))
+#define INT_VALUE_TO_SIGNED(val) ((int)(val))
 
 #define LC3_CHECK_OPCODE_RI(instr, instr_bc, op_bc) \
             ( \

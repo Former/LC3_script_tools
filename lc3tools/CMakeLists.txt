@@ -47,9 +47,14 @@ add_asm_exe(lc3as)
 target_compile_definitions(lc3as PRIVATE ONLY_OBJ_FILE)
 add_asm_exe(lc3as32)
 target_compile_definitions(lc3as32 PRIVATE LC3_32BIT ONLY_OBJ_FILE)
+add_asm_exe(lc3as32w)
+target_compile_definitions(lc3as32w PRIVATE LC3_32BIT_WIDE ONLY_OBJ_FILE)
+
 add_asm_exe(lc3as_sym)
 add_asm_exe(lc3as32_sym)
 target_compile_definitions(lc3as32_sym PRIVATE LC3_32BIT)
+add_asm_exe(lc3as32w_sym)
+target_compile_definitions(lc3as32w_sym PRIVATE LC3_32BIT_WIDE)
 
 # lc3Convert
 FIND_PACKAGE(FLEX REQUIRED)

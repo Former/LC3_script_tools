@@ -7,8 +7,6 @@
 namespace LC3_Sim
 {
 
-typedef uint32_t LC3_DefaultOperationType;
-
 typedef uint32_t LC3_RegisterType_32;
 typedef uint32_t LC3MemAddressType_32;
 

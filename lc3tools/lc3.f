@@ -54,6 +54,7 @@ part of the label?  Currently I allow only alpha followed by alphanum and _.
 
 #include "symbol.h"
 #include "types.h"
+#include "../lc3sim_cpp/instr_converter.h"
 
 #define FPRINTF(file, ...) do{ if (file) fprintf(file, __VA_ARGS__); }while(0)
 #define FCLOSE(file) do{ if (file) { fclose(file); file = NULL; } }while(0)
@@ -963,6 +964,15 @@ handle_debug (debug_stab_t stype, char* opstr)
 
 }
 
+static void
+write_instruction_value (int val, int dbg)
+{
+    if (LC3_INSTR_BIT_COUNT != 16) {
+        val = LC3_INSTR_CONVERT(val, 16, 4, 3, LC3_INSTR_BIT_COUNT, 4, 3);
+    }
+    write_value (val, dbg);
+}
+
 static void 
 generate_instruction (operands_t operands, const char* opstr)
 {
@@ -1001,7 +1011,7 @@ generate_instruction (operands_t operands, const char* opstr)
 		code_loc = 0x3000; 
 	    else {
                 code_orig = code_loc;        /* remember orig to calculate size of code block */
-	        write_value (code_loc, 0);
+	        write_instruction_value (code_loc, 0);
 		code_loc--; /* Starting point doesn't count as code. */
 	    }
 	    saw_orig = 1;
@@ -1037,91 +1047,91 @@ generate_instruction (operands_t operands, const char* opstr)
 	    	/* Check or read immediate range (error in first pass
 		   prevents execution of second, so never fails). */
 	        (void)read_signed_val (o3, &val, 5);
-		write_value (0x1020 | (r1 << 9) | (r2 << 6) | (val & 0x1F), 1);
+		write_instruction_value (0x1020 | (r1 << 9) | (r2 << 6) | (val & 0x1F), 1);
 	    } else
-		write_value (0x1000 | (r1 << 9) | (r2 << 6) | r3, 1);
+		write_instruction_value (0x1000 | (r1 << 9) | (r2 << 6) | r3, 1);
 	    break;
 	case OP_AND:
 	    if (operands == O_RRI) {
 	    	/* Check or read immediate range (error in first pass
 		   prevents execution of second, so never fails). */
 	        (void)read_signed_val (o3, &val, 5);
-		write_value (0x5020 | (r1 << 9) | (r2 << 6) | (val & 0x1F), 1);
+		write_instruction_value (0x5020 | (r1 << 9) | (r2 << 6) | (val & 0x1F), 1);
 	    } else
-		write_value (0x5000 | (r1 << 9) | (r2 << 6) | r3, 1);
+		write_instruction_value (0x5000 | (r1 << 9) | (r2 << 6) | r3, 1);
 	    break;
 	case OP_BR:
 	    if (operands == O_I)
 	        (void)read_signed_val (o1, &val, 9);
 	    else /* O_L */
 	        val = find_label (o1, 9);
-	    write_value (inst.ccode | (val & 0x1FF), 1);
+	    write_instruction_value (inst.ccode | (val & 0x1FF), 1);
 	    break;
 	case OP_JMP:
-	    write_value (0xC000 | (r1 << 6),1);
+	    write_instruction_value (0xC000 | (r1 << 6),1);
 	    break;
 	case OP_JSR:
 	    if (operands == O_I)
 	        (void)read_signed_val (o1, &val, 11);
 	    else /* O_L */
 	        val = find_label (o1, 11);
-	    write_value (0x4800 | (val & 0x7FF), 1);
+	    write_instruction_value (0x4800 | (val & 0x7FF), 1);
 	    break;
 	case OP_JSRR:
-	    write_value (0x4000 | (r1 << 6), 1);
+	    write_instruction_value (0x4000 | (r1 << 6), 1);
 	    break;
 	case OP_LD:
-	    write_value (0x2000 | (r1 << 9) | (val & 0x1FF), 1);
+	    write_instruction_value (0x2000 | (r1 << 9) | (val & 0x1FF), 1);
 	    break;
 	case OP_LDI:
-	    write_value (0xA000 | (r1 << 9) | (val & 0x1FF), 1);
+	    write_instruction_value (0xA000 | (r1 << 9) | (val & 0x1FF), 1);
 	    break;
 	case OP_LDR:
 	    (void)read_signed_val (o3, &val, 6);
-	    write_value (0x6000 | (r1 << 9) | (r2 << 6) | (val & 0x3F), 1);
+	    write_instruction_value (0x6000 | (r1 << 9) | (r2 << 6) | (val & 0x3F), 1);
 	    break;
 	case OP_LEA:
-	    write_value (0xE000 | (r1 << 9) | (val & 0x1FF), 1);
+	    write_instruction_value (0xE000 | (r1 << 9) | (val & 0x1FF), 1);
 	    break;
 	case OP_NOT:
-	    write_value (0x903F | (r1 << 9) | (r2 << 6), 1);
+	    write_instruction_value (0x903F | (r1 << 9) | (r2 << 6), 1);
 	    break;
 	case OP_RTI:
-	    write_value (0x8000, 1);
+	    write_instruction_value (0x8000, 1);
 	    break;
 	case OP_ST:
-	    write_value (0x3000 | (r1 << 9) | (val & 0x1FF), 1);
+	    write_instruction_value (0x3000 | (r1 << 9) | (val & 0x1FF), 1);
 	    break;
 	case OP_STI:
-	    write_value (0xB000 | (r1 << 9) | (val & 0x1FF), 1);
+	    write_instruction_value (0xB000 | (r1 << 9) | (val & 0x1FF), 1);
 	    break;
 	case OP_STR:
 	    (void)read_signed_val (o3, &val, 6);
-	    write_value (0x7000 | (r1 << 9) | (r2 << 6) | (val & 0x3F), 1);
+	    write_instruction_value (0x7000 | (r1 << 9) | (r2 << 6) | (val & 0x3F), 1);
 	    break;
 	case OP_TRAP:
 	    (void)read_unsigned_val (o1, &val, 8);
-	    write_value (0xF000 | (val & 0xFF),1);
+	    write_instruction_value (0xF000 | (val & 0xFF),1);
 	    break;
 
 	/* Generate trap pseudo-ops. */
 	case OP_GETC:  
-            write_value (0xF020,1);
+            write_instruction_value (0xF020,1);
             break;
 	case OP_HALT:
-            write_value (0xF025,1);
+            write_instruction_value (0xF025,1);
             break;
 	case OP_IN:
-            write_value (0xF023,1);
+            write_instruction_value (0xF023,1);
             break;
 	case OP_OUT:
-            write_value (0xF021,1);
+            write_instruction_value (0xF021,1);
             break;
 	case OP_PUTS:
-            write_value (0xF022,1);
+            write_instruction_value (0xF022,1);
             break;
 	case OP_PUTSP:
-            write_value (0xF024,1);
+            write_instruction_value (0xF024,1);
             break;
 
 	/* Generate non-trap pseudo-ops. */
@@ -1131,29 +1141,29 @@ generate_instruction (operands_t operands, const char* opstr)
 		val &= LC3_CODE_MASK;
 	    } else /* O_L */
 		val = find_label (o1, LC3_REG_BIT_COUNT);
-	    write_value (val,0);
+	    write_instruction_value (val,0);
     	    break;
 	case OP_RET:   
-	    write_value (0xC1C0,1); 
+	    write_instruction_value (0xC1C0,1); 
 	    break;
 	case OP_STRINGZ:
 	    /* We must count locations written in pass 1;
-	       write_value squashes the writes. */
+	       write_instruction_value squashes the writes. */
 	    for (str = o1 + 1; str[0] != '\"'; str++) {
 		if (str[0] == '\\') {
 		    switch (str[1]) {
-			case 'a': write_value ('\a', 0); str++; break;
-			case 'b': write_value ('\b', 0); str++; break;
-			case 'e': write_value ('\e', 0); str++; break;
-			case 'f': write_value ('\f', 0); str++; break;
-			case 'n': write_value ('\n', 0); str++; break;
-			case 'r': write_value ('\r', 0); str++; break;
-			case 't': write_value ('\t', 0); str++; break;
-			case 'v': write_value ('\v', 0); str++; break;
-			case '\\': write_value ('\\', 0); str++; break;
-			case '\"': write_value ('\"', 0); str++; break;
+			case 'a': write_instruction_value ('\a', 0); str++; break;
+			case 'b': write_instruction_value ('\b', 0); str++; break;
+			case 'e': write_instruction_value ('\e', 0); str++; break;
+			case 'f': write_instruction_value ('\f', 0); str++; break;
+			case 'n': write_instruction_value ('\n', 0); str++; break;
+			case 'r': write_instruction_value ('\r', 0); str++; break;
+			case 't': write_instruction_value ('\t', 0); str++; break;
+			case 'v': write_instruction_value ('\v', 0); str++; break;
+			case '\\': write_instruction_value ('\\', 0); str++; break;
+			case '\"': write_instruction_value ('\"', 0); str++; break;
 			/* FIXME: support others too? */
-			default: write_value (str[1],0); str++; break;
+			default: write_instruction_value (str[1],0); str++; break;
 		    }
 		} else {
                     if (str[0] == '\r') {
@@ -1162,17 +1172,17 @@ generate_instruction (operands_t operands, const char* opstr)
                         line_num++;
                     } else if (str[0] == '\n')
 		        line_num++;
-		    write_value (*str, 0);
+		    write_instruction_value (*str, 0);
 		}
 		last_cmd = NULL;	// To disable the source display for the next values
 	    }
-	    write_value (0, 0);
+	    write_instruction_value (0, 0);
 	    break;
 	case OP_BLKW:
 	    (void)read_val (o1, &val, LC3_REG_BIT_COUNT);
 	    val &= LC3_CODE_MASK;
 	    while (val-- > 0) {
-	        write_value (0x0000, 0);
+	        write_instruction_value (0x0000, 0);
 		last_cmd = NULL;	// To disable the source display for the next values
 	    }
 	    break;
@@ -1190,38 +1200,38 @@ generate_instruction (operands_t operands, const char* opstr)
 	case OP_SLL:
 	    if (operands == O_RRI) {
 	        (void)read_unsigned_val (o3, &val, 4);
-		write_value (0x1010 | (r1 << 9) | (r2 << 6) | (val & 0xF), 1);
+		write_instruction_value (0x1010 | (r1 << 9) | (r2 << 6) | (val & 0xF), 1);
 	    } else
-		write_value (0xD000 | (r1 << 9) | (r2 << 6) | r3, 1);
+		write_instruction_value (0xD000 | (r1 << 9) | (r2 << 6) | r3, 1);
 	    break;
 
 	/* Shift Right Arithmetic */
 	case OP_SRA:
 	    if (operands == O_RRI) {
 	        (void)read_unsigned_val (o3, &val, 4);
-		write_value (0x5010 | (r1 << 9) | (r2 << 6) | (val & 0xF), 1);
+		write_instruction_value (0x5010 | (r1 << 9) | (r2 << 6) | (val & 0xF), 1);
 	    } else
-		write_value (0xD000 | (r1 << 9) | (r2 << 6) | ((OP_SRA-OP_SLL) << 3) | r3, 1);
+		write_instruction_value (0xD000 | (r1 << 9) | (r2 << 6) | ((OP_SRA-OP_SLL) << 3) | r3, 1);
 	    break;
 
 	/* Divide */
 	case OP_DIV:
-	    write_value (0xD000 | (r1 << 9) | (r2 << 6) | ((OP_DIV-OP_SLL) << 3) | r3, 1);
+	    write_instruction_value (0xD000 | (r1 << 9) | (r2 << 6) | ((OP_DIV-OP_SLL) << 3) | r3, 1);
 	    break;
 
 	/* Remainder */
 	case OP_MOD:
-	    write_value (0xD000 | (r1 << 9) | (r2 << 6) | ((OP_MOD-OP_SLL) << 3) | r3, 1);
+	    write_instruction_value (0xD000 | (r1 << 9) | (r2 << 6) | ((OP_MOD-OP_SLL) << 3) | r3, 1);
 	    break;
 
 	/* Multiply */
 	case OP_MUL:
-	    write_value (0xD000 | (r1 << 9) | (r2 << 6) | ((OP_MUL-OP_SLL) << 3) | r3, 1);
+	    write_instruction_value (0xD000 | (r1 << 9) | (r2 << 6) | ((OP_MUL-OP_SLL) << 3) | r3, 1);
 	    break;
 
 	/* pseudo-ops */
 	case OP_NOP:
-            write_value (0x0000, 1);
+            write_instruction_value (0x0000, 1);
             break;
 
         /* directives */
@@ -1233,7 +1243,7 @@ generate_instruction (operands_t operands, const char* opstr)
                 num_errors++;
             } else {
 	        while (code_loc < val) {
-                    write_value (0x0000, 0);
+                    write_instruction_value (0x0000, 0);
 	            last_cmd = NULL;	// To disable the source display for the next values
                 }
             }
