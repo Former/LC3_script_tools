@@ -1,7 +1,7 @@
 // Copyright 2020 by Alexei Bezborodov <AlexeiBv@narod.ru>
 #pragma once
 
-#define I1                      1u
+#define I1                      (1UL)
 
 #define INT_VALUE(instr, bit_count) \
                                 ((((instr) & ((I1 << (bit_count)) - 1)) ^ (I1 << ((bit_count) - 1))) - (I1 << ((bit_count) - 1)))

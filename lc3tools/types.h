@@ -36,10 +36,22 @@
 
 #include <stdint.h>
 
-#if defined(LC3_32BIT)
+#if defined(LC3_64BIT_WIDE)
+
+    typedef uint64_t lc3_register_type;
+    #define LC3_SWAP SWAP_64
+    #define LC3_CODE_MASK 0xFFFFFFFF
+    #define LC3_INSTR_BIT_COUNT 64
+
+    #define HANDLES_64_BIT_LONGS_PROPERTY(value) 
+
+    #define CHECK_OUT_OF_RANGE(bits) 0
+    #define CHECK_OUT_OF_RANGE_UNSIGNED(bits) 0
+
+#elif defined(LC3_32BIT)
 
     typedef uint32_t lc3_register_type;
-    #define LC3_SWAP swap32
+    #define LC3_SWAP SWAP_32
     #define LC3_CODE_MASK 0xFFFFFFFF
     #define LC3_INSTR_BIT_COUNT 16
 
@@ -51,7 +63,7 @@
 #elif defined(LC3_32BIT_WIDE)
 
     typedef uint32_t lc3_register_type;
-    #define LC3_SWAP swap32
+    #define LC3_SWAP SWAP_32
     #define LC3_CODE_MASK 0xFFFFFFFF
     #define LC3_INSTR_BIT_COUNT 32
 
@@ -63,7 +75,7 @@
 #else // LC3_16BIT
 
     typedef uint16_t lc3_register_type;
-    #define LC3_SWAP swap16
+    #define LC3_SWAP SWAP_16
     #define LC3_CODE_MASK 0x0000FFFF
     #define LC3_INSTR_BIT_COUNT 16
 
@@ -78,6 +90,10 @@
 
 #endif // LC3_32BIT and LC3_16BIT
 
-#define LC3_REG_BIT_COUNT (sizeof(lc3_register_type) * 8)
+#define BIT_IN_ONE_BYTE_COUNT 8
+#define LC3_REG_BIT_COUNT (sizeof(lc3_register_type) * BIT_IN_ONE_BYTE_COUNT)
+#define SWAP_64(val) val //((val << (BIT_IN_ONE_BYTE_COUNT * 3)) | ((val << BIT_IN_ONE_BYTE_COUNT) & 0x00FF0000) | ((val >> BIT_IN_ONE_BYTE_COUNT) & 0x0000FF00) | (val >> (BIT_IN_ONE_BYTE_COUNT * 3)))
+#define SWAP_32(val) ((val << (BIT_IN_ONE_BYTE_COUNT * 3)) | ((val << BIT_IN_ONE_BYTE_COUNT) & 0x00FF0000) | ((val >> BIT_IN_ONE_BYTE_COUNT) & 0x0000FF00) | (val >> (BIT_IN_ONE_BYTE_COUNT * 3)))
+#define SWAP_16(val) ((val << BIT_IN_ONE_BYTE_COUNT) | (val >> BIT_IN_ONE_BYTE_COUNT))
 
 #endif //TYPES_H

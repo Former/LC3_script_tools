@@ -1,0 +1,9 @@
+#!/bin/bash
+#input files
+obj_file=$1
+obj_correct_file=$2
+
+# replace finish code to zero(nop) for stop programm after command "continue"
+sed 's/\x41\xC0\x00\x00\x0F\xFF\xFF\xFF/\x41\xC0\x00\x00\x00\x00\x00\x00/g' $obj_file > $obj_correct_file
+
+

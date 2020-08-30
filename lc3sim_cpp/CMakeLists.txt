@@ -9,34 +9,26 @@ set(OPTIMIZE_COMPILE_OPTION -O3)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
-ADD_CUSTOM_COMMAND(
-        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/lc3os.c
-        SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/lc3os.obj
-        COMMAND xxd -i lc3os.obj > ${CMAKE_CURRENT_BINARY_DIR}/lc3os.c
+function(GenOS a_OsFileName)
+    ADD_CUSTOM_COMMAND(
+        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${a_OsFileName}.c
+        SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/${a_OsFileName}.obj
+        COMMAND xxd -i ${a_OsFileName}.obj > ${CMAKE_CURRENT_BINARY_DIR}/${a_OsFileName}.c
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        COMMENT "Generating lc3os.c"
+        COMMENT "Generating ${a_OsFileName}.c"
     )
+endfunction()
 
-ADD_CUSTOM_COMMAND(
-        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/lc3os32.c
-        SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/lc3os32.obj
-        COMMAND xxd -i lc3os32.obj > ${CMAKE_CURRENT_BINARY_DIR}/lc3os32.c
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        COMMENT "Generating lc3os32.c"
-    )
-
-ADD_CUSTOM_COMMAND(
-        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/lc3os32w.c
-        SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/lc3os32w.obj
-        COMMAND xxd -i lc3os32w.obj > ${CMAKE_CURRENT_BINARY_DIR}/lc3os32w.c
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        COMMENT "Generating lc3os32w.c"
-    )
+GenOS(lc3os16)
+GenOS(lc3os32)
+GenOS(lc3os32w)
+GenOS(lc3os64w)
 
 set(SOURCES_LC3SIM_CPP
-    ${CMAKE_CURRENT_BINARY_DIR}/lc3os.c
+    ${CMAKE_CURRENT_BINARY_DIR}/lc3os16.c
     ${CMAKE_CURRENT_BINARY_DIR}/lc3os32.c
     ${CMAKE_CURRENT_BINARY_DIR}/lc3os32w.c
+    ${CMAKE_CURRENT_BINARY_DIR}/lc3os64w.c
     lc3sim.h
     sim_types.h
     instr_config.h
@@ -52,59 +44,27 @@ function(SetOptionts a_TargetName a_Definitions)
     set_target_properties(${a_TargetName} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${INSTALL_DIR}/")
 endfunction()
 
-# 16 bit
-add_library(liblc3sim_cpp16 STATIC 
-    ${SOURCES_LC3SIM_CPP}
-    )
-SetOptionts(liblc3sim_cpp16 LC3_16BIT)
+function(MakeSim a_TargetBaseName a_Definition)
+    add_library(lib${a_TargetBaseName} STATIC 
+        ${SOURCES_LC3SIM_CPP}
+        )
+    SetOptionts(lib${a_TargetBaseName} ${a_Definition})
 
-add_executable(lc3sim_cpp16 
-    main.cpp
-    )
-SetOptionts(lc3sim_cpp16 LC3_16BIT)
-target_link_libraries(lc3sim_cpp16 liblc3sim_cpp16)
+    add_executable(${a_TargetBaseName} 
+        main.cpp
+        )
+    SetOptionts(${a_TargetBaseName} ${a_Definition})
+    target_link_libraries(${a_TargetBaseName} lib${a_TargetBaseName})
 
-add_executable(lc3sim_cpp16trace 
-    ${SOURCES_LC3SIM_CPP}
-    main.cpp
-    )
-SetOptionts(lc3sim_cpp16trace LC3_16BIT)
-target_compile_definitions(lc3sim_cpp16trace PRIVATE LC3_16BIT TRACE)
+    add_executable(${a_TargetBaseName}trace 
+        ${SOURCES_LC3SIM_CPP}
+        main.cpp
+        )
+    SetOptionts(${a_TargetBaseName}trace ${a_Definition})
+    target_compile_definitions(${a_TargetBaseName}trace PRIVATE ${a_Definition} TRACE)
+endfunction()
 
-# 32 bit
-add_executable(lc3sim_cpp32
-    ${SOURCES_LC3SIM_CPP}
-    main.cpp
-    )
-SetOptionts(lc3sim_cpp32 LC3_32BIT)
-
-add_library(liblc3sim_cpp32 STATIC 
-    ${SOURCES_LC3SIM_CPP}
-    )
-SetOptionts(liblc3sim_cpp32 LC3_32BIT)
-
-add_executable(lc3sim_cpp32trace 
-    ${SOURCES_LC3SIM_CPP}
-    main.cpp
-    )
-SetOptionts(lc3sim_cpp32trace LC3_32BIT)
-target_compile_definitions(lc3sim_cpp32trace PRIVATE LC3_32BIT TRACE)
-
-# 32 bit wide
-add_library(liblc3sim_cpp32w STATIC 
-    ${SOURCES_LC3SIM_CPP}
-    )
-SetOptionts(liblc3sim_cpp32w LC3_32BIT_WIDE)
-
-add_executable(lc3sim_cpp32w 
-    main.cpp
-    )
-SetOptionts(lc3sim_cpp32w LC3_32BIT_WIDE TRACE)
-target_link_libraries(lc3sim_cpp32w liblc3sim_cpp32w)
-
-add_executable(lc3sim_cpp32wtrace 
-    ${SOURCES_LC3SIM_CPP}
-    main.cpp
-    )
-SetOptionts(lc3sim_cpp32wtrace LC3_32BIT_WIDE)
-target_compile_definitions(lc3sim_cpp32wtrace PRIVATE LC3_32BIT_WIDE TRACE)
+MakeSim(lc3sim_cpp16 LC3_16BIT)
+MakeSim(lc3sim_cpp32 LC3_32BIT)
+MakeSim(lc3sim_cpp32w LC3_32BIT_WIDE)
+MakeSim(lc3sim_cpp64w LC3_64BIT_WIDE)

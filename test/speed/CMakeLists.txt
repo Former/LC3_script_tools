@@ -33,5 +33,8 @@ foreach (cur_file ${src_files})
 
     BuildObjFile(out_obj_file ${out_asm_file} ${cur_file} ${LC3AS32W} ${CORRECT32W_EXE} ${OUT_DIR}32W) 
     AddSpeedTest(${LC3SIM_CPP32W} ${out_obj_file} ${cur_file} "sim_cpp32w" ${DEFAULT_OUT} ${TYPE_OUT_STDOUT})
+
+    #BuildObjFile(out_obj_file ${out_asm_file} ${cur_file} ${LC3AS64W} ${CORRECT64W_EXE} ${OUT_DIR}64W) 
+    #AddSpeedTest(${LC3SIM_CPP64W} ${out_obj_file} ${cur_file} "sim_cpp64w" ${DEFAULT_OUT} ${TYPE_OUT_STDOUT})
 endforeach()
 

@@ -15,7 +15,7 @@ echo "Run ctest"
 time ctest -R regress -j $1
 
 # Run unit test
-ctest -R unittest -V -j
+ctest -R unittest -j
 
 # Run speed test
 ctest -R speed_test 

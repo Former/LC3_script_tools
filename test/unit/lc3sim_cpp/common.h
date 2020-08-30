@@ -1,6 +1,7 @@
 #pragma once
 
 #include "lc3sim.h"
+#include "os.h"
 
 #define ARRAY_SIZE(a) (sizeof(a)/sizeof(a[0]))
 
@@ -27,18 +28,3 @@ public:
 
     std::vector<LC3_Sim::RegType> m_Memory;
 };
-
-extern unsigned char lc3os32_obj[];
-extern unsigned int lc3os32_obj_len;
-extern unsigned char lc3os_obj[];
-extern unsigned int lc3os_obj_len;
-
-#if defined(LC3_32BIT) || defined(LC3_32BIT_WIDE)
-#define lc3os_bin_data lc3os32_obj
-#define lc3os_bin_data_len lc3os32_obj_len
-#else
-#define lc3os_bin_data lc3os_obj
-#define lc3os_bin_data_len lc3os_obj_len
-#endif
-
-

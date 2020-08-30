@@ -762,14 +762,6 @@ read_unsigned_val (const char* s, int* vptr, int bits)
     return 0;
 }
 
-static uint16_t swap16(uint16_t val) {
-    return (val << 8) | (val >> 8);
-}
-
-static uint32_t swap32(uint32_t val) {
-    return (val << 8 * 3) | ((val << 8) & 0x00FF0000) | ((val >> 8) & 0x0000FF00) | (val >> 8 * 3);
-}
-
 static void
 write_value (int val, int dbg)
 {
@@ -968,7 +960,7 @@ static void
 write_instruction_value (int val, int dbg)
 {
     if (LC3_INSTR_BIT_COUNT != 16) {
-        val = LC3_INSTR_CONVERT(val, 16, 4, 3, LC3_INSTR_BIT_COUNT, 4, 3);
+        val = (lc3_register_type)LC3_INSTR_CONVERT(val, 16, 4, 3, LC3_INSTR_BIT_COUNT, 4, 3);
     }
     write_value (val, dbg);
 }

@@ -14,8 +14,8 @@
 #include <unistd.h>
 #include <sys/time.h>
 
-#define SING_BIT (1 << LC3_SIGN_BIT_INDEX)
-#define STATUS_BIT (1 << LC3_STATUS_BIT_INDEX)
+#define SING_BIT (1UL << LC3_SIGN_BIT_INDEX)
+#define STATUS_BIT (1UL << LC3_STATUS_BIT_INDEX)
 
 LC3_Sim::IInputOutput::~IInputOutput()
 {
