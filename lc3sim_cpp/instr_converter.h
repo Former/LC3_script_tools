@@ -107,5 +107,5 @@
                 (LC3_CHECK_OPCODE_T(instr, instr_bc_from, op_bc_from)) ? \
                     LC3_INSTR_CONVERT_T(instr, instr_bc_from, op_bc_from, rn_bc_from, instr_bc_to, op_bc_to, rn_bc_to) \
                 : \
-                (VALUE_ASSERT(((void)"This operation not implemented", LC3_OPER_CODE(instr, instr_bc_from, op_bc_from), 0)), 0) \
+                (VALUE_ASSERT(((void)"This operation not implemented", (void)LC3_OPER_CODE(instr, instr_bc_from, op_bc_from), 0)), 0) \
             )
