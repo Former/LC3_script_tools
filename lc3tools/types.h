@@ -93,7 +93,7 @@
 #define BIT_IN_ONE_BYTE_COUNT 8
 #define LC3_REG_BIT_COUNT (sizeof(lc3_register_type) * BIT_IN_ONE_BYTE_COUNT)
 #define SWAP_64(val) val //((val << (BIT_IN_ONE_BYTE_COUNT * 3)) | ((val << BIT_IN_ONE_BYTE_COUNT) & 0x00FF0000) | ((val >> BIT_IN_ONE_BYTE_COUNT) & 0x0000FF00) | (val >> (BIT_IN_ONE_BYTE_COUNT * 3)))
-#define SWAP_32(val) ((val << (BIT_IN_ONE_BYTE_COUNT * 3)) | ((val << BIT_IN_ONE_BYTE_COUNT) & 0x00FF0000) | ((val >> BIT_IN_ONE_BYTE_COUNT) & 0x0000FF00) | (val >> (BIT_IN_ONE_BYTE_COUNT * 3)))
+#define SWAP_32(val) (((val << (BIT_IN_ONE_BYTE_COUNT * 3)) & 0xFF000000) | ((val << BIT_IN_ONE_BYTE_COUNT) & 0x00FF0000) | ((val >> BIT_IN_ONE_BYTE_COUNT) & 0x0000FF00) | ((val >> (BIT_IN_ONE_BYTE_COUNT * 3)) & 0x000000FF))
 #define SWAP_16(val) ((val << BIT_IN_ONE_BYTE_COUNT) | (val >> BIT_IN_ONE_BYTE_COUNT))
 
 #endif //TYPES_H
