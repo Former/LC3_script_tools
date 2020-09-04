@@ -698,7 +698,7 @@ read_raw_val (const char* s, long * vptr)
    Format (signed/unsigned) is irrelevant as long value fits in size specified
    */
 static int
-read_val (const char* s, int* vptr, int bits)
+read_val (const char* s, long* vptr, int bits)
 {
     long v;
     if (read_raw_val(s, &v))
