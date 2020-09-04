@@ -26,8 +26,9 @@ typedef uint16_t LC3MemAddressType_16;
     typedef LC3MemAddressType_64 LC3MemAddressType;
 
     #define LC3_SWAP SWAP_64
-    #define LC3_MAX_MEMORY_ADDRESS (2*UINT16_MAX) // may be up to UINT64_MAX
+    #define LC3_MAX_MEMORY_ADDRESS          (2*UINT16_MAX) // may be up to UINT64_MAX
     #define LC3_INSTRUCTION_BIT_COUNT       BIT_COUNT(LC3_Sim::LC3_RegisterType)
+    #define PRINT_REG_TYPE                  "%lx"
 
 #elif defined(LC3_32BIT)
 
@@ -35,8 +36,9 @@ typedef uint16_t LC3MemAddressType_16;
     typedef LC3MemAddressType_32 LC3MemAddressType;
 
     #define LC3_SWAP SWAP_32
-    #define LC3_MAX_MEMORY_ADDRESS (2*UINT16_MAX) // may be up to UINT32_MAX
+    #define LC3_MAX_MEMORY_ADDRESS          (2*UINT16_MAX) // may be up to UINT32_MAX
     #define LC3_INSTRUCTION_BIT_COUNT       BIT_COUNT(LC3_Sim::LC3_RegisterType_16)
+    #define PRINT_REG_TYPE                  "%x"
 
 #elif defined(LC3_32BIT_WIDE)
 
@@ -44,8 +46,9 @@ typedef uint16_t LC3MemAddressType_16;
     typedef LC3MemAddressType_32 LC3MemAddressType;
 
     #define LC3_SWAP SWAP_32
-    #define LC3_MAX_MEMORY_ADDRESS (2*UINT16_MAX) // may be up to UINT32_MAX
+    #define LC3_MAX_MEMORY_ADDRESS          (2*UINT16_MAX) // may be up to UINT32_MAX
     #define LC3_INSTRUCTION_BIT_COUNT       BIT_COUNT(LC3_Sim::LC3_RegisterType)
+    #define PRINT_REG_TYPE                  "%x"
 
 #else // LC3_16BIT
 
@@ -53,8 +56,9 @@ typedef uint16_t LC3MemAddressType_16;
     typedef LC3MemAddressType_16 LC3MemAddressType;
 
     #define LC3_SWAP SWAP_16
-    #define LC3_MAX_MEMORY_ADDRESS UINT16_MAX
+    #define LC3_MAX_MEMORY_ADDRESS          UINT16_MAX
     #define LC3_INSTRUCTION_BIT_COUNT       BIT_COUNT(LC3_Sim::LC3_RegisterType)
+    #define PRINT_REG_TYPE                  "%x"
 
 #endif
 

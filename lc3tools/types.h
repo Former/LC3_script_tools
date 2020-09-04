@@ -40,8 +40,10 @@
 
     typedef uint64_t lc3_register_type;
     #define LC3_SWAP SWAP_64
-    #define LC3_CODE_MASK 0xFFFFFFFF
+    #define LC3_VALUE_MASK 0xFFFFFFFFFFFFFFFFUL
+    #define LC3_ADDR_MASK 0xFFFF
     #define LC3_INSTR_BIT_COUNT 64
+    #define LC3_LOAD_REG_BIT_COUNT 32
 
     #define HANDLES_64_BIT_LONGS_PROPERTY(value) 
 
@@ -52,8 +54,10 @@
 
     typedef uint32_t lc3_register_type;
     #define LC3_SWAP SWAP_32
-    #define LC3_CODE_MASK 0xFFFFFFFF
+    #define LC3_VALUE_MASK 0xFFFFFFFF
+    #define LC3_ADDR_MASK 0xFFFF
     #define LC3_INSTR_BIT_COUNT 16
+    #define LC3_LOAD_REG_BIT_COUNT 32
 
     #define HANDLES_64_BIT_LONGS_PROPERTY(value) 
 
@@ -64,8 +68,10 @@
 
     typedef uint32_t lc3_register_type;
     #define LC3_SWAP SWAP_32
-    #define LC3_CODE_MASK 0xFFFFFFFF
+    #define LC3_VALUE_MASK 0xFFFFFFFF
+    #define LC3_ADDR_MASK 0xFFFF
     #define LC3_INSTR_BIT_COUNT 32
+    #define LC3_LOAD_REG_BIT_COUNT 32
 
     #define HANDLES_64_BIT_LONGS_PROPERTY(value) 
 
@@ -76,8 +82,10 @@
 
     typedef uint16_t lc3_register_type;
     #define LC3_SWAP SWAP_16
-    #define LC3_CODE_MASK 0x0000FFFF
+    #define LC3_VALUE_MASK 0x0000FFFF
+    #define LC3_ADDR_MASK 0xFFFF
     #define LC3_INSTR_BIT_COUNT 16
+    #define LC3_LOAD_REG_BIT_COUNT 16
 
     #define HANDLES_64_BIT_LONGS_PROPERTY(value) \
         do { \

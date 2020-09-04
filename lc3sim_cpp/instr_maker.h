@@ -8,22 +8,22 @@
 #define assert(cond) ((void)0)
 #endif
 
-#define OPCODE_BR                       ((uint64_t)0b0000)
-#define OPCODE_ADD                      ((uint64_t)0b0001)
-#define OPCODE_LD                       ((uint64_t)0b0010)
-#define OPCODE_ST                       ((uint64_t)0b0011)
-#define OPCODE_JSR                      ((uint64_t)0b0100)
-#define OPCODE_AND                      ((uint64_t)0b0101)
-#define OPCODE_LDR                      ((uint64_t)0b0110)
-#define OPCODE_STR                      ((uint64_t)0b0111)
-#define OPCODE_RTI                      ((uint64_t)0b1000)
-#define OPCODE_NOT                      ((uint64_t)0b1001)
-#define OPCODE_LDI                      ((uint64_t)0b1010)
-#define OPCODE_STI                      ((uint64_t)0b1011)
-#define OPCODE_JMP                      ((uint64_t)0b1100)
-#define OPCODE_RES                      ((uint64_t)0b1101)
-#define OPCODE_LEA                      ((uint64_t)0b1110)
-#define OPCODE_TRAP                     ((uint64_t)0b1111)
+#define OPCODE_BR                       0b0000UL
+#define OPCODE_ADD                      0b0001UL
+#define OPCODE_LD                       0b0010UL
+#define OPCODE_ST                       0b0011UL
+#define OPCODE_JSR                      0b0100UL
+#define OPCODE_AND                      0b0101UL
+#define OPCODE_LDR                      0b0110UL
+#define OPCODE_STR                      0b0111UL
+#define OPCODE_RTI                      0b1000UL
+#define OPCODE_NOT                      0b1001UL
+#define OPCODE_LDI                      0b1010UL
+#define OPCODE_STI                      0b1011UL
+#define OPCODE_JMP                      0b1100UL
+#define OPCODE_RES                      0b1101UL
+#define OPCODE_LEA                      0b1110UL
+#define OPCODE_TRAP                     0b1111UL
 
 #define TO_OPER_TYPE(oper)              ((uint64_t)oper)
 

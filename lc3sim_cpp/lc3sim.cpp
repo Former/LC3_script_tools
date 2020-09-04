@@ -47,16 +47,16 @@ LC3_Sim::InstructionExecuter::Exception::Exception(Type a_Type, AddressType a_Ex
 
 LC3_Sim::Registers::Registers()
 {
-    m_Reg[rnReg_0] = 0;
-    m_Reg[rnReg_1] = 0;
-    m_Reg[rnReg_2] = 0;
-    m_Reg[rnReg_3] = 0;
-    m_Reg[rnReg_4] = 0;
-    m_Reg[rnReg_5] = 0;
-    m_Reg[rnReg_6] = 0;
-    m_Reg[rnReg_7] = 0;
-    m_Reg[rnReg_PC] = 0;
-    m_Reg[rnReg_NumCC] = 0;
+    m_Reg[rnReg_0] = 0UL;
+    m_Reg[rnReg_1] = 0UL;
+    m_Reg[rnReg_2] = 0UL;
+    m_Reg[rnReg_3] = 0UL;
+    m_Reg[rnReg_4] = 0UL;
+    m_Reg[rnReg_5] = 0UL;
+    m_Reg[rnReg_6] = 0UL;
+    m_Reg[rnReg_7] = 0UL;
+    m_Reg[rnReg_PC] = 0UL;
+    m_Reg[rnReg_NumCC] = 0UL;
 }
 LC3_Sim::InstructionExecuter::InstructionExecuter(Registers* a_Registers, IVirtualMemory* a_VirtualMemory, IInputOutput* a_InputOutput)
     :m_Registers(a_Registers),m_VirtualMemory(a_VirtualMemory),m_InputOutput(a_InputOutput)
@@ -74,7 +74,7 @@ enum ESpecAddr
 
 static LC3_Sim::IVirtualMemory::Result MemoryRead(LC3_Sim::RegType* a_Out, LC3_Sim::AddressType a_Address, LC3_Sim::IVirtualMemory* a_VirtualMemory, LC3_Sim::IInputOutput* a_InputOutrut)
 {
-    DEBUG_TRACE("MemoryRead %x\n", a_Address);
+    DEBUG_TRACE("MemoryRead " PRINT_REG_TYPE "\n", a_Address);
     switch (a_Address)
     {
         case sAddressKBSR:
@@ -96,7 +96,7 @@ static LC3_Sim::IVirtualMemory::Result MemoryRead(LC3_Sim::RegType* a_Out, LC3_S
 
 static LC3_Sim::IVirtualMemory::Result MemoryWrite(LC3_Sim::RegType a_Value, LC3_Sim::AddressType a_Address, LC3_Sim::IVirtualMemory* a_VirtualMemory, LC3_Sim::IInputOutput* a_InputOutrut)
 {
-    DEBUG_TRACE("MemoryWrite %x, val = %x\n", a_Address, a_Value);
+    DEBUG_TRACE("MemoryWrite " PRINT_REG_TYPE ", val = " PRINT_REG_TYPE "\n", a_Address, a_Value);
     switch (a_Address)
     {
         case sAddressKBSR:
@@ -135,13 +135,14 @@ static LC3_Sim::Registers::EFlags SignFlag(LC3_Sim::RegType a_Value)
 #define MEMORY_READ(out, addr)      MemoryRead(out, addr, m_VirtualMemory, m_InputOutput)
 #define MEMORY_WRITE(value, addr)   MemoryWrite(value, addr, m_VirtualMemory, m_InputOutput)
 
-#define SET_CC_REG_NUM1(instr)      REG(LC3_Sim::Registers::rnReg_NumCC) = REG_NUM1(instr)
+#define SET_CC_REG_NUM1(instr)      REG(LC3_Sim::Registers::rnReg_NumCC) = REG_NUM1(instr);\
+                                        DEBUG_TRACE("Reg[" PRINT_REG_TYPE "] = " PRINT_REG_TYPE "\n", REG_NUM1(instr), REG(REG_NUM1(instr)))
 
 #define CASE(instr_name)            case OPCODE_##instr_name: DEBUG_TRACE("Operation %s\n", #instr_name);
 
 LC3_Sim::InstructionExecuter::Exception LC3_Sim::InstructionExecuter::ExecuteOneInstruction(LC3_Sim::RegType a_Instruction)
 {
-    DEBUG_TRACE("Instruction %x addr %x\n", a_Instruction, REG(LC3_Sim::Registers::rnReg_PC));
+    DEBUG_TRACE("Instruction " PRINT_REG_TYPE " addr " PRINT_REG_TYPE "\n", a_Instruction, REG(LC3_Sim::Registers::rnReg_PC));
     
     switch (OPER_CODE(a_Instruction))
     {

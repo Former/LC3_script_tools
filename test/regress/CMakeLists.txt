@@ -117,8 +117,12 @@ foreach (cur_file ${src_32bit_file_list})
 
     BuildObjFile(out_file ${out_asm_file} ${cur_file} ${LC3AS32} ${CORRECT32_EXE} ${OUT_DIR}32) 
     list(APPEND obj_32bit_file_list ${out_file})
+
     BuildObjFile(out_file ${out_asm_file} ${cur_file} ${LC3AS32W} ${CORRECT32W_EXE} ${OUT_DIR}32W) 
     list(APPEND obj_32bit_wide_file_list ${out_file})
+
+    BuildObjFile(out_file ${out_asm_file} ${cur_file} ${LC3AS64W} ${CORRECT64W_EXE} ${OUT_DIR}64W) 
+    list(APPEND obj_64bit_wide_file_list ${out_file})
 endforeach()
 
 # Known errors 16 bit: Errors when execute
@@ -201,4 +205,15 @@ foreach (index RANGE 0 ${obj_32bit_wide_file_count})
     endif()
 endforeach()
 
+# Config test 64 bit wide
+list(LENGTH obj_64bit_wide_file_list obj_64bit_wide_file_count)
+math(EXPR obj_64bit_wide_file_count "${obj_64bit_wide_file_count} - 1")
+foreach (index RANGE 0 ${obj_64bit_wide_file_count})
+    list(GET obj_64bit_wide_file_list ${index} cur_obj_file)
+    list(GET src_32bit_file_list ${index} cur_src_file)
 
+    list(FIND exclude_src_files_for_lc3sim_c32 ${cur_src_file} find_src_file)
+    if (${find_src_file} EQUAL -1)
+        AddRegressTest(${LC3SIM_CPP64W} ${cur_obj_file} ${cur_src_file} "sim_cpp64w" ${DEFAULT_OUT} ${TYPE_OUT_STDOUT})
+    endif()
+endforeach()

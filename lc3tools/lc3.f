@@ -709,7 +709,7 @@ read_val (const char* s, int* vptr, int bits)
         num_errors++;
         return -1;
     }
-    if (bits != 32 && ((v & (1UL << (bits - 1))) != 0))
+    if (bits != LC3_LOAD_REG_BIT_COUNT && ((v & (1UL << (bits - 1))) != 0))
         v |= ~((1UL << bits) - 1);
     *vptr = v;
     return 0;
@@ -730,7 +730,7 @@ read_signed_val (const char* s, int* vptr, int bits)
         num_errors++;
         return -1;
     }
-    if (bits != 32 && ((v & (1UL << (bits - 1))) != 0))
+    if (bits != LC3_LOAD_REG_BIT_COUNT && ((v & (1UL << (bits - 1))) != 0))
         v |= ~((1UL << bits) - 1);
     *vptr = v;
     return 0;
@@ -763,7 +763,7 @@ read_unsigned_val (const char* s, int* vptr, int bits)
 }
 
 static void
-write_value (int val, int dbg)
+write_value (long val, int dbg)
 {
     static int old_line = -1;
     static int old_loc = -1;
@@ -772,7 +772,7 @@ write_value (int val, int dbg)
     int i;
     int this_loc = code_loc;
 
-    code_loc = (code_loc + 1) & LC3_CODE_MASK;
+    code_loc = (code_loc + 1) & LC3_ADDR_MASK;
     if (code_loc == 0) {
 	show_error("More code than available address space.\n");
 	exit(1);
@@ -874,7 +874,7 @@ find_label (const char* optarg, int bits)
     label = find_symbol (local, NULL);
     if (label != NULL) {
 	value = label->addr;
-	if (bits != LC3_REG_BIT_COUNT) { /* Everything except 16/32 bits is PC-relative. */
+	if (bits != LC3_LOAD_REG_BIT_COUNT) { /* Everything except 16/32 bits is PC-relative. */
 	    limit = (1L << (bits - 1));
 	    value -= code_loc + 1;
 	    if (value < -limit || value >= limit) {
@@ -957,7 +957,7 @@ handle_debug (debug_stab_t stype, char* opstr)
 }
 
 static void
-write_instruction_value (int val, int dbg)
+write_instruction_value (long val, int dbg)
 {
     if (LC3_INSTR_BIT_COUNT != 16) {
         val = (lc3_register_type)LC3_INSTR_CONVERT(val, 16, 4, 3, LC3_INSTR_BIT_COUNT, 4, 3);
@@ -968,7 +968,7 @@ write_instruction_value (int val, int dbg)
 static void 
 generate_instruction (operands_t operands, const char* opstr)
 {
-    int val, r1, r2, r3;
+    long val, r1, r2, r3;
     const char* o1;
     const char* o2;
     const char* o3;
@@ -997,7 +997,7 @@ generate_instruction (operands_t operands, const char* opstr)
 
     if (inst.op == OP_ORIG) {
 	if (saw_orig == 0) {
-	    if (read_val (o1, &code_loc, LC3_REG_BIT_COUNT) == -1)
+	    if (read_val (o1, &code_loc, LC3_LOAD_REG_BIT_COUNT) == -1)
 		/* Pick arbitrary value, to continue input processing to report other errors.
                    The num_errors variable will prevent code generation. */
 		code_loc = 0x3000; 
@@ -1129,10 +1129,10 @@ generate_instruction (operands_t operands, const char* opstr)
 	/* Generate non-trap pseudo-ops. */
     	case OP_FILL:
 	    if (operands == O_I) {
-		(void)read_val (o1, &val, LC3_REG_BIT_COUNT);
-		val &= LC3_CODE_MASK;
+		(void)read_val (o1, &val, LC3_LOAD_REG_BIT_COUNT);
+		val &= LC3_VALUE_MASK;
 	    } else /* O_L */
-		val = find_label (o1, LC3_REG_BIT_COUNT);
+		val = find_label (o1, LC3_LOAD_REG_BIT_COUNT);
 	    write_value (val,0);
     	    break;
 	case OP_RET:   
@@ -1171,8 +1171,8 @@ generate_instruction (operands_t operands, const char* opstr)
 	    write_value (0, 0);
 	    break;
 	case OP_BLKW:
-	    (void)read_val (o1, &val, LC3_REG_BIT_COUNT);
-	    val &= LC3_CODE_MASK;
+	    (void)read_val (o1, &val, LC3_LOAD_REG_BIT_COUNT);
+	    val &= LC3_ADDR_MASK;
 	    while (val-- > 0) {
 	        write_value (0x0000, 0);
 		last_cmd = NULL;	// To disable the source display for the next values
@@ -1228,8 +1228,8 @@ generate_instruction (operands_t operands, const char* opstr)
 
         /* directives */
         case OP_BLKWTO:
-	    (void)read_val (o1, &val, LC3_REG_BIT_COUNT);
-	    val &= LC3_CODE_MASK;
+	    (void)read_val (o1, &val, LC3_LOAD_REG_BIT_COUNT);
+	    val &= LC3_ADDR_MASK;
             if (code_loc > val) {
                 show_error("requested address is in the past\n");
                 num_errors++;
