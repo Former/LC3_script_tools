@@ -114,7 +114,13 @@ int main(int argc, const char* argv[])
     }
 
     LC3_Sim::InstructionIndex instr = 0;
-    proc.Run(&instr, 0x2FFFFFFF);
+    bool stop = false;
+    int run_count = 0;
+    while(!stop && (run_count < 10))
+    {
+        stop = proc.Run(&instr, 0x2FFFFFFF);
+        ++run_count;
+    }
 
     return 0;
 }

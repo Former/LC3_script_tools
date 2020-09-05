@@ -13,7 +13,20 @@ set(src_files
     math/test1.c
     math/test2.c
     math/test3.c
+    math/test4.c
+    math/test_and.c
     )
+
+set(OPTIMIZE_COMPILE_OPTION -O0)
+
+function(BuildNative a_OutTargetName a_SourceName)
+    BuildNameFromPath(target_name ${a_SourceName}.native)
+
+    set(${a_OutTargetName} ${target_name} PARENT_SCOPE)
+    add_executable(${target_name} ${a_SourceName})
+
+    target_compile_options(${target_name} PRIVATE ${OPTIMIZE_COMPILE_OPTION} -Wall -g --std=c11)
+endfunction()
 
 foreach (cur_file ${src_files})
     BuildAsmFile(out_asm_file ${cur_file} ${LC3_TARGET_LCC_NAME} ${OUT_DIR}16) 
@@ -36,5 +49,8 @@ foreach (cur_file ${src_files})
 
     BuildObjFile(out_obj_file ${out_asm_file} ${cur_file} ${LC3AS64W} ${CORRECT64W_EXE} ${OUT_DIR}64W) 
     AddSpeedTest(${LC3SIM_CPP64W} ${out_obj_file} ${cur_file} "sim_cpp64w" ${DEFAULT_OUT} ${TYPE_OUT_STDOUT})
+
+    BuildNative(out_native_file ${cur_file})
+    AddSpeedTest("null" ${CMAKE_CURRENT_BINARY_DIR}/${out_native_file} ${cur_file} "nativeO0" ${DEFAULT_OUT} ${TYPE_OUT_NATIVE})
 endforeach()
 

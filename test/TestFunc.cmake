@@ -26,6 +26,7 @@ set(LC3_32_TARGET_LCC_NAME "lc3_32bit")
 set(DEFAULT_OUT ${CMAKE_CURRENT_SOURCE_DIR}/../default_out) 
 
 set(TYPE_OUT_STDOUT "stdout")
+set(TYPE_OUT_NATIVE "native")
 set(TYPE_OUT_FILE "file")
 
 function(BuildAsmFile a_OutAsmFile a_InputFile a_TargetName a_OutBuildDir)
@@ -95,9 +96,15 @@ function(BuildObjFile a_OutObjFile a_InputAsmFile a_InputFile a_AsmExe a_Correct
         COMMENT "Correct to ${obj_correct_file}"
     )
 
-    string(REPLACE "/" "_" input_name ${a_InputAsmFile})
+    BuildNameFromPath(input_name ${a_InputAsmFile})
     set(cur_target_name ${a_OutBuildDir}_${input_name})
     add_custom_target(${cur_target_name} ALL DEPENDS ${obj_correct_file})
+endfunction()
+
+function(BuildNameFromPath a_OutName a_Path)
+    string(REPLACE "/" "_" out_name ${a_Path})
+
+    set(${a_OutName} ${out_name} PARENT_SCOPE)
 endfunction()
 
 function(BuildObjFiles a_OutObjFileList a_InputFileList a_TargetName a_AsmExe a_CorrectExe a_OutBuildDir)
