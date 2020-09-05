@@ -15,6 +15,9 @@ set(src_files
     math/test3.c
     math/test4.c
     math/test_and.c
+    math/test_div.c
+    math/test_div1.c
+    math/test_summ.c
     )
 
 set(OPTIMIZE_COMPILE_OPTION -O0)
