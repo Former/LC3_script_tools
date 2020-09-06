@@ -51,12 +51,17 @@ class SimpleVM: public LC3_Sim::IVirtualMemory
 public:
     SimpleVM()
     {
-        m_Memory.resize(LC3_MAX_MEMORY_ADDRESS);
+        m_Memory = (LC3_Sim::RegType*)malloc(LC3_MAX_MEMORY_ADDRESS * sizeof(LC3_Sim::RegType));
+    }
+
+    ~SimpleVM()
+    {
+        free(m_Memory);
     }
     
     virtual LC3_Sim::IVirtualMemory::Result Read(LC3_Sim::RegType* a_Value, LC3_Sim::AddressType a_Address) const override
     {
-        if (a_Address > m_Memory.size())
+        if (a_Address >= LC3_MAX_MEMORY_ADDRESS)
             return rErrorAddressOutOfRange;
         
         *a_Value = m_Memory[a_Address];
@@ -65,14 +70,14 @@ public:
 
     virtual LC3_Sim::IVirtualMemory::Result Write(LC3_Sim::RegType a_Value, LC3_Sim::AddressType a_Address) override
     {
-        if (a_Address > m_Memory.size())
+        if (a_Address >= LC3_MAX_MEMORY_ADDRESS)
             return rErrorAddressOutOfRange;
         
         m_Memory[a_Address] = a_Value;
         return rSuccess;
     }
 private:
-    std::vector<LC3_Sim::RegType> m_Memory;
+    LC3_Sim::RegType* m_Memory;
 };
 
 int main(int argc, const char* argv[])
