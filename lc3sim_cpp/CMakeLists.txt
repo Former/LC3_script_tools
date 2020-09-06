@@ -38,9 +38,9 @@ set(SOURCES_LC3SIM_CPP
     lc3sim.cpp
     )
 
-function(SetOptionts a_TargetName a_Definitions)
+function(SetOptionts a_TargetName a_Definitions a_ExtraOptions)
     target_compile_definitions(${a_TargetName} PRIVATE ${a_Definitions})
-    target_compile_options(${a_TargetName} PRIVATE ${OPTIMIZE_COMPILE_OPTION} -Wall -g)
+    target_compile_options(${a_TargetName} PRIVATE ${OPTIMIZE_COMPILE_OPTION} -Wall ${a_ExtraOptions})
     set_target_properties(${a_TargetName} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${INSTALL_DIR}/")
 endfunction()
 
@@ -48,20 +48,26 @@ function(MakeSim a_TargetBaseName a_Definition)
     add_library(lib${a_TargetBaseName} STATIC 
         ${SOURCES_LC3SIM_CPP}
         )
-    SetOptionts(lib${a_TargetBaseName} ${a_Definition})
+    SetOptionts(lib${a_TargetBaseName} ${a_Definition} "-g")
 
     add_executable(${a_TargetBaseName} 
         main.cpp
         )
-    SetOptionts(${a_TargetBaseName} ${a_Definition})
+    SetOptionts(${a_TargetBaseName} ${a_Definition} "-g")
     target_link_libraries(${a_TargetBaseName} lib${a_TargetBaseName})
 
     add_executable(${a_TargetBaseName}trace 
         ${SOURCES_LC3SIM_CPP}
         main.cpp
         )
-    SetOptionts(${a_TargetBaseName}trace ${a_Definition})
+    SetOptionts(${a_TargetBaseName}trace ${a_Definition} "-g")
     target_compile_definitions(${a_TargetBaseName}trace PRIVATE ${a_Definition} TRACE)
+
+    add_executable(${a_TargetBaseName}prof 
+        ${SOURCES_LC3SIM_CPP}
+        main.cpp
+        )
+    SetOptionts(${a_TargetBaseName}prof ${a_Definition} "-pg")
 endfunction()
 
 MakeSim(lc3sim_cpp16 LC3_16BIT)
