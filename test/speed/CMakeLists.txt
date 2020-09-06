@@ -45,6 +45,6 @@ foreach (cur_file ${src_files})
     AddSpeedTest(${LC3SIM_CPP64W} ${out_obj_file} ${cur_file} "sim_cpp64w" ${DEFAULT_OUT} ${TYPE_OUT_STDOUT})
 
     BuildNative(out_native_file ${cur_file})
-    AddSpeedTest("null" ${CMAKE_CURRENT_BINARY_DIR}/${out_native_file} ${cur_file} "nativeO0" ${DEFAULT_OUT} ${TYPE_OUT_NATIVE})
+    AddSpeedTest("null" ${out_native_file} ${cur_file} "nativeO0" ${DEFAULT_OUT} ${TYPE_OUT_NATIVE})
 endforeach()
 

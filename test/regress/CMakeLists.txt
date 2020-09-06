@@ -123,6 +123,9 @@ foreach (cur_file ${src_32bit_file_list})
 
     BuildObjFile(out_file ${out_asm_file} ${cur_file} ${LC3AS64W} ${CORRECT64W_EXE} ${OUT_DIR}64W) 
     list(APPEND obj_64bit_wide_file_list ${out_file})
+
+    BuildNative(out_native_file ${cur_file})
+    list(APPEND native_file_list ${out_native_file})
 endforeach()
 
 # Known errors 16 bit: Errors when execute
@@ -215,5 +218,54 @@ foreach (index RANGE 0 ${obj_64bit_wide_file_count})
     list(FIND exclude_src_files_for_lc3sim_c32 ${cur_src_file} find_src_file)
     if (${find_src_file} EQUAL -1)
         AddRegressTest(${LC3SIM_CPP64W} ${cur_obj_file} ${cur_src_file} "sim_cpp64w" ${DEFAULT_OUT} ${TYPE_OUT_STDOUT})
+    endif()
+endforeach()
+
+
+# Known errors native: Errors when execute
+set(exclude_src_files_for_native
+    stackl_test/test3.c
+    stackl_test/test9.c # sizeof(short)
+    c-testsuite/single-exec/00184.c 
+    c-testsuite/single-exec/00212.c
+    lcc_regression/fig14_10.c # input and out in one stream
+    lcc_regression/fig14_11.c
+    lcc_regression/fig14_2.c
+    lcc_regression/fig15_3.c
+    lcc_regression/fig15_4.c
+    lcc_regression/fig16_10.c
+    lcc_regression/fig16_12.c
+    lcc_regression/fig16_13.c
+    lcc_regression/fig16_14.c
+    lcc_regression/fig16_6.c
+    lcc_regression/fig16_8.c
+    lcc_regression/fig16_9.c
+    lcc_regression/fig17_13.c
+    lcc_regression/fig17_18.c
+    lcc_regression/fig18_1.c
+    lcc_regression_32bit/fig14_2.c
+    lcc_regression_32bit/fig15_3.c
+    lcc_regression_32bit/fig15_4.c
+    lcc_regression_32bit/fig16_10.c
+    lcc_regression_32bit/fig16_12.c
+    lcc_regression_32bit/fig16_13.c
+    lcc_regression_32bit/fig16_14.c
+    lcc_regression_32bit/fig16_6.c
+    lcc_regression_32bit/fig16_8.c
+    lcc_regression_32bit/fig16_9.c
+    lcc_regression_32bit/fig17_13.c
+    lcc_regression_32bit/fig17_18.c
+    lcc_regression_32bit/sort.c
+    )
+
+list(LENGTH native_file_list native_file_count)
+math(EXPR native_file_count "${native_file_count} - 1")
+foreach (index RANGE 0 ${native_file_count})
+    list(GET native_file_list ${index} cur_obj_file)
+    list(GET src_32bit_file_list ${index} cur_src_file)
+
+    list(FIND exclude_src_files_for_native ${cur_src_file} find_src_file)
+    if (${find_src_file} EQUAL -1)
+        AddRegressTest("null" ${cur_obj_file} ${cur_src_file} "nativeO0" ${DEFAULT_OUT} ${TYPE_OUT_NATIVE})
     endif()
 endforeach()

@@ -144,7 +144,7 @@ set(OPTIMIZE_NATIVE_COMPILE_OPTION -O0)
 function(BuildNative a_OutTargetName a_SourceName)
     BuildNameFromPath(target_name ${a_SourceName}.native)
 
-    set(${a_OutTargetName} ${target_name} PARENT_SCOPE)
+    set(${a_OutTargetName} ${CMAKE_CURRENT_BINARY_DIR}/${target_name} PARENT_SCOPE)
     add_executable(${target_name} ${a_SourceName})
 
     target_compile_options(${target_name} PRIVATE ${OPTIMIZE_NATIVE_COMPILE_OPTION} -Wall -g --std=c11)
