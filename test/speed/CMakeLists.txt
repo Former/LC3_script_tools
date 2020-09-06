@@ -22,17 +22,6 @@ set(src_files
     math/test_xor.c
     )
 
-set(OPTIMIZE_COMPILE_OPTION -O0)
-
-function(BuildNative a_OutTargetName a_SourceName)
-    BuildNameFromPath(target_name ${a_SourceName}.native)
-
-    set(${a_OutTargetName} ${target_name} PARENT_SCOPE)
-    add_executable(${target_name} ${a_SourceName})
-
-    target_compile_options(${target_name} PRIVATE ${OPTIMIZE_COMPILE_OPTION} -Wall -g --std=c11)
-endfunction()
-
 foreach (cur_file ${src_files})
     BuildAsmFile(out_asm_file ${cur_file} ${LC3_TARGET_LCC_NAME} ${OUT_DIR}16) 
 

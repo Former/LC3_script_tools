@@ -138,3 +138,14 @@ endfunction()
 function(AddSpeedTest a_SimExe a_ObjFile a_SourceFile a_AppendForNameTempFiles a_DefaultOutFile a_TypeOut)
     AddTest(speed_test ${a_SimExe} ${a_ObjFile} ${a_SourceFile} ${a_AppendForNameTempFiles} ${a_DefaultOutFile} ${a_TypeOut})
 endfunction()
+
+set(OPTIMIZE_NATIVE_COMPILE_OPTION -O0)
+
+function(BuildNative a_OutTargetName a_SourceName)
+    BuildNameFromPath(target_name ${a_SourceName}.native)
+
+    set(${a_OutTargetName} ${target_name} PARENT_SCOPE)
+    add_executable(${target_name} ${a_SourceName})
+
+    target_compile_options(${target_name} PRIVATE ${OPTIMIZE_NATIVE_COMPILE_OPTION} -Wall -g --std=c11)
+endfunction()
