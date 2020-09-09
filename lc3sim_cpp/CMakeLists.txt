@@ -40,7 +40,8 @@ set(SOURCES_LC3SIM_CPP
 
 function(SetOptionts a_TargetName a_Definitions a_ExtraOptions)
     target_compile_definitions(${a_TargetName} PRIVATE ${a_Definitions})
-    target_compile_options(${a_TargetName} PRIVATE ${OPTIMIZE_COMPILE_OPTION} -Wall ${a_ExtraOptions})
+    target_compile_options(${a_TargetName} PRIVATE ${a_ExtraOptions} ${OPTIMIZE_COMPILE_OPTION} -Wall)
+    #target_link_options(${a_TargetName} PRIVATE ${a_ExtraOptions} ${OPTIMIZE_COMPILE_OPTION})
     set_target_properties(${a_TargetName} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${INSTALL_DIR}/")
 endfunction()
 
@@ -68,6 +69,7 @@ function(MakeSim a_TargetBaseName a_Definition)
         main.cpp
         )
     SetOptionts(${a_TargetBaseName}prof ${a_Definition} "-pg")
+    target_link_libraries(${a_TargetBaseName}prof INTERFACE "-pg")
 endfunction()
 
 MakeSim(lc3sim_cpp16 LC3_16BIT)
