@@ -191,6 +191,19 @@ void statement(int loop, Swtch swp, int lev) {
 		       	error("missing label in goto\n"); expect(';');
 					  break;
 
+	case ASM:   {  walk(NULL, 0, 0);
+		        definept(NULL);
+		        unsigned char* asm_code_start = cp;
+		        unsigned int code_size = 0;
+		        while(*(cp++) != "\n")
+		        {
+					++code_size;
+				}
+		       	asmcode(asm_code_start, code_size);
+		       	t = gettok();
+				}
+				break;
+
 	case ID:       if (getchr() == ':') {
 		       	stmtlabel();
 		       	statement(loop, swp, lev);
@@ -566,6 +579,17 @@ void definelab(int lab) {
 			cp = cp->prev;
 	}
 }
+
+void asmcode(const unsigned char* a_AsmCode, unsigned int a_AsmCodeSize) {
+	Symbol tsym;
+	tsym->u.c.v.p = stringn(a_AsmCode, a_AsmCodeSize);
+   	use(tsym, src);
+
+	code(Label)->u.forest = newnode(ASMCODE+V, NULL, NULL, tsym);
+	//for (cp = codelist->prev; cp->kind <= Label; )
+	//	cp = cp->prev;
+}
+
 Node jump(int lab) {
 	Symbol p = findlabel(lab);
 

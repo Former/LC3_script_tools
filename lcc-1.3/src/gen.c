@@ -68,7 +68,7 @@ static char NeedsReg[] = {
 	1, 1, 1, 1,             /* BAND BCOM BOR BXOR */
 	1, 1,                   /* DIV MUL */
 	0, 0, 0, 0, 0, 0,       /* EQ GE GT LE LT NE */
-	0, 0                   /* JUMP LABEL   */
+	0, 0, 0                 /* JUMP LABEL ASMCODE */
 };
 Node head;
 
@@ -283,7 +283,7 @@ void dumptree(Node p) {
 		if (p->kids[0])
 			dumptree(p->kids[0]);
 		break;
-	case CVF: case CVI: case CVP: case CVU: case JUMP:
+	case CVF: case CVI: case CVP: case CVU: case JUMP: case ASMCODE:
 	case ARG: case BCOM: case NEG: case INDIR:
 		dumptree(p->kids[0]);
 		break;

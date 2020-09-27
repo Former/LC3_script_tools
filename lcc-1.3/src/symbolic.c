@@ -306,7 +306,7 @@ static Node I(gen)(Node p) {
 			assert(IR->wants_dag || p->count == 0);
 			break;
 		case ARG:
-		case ASGN: case JUMP: case LABEL: case RET:
+		case ASGN: case JUMP: case ASMCODE: case LABEL: case RET:
 		case EQ: case GE: case GT: case LE: case LT: case NE:
 			assert(p->count == 0);
 			break;

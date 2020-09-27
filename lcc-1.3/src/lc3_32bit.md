@@ -262,6 +262,8 @@ typedef struct {
 
 %term LABELV=600
 
+%term ASMCODEV=712
+
 %term LOADB=233
 %term LOADI1=1253
 %term LOADP1=1255
@@ -672,6 +674,9 @@ static void clobber(Node p) {
 
 		case JUMP+V:
 			spill(1<<0, IREG, p); break;
+
+		case ASMCODE+V:
+			print(p->syms[0]->u.c.v.p); break;
 
 		case CALL+I: case CALL+P: case CALL+U:
 			spill(INTTMP,          IREG, p); break;

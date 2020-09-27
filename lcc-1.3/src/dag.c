@@ -203,6 +203,12 @@ Node listnodes(Tree tp, int tlab, int flab) {
 		      l = listnodes(tp->kids[0], 0, 0);
 		      list(newnode(JUMP+V, l, NULL, NULL));
 		      reset(); } break;
+	case ASMCODE: { assert(tlab == 0 && flab == 0);
+		      assert(tp->u.sym == 0);
+		      assert(tp->kids[0]);
+		      l = listnodes(tp->kids[0], 0, 0);
+		      list(newnode(ASMCODE+V, l, NULL, NULL));
+		      reset(); } break;
 	case CALL:  { Tree save = firstarg;
 		      firstarg = NULL;
 		      assert(tlab == 0 && flab == 0);

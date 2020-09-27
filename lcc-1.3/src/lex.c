@@ -708,6 +708,14 @@ int gettok(void) {
 				cp = rcp + 9;
 				return FIRSTARG;
 			}
+			if (rcp[0] == '_'
+			&&  rcp[1] == 'a'
+			&&  rcp[2] == 's'
+			&&  rcp[3] == 'm'
+			&& !(map[rcp[4]]&(DIGIT|LETTER))) {
+				cp = rcp + 4;
+				return ASM;
+			}
 			goto id;
 		default:
 			if ((map[cp[-1]]&BLANK) == 0)
