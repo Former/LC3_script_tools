@@ -191,14 +191,27 @@ void statement(int loop, Swtch swp, int lev) {
 		       	error("missing label in goto\n"); expect(';');
 					  break;
 
-	case ASM:   {  walk(NULL, 0, 0);
+	case ASM:   {
+				walk(NULL, 0, 0);
 		        definept(NULL);
-		        unsigned char* asm_code_start = cp;
 		        unsigned int code_size = 0;
-		        while(*(cp++) != "\n")
+		        while(*cp == ' ' || *cp == '\t')
+					++cp;
+		        unsigned char end_char = '\n';
+		        if (*cp == '{')
 		        {
-					++code_size;
+					end_char = '}';
+					++cp;
 				}
+		        unsigned char* asm_code_start = cp;
+
+				while(!(*cp == end_char || *cp == '\0'))
+				{
+					++code_size;
+					++cp;
+				}
+                if (*cp == end_char)
+                    ++cp;
 		       	asmcode(asm_code_start, code_size);
 		       	t = gettok();
 				}
@@ -580,14 +593,14 @@ void definelab(int lab) {
 	}
 }
 
+extern void list(Node p);
+
 void asmcode(const unsigned char* a_AsmCode, unsigned int a_AsmCodeSize) {
-	Symbol tsym;
+	Symbol tsym = temporary(REGISTER, voidptype);
 	tsym->u.c.v.p = stringn(a_AsmCode, a_AsmCodeSize);
    	use(tsym, src);
 
-	code(Label)->u.forest = newnode(ASMCODE+V, NULL, NULL, tsym);
-	//for (cp = codelist->prev; cp->kind <= Label; )
-	//	cp = cp->prev;
+    list(newnode(ASMCODE+V, NULL, NULL, tsym));
 }
 
 Node jump(int lab) {

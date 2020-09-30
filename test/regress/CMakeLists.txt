@@ -13,6 +13,7 @@ set(source_16bit_file_templates
     "stackl_test/*.c"
     "c-testsuite/single-exec/*.c"
     "lcc_regression/*.c"
+    "__asm_test/*.c"
     )
 
 set(source_32bit_file_templates
@@ -20,6 +21,7 @@ set(source_32bit_file_templates
     "c-testsuite/single-exec/*.c"
     "lcc_regression/*.c"
     "lcc_regression_32bit/*.c"
+    "__asm_test/*.c"
     )
 
 # Known errors: this files not compile
@@ -82,10 +84,23 @@ set(not_compile_src_files
 
 set(exclude_src_16bit_files
     ${not_compile_src_files}
+    __asm_test/test3.c # def16 fail
+    __asm_test/test7.c # def16 fail
     )
 
 set(exclude_src_32bit_files
     ${not_compile_src_files}
+    )
+
+set(exclude_src_native_files
+    ${not_compile_src_files}
+    __asm_test/test1.c
+    __asm_test/test2.c
+    __asm_test/test3.c
+    __asm_test/test4.c
+    __asm_test/test5.c
+    __asm_test/test6.c
+    __asm_test/test7.c
     )
 
 # Make source file list
@@ -100,8 +115,10 @@ foreach (cur_templete ${source_32bit_file_templates})
     file(GLOB cur_list RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${cur_templete}) 
 
     list(APPEND src_32bit_file_list ${cur_list})
+    list(APPEND src_native_file_list ${cur_list})
 endforeach()
 list(REMOVE_ITEM src_32bit_file_list ${exclude_src_32bit_files})
+list(REMOVE_ITEM src_native_file_list ${exclude_src_native_files})
 
 
 # Make obj file list
@@ -123,7 +140,9 @@ foreach (cur_file ${src_32bit_file_list})
 
     BuildObjFile(out_file ${out_asm_file} ${cur_file} ${LC3AS64W} ${CORRECT64W_EXE} ${OUT_DIR}64W) 
     list(APPEND obj_64bit_wide_file_list ${out_file})
+endforeach()
 
+foreach (cur_file ${src_native_file_list})
     BuildNative(out_native_file ${cur_file})
     list(APPEND native_file_list ${out_native_file})
 endforeach()
@@ -262,7 +281,7 @@ list(LENGTH native_file_list native_file_count)
 math(EXPR native_file_count "${native_file_count} - 1")
 foreach (index RANGE 0 ${native_file_count})
     list(GET native_file_list ${index} cur_obj_file)
-    list(GET src_32bit_file_list ${index} cur_src_file)
+    list(GET src_native_file_list ${index} cur_src_file)
 
     list(FIND exclude_src_files_for_native ${cur_src_file} find_src_file)
     if (${find_src_file} EQUAL -1)

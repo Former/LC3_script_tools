@@ -516,7 +516,7 @@ Node gen(Node forest) {
 		ralloc(p);
 		if (p->x.listed && NeedsReg[opindex(p->op)]
 		&& (*IR->x.rmap)(opkind(p->op))) {
-			assert(generic(p->op) == CALL || generic(p->op) == LOAD);
+			assert(generic(p->op) == CALL || generic(p->op) == LOAD || generic(p->op) == ASMCODE);
 			putreg(p->syms[RX]);
 		}
 	}

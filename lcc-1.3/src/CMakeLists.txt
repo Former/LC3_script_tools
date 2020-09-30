@@ -49,6 +49,10 @@ set(TOP_DIR "${CMAKE_CURRENT_SOURCE_DIR}/..")
 set(INSTALL_DIR "${CMAKE_BINARY_DIR}/bin")
 set(PATHSEP /)
 
+set(COMPILE_FLAG
+	-g
+	)
+
 add_library(librcc STATIC 
 	${SRCS}
 	)
@@ -80,10 +84,6 @@ foreach(GEN_FILE ${GEN_FILES})
 	add_custom_target(opcode_defs_${GEN_FILE} DEPENDS ${GEN_FILE_C})
 	add_dependencies(librcc opcode_defs_${GEN_FILE})
 endforeach()
-
-set(COMPILE_FLAG
-	-g
-	)
 
 add_executable(rcc
 	main.c

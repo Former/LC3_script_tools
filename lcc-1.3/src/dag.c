@@ -25,7 +25,7 @@ static struct dag *dagnode(int, Node, Node, Symbol);
 static Symbol equated(Symbol);
 static void fixup(Node);
 static void labelnode(int);
-static void list(Node);
+void list(Node);
 static void killnodes(Symbol);
 static Node node(int, Node, Node, Symbol);
 static void printdag1(Node, int, int);
@@ -383,7 +383,7 @@ Node listnodes(Tree tp, int tlab, int flab) {
 	tp->node = p;
 	return p;
 }
-static void list(Node p) {
+void list(Node p) {
 	if (p && p->link == NULL) {
 		if (forest) {
 			p->link = forest->link;

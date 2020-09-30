@@ -380,7 +380,8 @@ reg: CVIU1(reg)   "add %c, %0, #0\n"  move(a)
 reg: CVUI1(reg)   "add %c, %0, #0\n"  move(a)
 reg: CVUU1(reg)   "add %c, %0, #0\n"  move(a)
 
-stmt: LABELV	     "LC3_GFLAG %a LC3_GFLAG .FILL lc3_%a\nlc3_%a\n"
+stmt: LABELV         "LC3_GFLAG %a LC3_GFLAG .FILL lc3_%a\nlc3_%a\n"
+stmt: ASMCODEV       "# ASMCODE\n"
 jaddr: ADDRGP1	     "%a"
 stmt: JUMPV(jaddr)   ".LC3GLOBAL %0 0\nLDR R0, R0, #0\nJMP R0\n"  
 stmt: JUMPV(reg)     "LDR %0, %0, #0\nJMP %0 ;unconditional\n"  
@@ -675,9 +676,6 @@ static void clobber(Node p) {
 		case JUMP+V:
 			spill(1<<0, IREG, p); break;
 
-		case ASMCODE+V:
-			print(p->syms[0]->u.c.v.p); break;
-
 		case CALL+I: case CALL+P: case CALL+U:
 			spill(INTTMP,          IREG, p); break;
 
@@ -702,6 +700,11 @@ static void emit2(Node p) {
 	char* str;
 
 	switch (specific(p->op)) {
+        
+        case ASMCODE+V:
+			print(p->syms[0]->u.c.v.p);
+			print("\n");
+			break;
 
 /***********Handles Calls*********************************/
 		case CALL+U: case CALL+I:

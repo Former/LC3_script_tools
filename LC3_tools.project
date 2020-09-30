@@ -26,7 +26,7 @@
         <LibraryPath Value="Debug"/>
       </Linker>
       <ResourceCompiler Options="" Required="no"/>
-      <General OutputFile="" IntermediateDirectory="$(WorkspacePath)/build" Command="$(WorkspacePath)/cmake-build-Debug/$(ProjectName)/unittest_sim_cpp_32" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(WorkspacePath)/cmake-build-Debug/$(ProjectName)" PauseExecWhenProcTerminates="no" IsGUIProgram="no" IsEnabled="yes"/>
+      <General OutputFile="" IntermediateDirectory="$(WorkspacePath)/build" Command="$(WorkspacePath)/cmake-build-Debug/$(ProjectName)/bin/rcc" CommandArguments="-target=lc3 -target=lc3 lcc152240.i lcc63661.lcc" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(WorkspacePath)/cmake-build-Debug/$(ProjectName)/test/regress/build16/__asm_test" PauseExecWhenProcTerminates="no" IsGUIProgram="no" IsEnabled="yes"/>
       <BuildSystem Name="CMake"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[]]>
