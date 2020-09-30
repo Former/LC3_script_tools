@@ -42,10 +42,18 @@ public:
     };
 
     virtual ~IVirtualMemory();
-    
+
     virtual Result Read(RegType* a_Value, AddressType a_Address) const = 0;
 
     virtual Result Write(RegType a_Value, AddressType a_Address) = 0;
+};
+
+class IReservedOperation
+{
+public:
+    virtual ~IReservedOperation();
+
+    virtual void Operation(RegType a_RegValue, RegType a_Value) = 0;
 };
 
 // Регистры процессора.
@@ -114,7 +122,7 @@ private:
         Exception(Type a_Type, AddressType a_ExecuteAddress, AddressType a_AccessAddress);
     };
 public:
-    InstructionExecuter(Registers* a_Registers, IVirtualMemory* a_VirtualMemory, IInputOutput* a_InputOutput);
+    InstructionExecuter(Registers* a_Registers, IVirtualMemory* a_VirtualMemory, IInputOutput* a_InputOutput, IReservedOperation* a_ReservedOperation);
 
     Exception ExecuteOneInstruction(RegType a_Instruction);
 
@@ -122,6 +130,7 @@ private:
     Registers*      m_Registers;
     IVirtualMemory* m_VirtualMemory;
     IInputOutput*   m_InputOutput;
+    IReservedOperation* m_ReservedOperation;
 };
 
 // Процессор исполняет серию инструкций, обрабатывает исключения
@@ -136,7 +145,7 @@ public:
         lrWriteError,
     };
     
-    Processor(Registers* a_Registers, IVirtualMemory* a_VirtualMemory, IInputOutput* a_InputOutput, ProcessorConfig* a_ProcessorConfig);
+    Processor(Registers* a_Registers, IVirtualMemory* a_VirtualMemory, IInputOutput* a_InputOutput, IReservedOperation* a_ReservedOperation, ProcessorConfig* a_ProcessorConfig);
     
     Bool Run(InstructionIndex* a_ExecutedInsructionsCount, InstructionIndex a_MaxExecuteInsructCount);
 
@@ -148,6 +157,7 @@ private:
     Registers*       m_Registers;
     IVirtualMemory*  m_VirtualMemory;
     IInputOutput*    m_InputOutput;
+    IReservedOperation* m_ReservedOperation;
     ProcessorConfig* m_ProcessorConfig;
     InstructionExecuter m_Executer;
 };

@@ -13,9 +13,10 @@ protected:
     {
         m_SimpleIO  = new TestIO;
         m_SimpleVM  = new TestVM;
+        m_SimpleOP  = new TestOp;
         m_Reg       = new LC3_Sim::Registers;
         m_Config    = new LC3_Sim::ProcessorConfig(START_EXCEPTION_HANDLER, INFO_EXCEPTION_HANDLER, 0xFFF);
-        m_Proc      = new LC3_Sim::Processor(m_Reg, m_SimpleVM, m_SimpleIO, m_Config);
+        m_Proc      = new LC3_Sim::Processor(m_Reg, m_SimpleVM, m_SimpleIO, m_SimpleOP, m_Config);
     }
 
     void TearDown()
@@ -23,6 +24,7 @@ protected:
         delete m_Proc;
         delete m_SimpleIO;
         delete m_SimpleVM;
+        delete m_SimpleOP;
         delete m_Reg;
         delete m_Config;
     }
@@ -47,6 +49,7 @@ protected:
 
     TestIO* m_SimpleIO;
     TestVM* m_SimpleVM;
+    TestOp* m_SimpleOP;
     LC3_Sim::Registers* m_Reg;
 
     LC3_Sim::ProcessorConfig* m_Config;
@@ -56,11 +59,14 @@ protected:
 #define LOCAL_VAR_COPY \
     /*TestIO io = *m_SimpleIO;*/ \
     TestVM vm = *m_SimpleVM; \
+    TestOp op = *m_SimpleOP; \
     LC3_Sim::Registers reg = *m_Reg; \
     LC3_Sim::ProcessorConfig config = *m_Config;
 
 #define CHECK_LOCAL_VAR \
     /*EXPECT_EQ(io == *m_SimpleIO, true);*/ \
+    EXPECT_EQ(m_SimpleOP->m_RegValue, op.m_RegValue); \
+    EXPECT_EQ(m_SimpleOP->m_Value, op.m_Value); \
     EXPECT_EQ(m_SimpleVM->m_Memory, vm.m_Memory); \
     EXPECT_EQ(m_Reg->m_Reg[LC3_Sim::Registers::rnReg_0], reg.m_Reg[LC3_Sim::Registers::rnReg_0]); \
     EXPECT_EQ(m_Reg->m_Reg[LC3_Sim::Registers::rnReg_1], reg.m_Reg[LC3_Sim::Registers::rnReg_1]); \

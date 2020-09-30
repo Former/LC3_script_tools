@@ -25,6 +25,10 @@ LC3_Sim::IVirtualMemory::~IVirtualMemory()
 {
 }
 
+LC3_Sim::IReservedOperation::~IReservedOperation()
+{
+}
+
 LC3_Sim::ProcessorConfig::ProcessorConfig(AddressType a_ExceptionHandlerAddress, AddressType a_ExceptionInfoAddress, AddressType a_ExceptionMask)
     :m_ExceptionHandlerAddress(a_ExceptionHandlerAddress),
     m_ExceptionInfoAddress(a_ExceptionInfoAddress),
@@ -58,8 +62,8 @@ LC3_Sim::Registers::Registers()
     m_Reg[rnReg_PC] = 0UL;
     m_Reg[rnReg_NumCC] = 0UL;
 }
-LC3_Sim::InstructionExecuter::InstructionExecuter(Registers* a_Registers, IVirtualMemory* a_VirtualMemory, IInputOutput* a_InputOutput)
-    :m_Registers(a_Registers),m_VirtualMemory(a_VirtualMemory),m_InputOutput(a_InputOutput)
+LC3_Sim::InstructionExecuter::InstructionExecuter(Registers* a_Registers, IVirtualMemory* a_VirtualMemory, IInputOutput* a_InputOutput, IReservedOperation* a_ReservedOperation)
+    :m_Registers(a_Registers),m_VirtualMemory(a_VirtualMemory),m_InputOutput(a_InputOutput), m_ReservedOperation(a_ReservedOperation)
 {
 }
 
@@ -292,7 +296,8 @@ LC3_Sim::InstructionExecuter::Exception LC3_Sim::InstructionExecuter::ExecuteOne
             break;
         }
         CASE(RES)
-            return EXCEPTION(etNotImplemented);
+            m_ReservedOperation->Operation(REG_WITH_NUM1(a_Instruction), INT_AFTER_NUM1(a_Instruction));
+            break;
         CASE(LEA)
         {
             REG_WITH_NUM1(a_Instruction) = REG(LC3_Sim::Registers::rnReg_PC) + INT_AFTER_NUM1(a_Instruction);
@@ -328,12 +333,13 @@ LC3_Sim::InstructionExecuter::Exception LC3_Sim::InstructionExecuter::ExecuteOne
     return EXCEPTION(etSuccess);
 }
 
-LC3_Sim::Processor::Processor(Registers* a_Registers, IVirtualMemory* a_VirtualMemory, IInputOutput* a_InputOutput, ProcessorConfig* a_ProcessorConfig)
+LC3_Sim::Processor::Processor(Registers* a_Registers, IVirtualMemory* a_VirtualMemory, IInputOutput* a_InputOutput, IReservedOperation* a_ReservedOperation, ProcessorConfig* a_ProcessorConfig)
     :m_Registers(a_Registers), 
     m_VirtualMemory(a_VirtualMemory), 
     m_InputOutput(a_InputOutput), 
+    m_ReservedOperation(a_ReservedOperation),
     m_ProcessorConfig(a_ProcessorConfig),
-    m_Executer(m_Registers, m_VirtualMemory, m_InputOutput)
+    m_Executer(m_Registers, m_VirtualMemory, m_InputOutput, m_ReservedOperation)
 {
 }
 

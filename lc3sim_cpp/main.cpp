@@ -80,6 +80,15 @@ private:
     LC3_Sim::RegType* m_Memory;
 };
 
+class SimpleOp: public LC3_Sim::IReservedOperation
+{
+public:
+    virtual void Operation(LC3_Sim::RegType a_RegValue, LC3_Sim::RegType a_Value) override
+    {
+        printf("ReservedOperation reg = %ld val = %ld\n", (long int)a_RegValue, (long int)a_Value);
+    }
+};
+
 int main(int argc, const char* argv[])
 {
     if (argc != 2)
@@ -90,10 +99,11 @@ int main(int argc, const char* argv[])
     
     SimpleIO simpleio;
     SimpleVM simplevm;
+    SimpleOp simpleop;
     LC3_Sim::Registers reg;
 
     LC3_Sim::ProcessorConfig config(0, 0xfffe, 0);
-    LC3_Sim::Processor proc(&reg, &simplevm, &simpleio, &config);
+    LC3_Sim::Processor proc(&reg, &simplevm, &simpleio, &simpleop, &config);
     
     LC3_Sim::Processor::LoadResult res = proc.LoadData(lc3os_bin_data, lc3os_bin_data_len);
     

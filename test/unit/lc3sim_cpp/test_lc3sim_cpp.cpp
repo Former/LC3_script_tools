@@ -6,23 +6,26 @@ TEST(LC3SIM_CPP, Create_Destroy)
 {
     TestIO simpleio;
     TestVM simplevm;
+    TestOp simpleop;
+
     LC3_Sim::Registers reg;
 
     LC3_Sim::ProcessorConfig config(0, 0xfffe, 0);
-    LC3_Sim::Processor proc(&reg, &simplevm, &simpleio, &config);
+    LC3_Sim::Processor proc(&reg, &simplevm, &simpleio, &simpleop, &config);
 }
 
 TEST(LC3SIM_CPP, LoadOS)
 {
     TestIO simpleio;
     TestVM simplevm;
+    TestOp simpleop;
     LC3_Sim::Registers reg;
 
     LC3_Sim::ProcessorConfig config(0, 0xfffe, 0);
-    LC3_Sim::Processor proc(&reg, &simplevm, &simpleio, &config);
+    LC3_Sim::Processor proc(&reg, &simplevm, &simpleio, &simpleop, &config);
 
     LC3_Sim::Processor::LoadResult res = proc.LoadData(lc3os_bin_data, lc3os_bin_data_len);
-    
+
     EXPECT_EQ(res, LC3_Sim::Processor::lrSuccess);
 }
 
@@ -35,15 +38,16 @@ TEST(LC3SIM_CPP, LoadOS)
 TEST(LC3SIM_CPP, LoadDataNopOn0)
 {
     LC3_Sim::RegType data[] = {0u, 0u, 0xFFu, BIG_DATA};
-    
+
     ARRAY_SWAP(data);
 
     TestIO simpleio;
     TestVM simplevm;
+    TestOp simpleop;
     LC3_Sim::Registers reg;
 
     LC3_Sim::ProcessorConfig config(0, 0xfffe, 0);
-    LC3_Sim::Processor proc(&reg, &simplevm, &simpleio, &config);
+    LC3_Sim::Processor proc(&reg, &simplevm, &simpleio, &simpleop, &config);
 
     LC3_Sim::Processor::LoadResult res = proc.LoadData((uint8_t*)data, sizeof(data));
 
@@ -67,10 +71,11 @@ TEST(LC3SIM_CPP, LoadDataNopOn100)
 
     TestIO simpleio;
     TestVM simplevm;
+    TestOp simpleop;
     LC3_Sim::Registers reg;
 
     LC3_Sim::ProcessorConfig config(0, 0xfffe, 0);
-    LC3_Sim::Processor proc(&reg, &simplevm, &simpleio, &config);
+    LC3_Sim::Processor proc(&reg, &simplevm, &simpleio, &simpleop, &config);
 
     LC3_Sim::Processor::LoadResult res = proc.LoadData((uint8_t*)data, sizeof(data));
 
@@ -94,10 +99,11 @@ TEST(LC3SIM_CPP, RunNopOn0)
 
     TestIO simpleio;
     TestVM simplevm;
+    TestOp simpleop;
     LC3_Sim::Registers reg;
 
     LC3_Sim::ProcessorConfig config(0, 0xfffe, 0);
-    LC3_Sim::Processor proc(&reg, &simplevm, &simpleio, &config);
+    LC3_Sim::Processor proc(&reg, &simplevm, &simpleio, &simpleop, &config);
 
     LC3_Sim::Processor::LoadResult res = proc.LoadData((uint8_t*)data, sizeof(data));
 
@@ -116,10 +122,11 @@ TEST(LC3SIM_CPP, RunNopOn100)
 
     TestIO simpleio;
     TestVM simplevm;
+    TestOp simpleop;
     LC3_Sim::Registers reg;
 
     LC3_Sim::ProcessorConfig config(0, 0xfffe, 0);
-    LC3_Sim::Processor proc(&reg, &simplevm, &simpleio, &config);
+    LC3_Sim::Processor proc(&reg, &simplevm, &simpleio, &simpleop, &config);
 
     LC3_Sim::Processor::LoadResult res = proc.LoadData((uint8_t*)data, sizeof(data));
 
