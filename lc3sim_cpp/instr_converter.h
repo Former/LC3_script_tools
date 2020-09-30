@@ -13,6 +13,7 @@
                 (LC3_OPER_CODE(instr, instr_bc, op_bc) == OPCODE_ST) || \
                 (LC3_OPER_CODE(instr, instr_bc, op_bc) == OPCODE_LDI) || \
                 (LC3_OPER_CODE(instr, instr_bc, op_bc) == OPCODE_STI) || \
+                (LC3_OPER_CODE(instr, instr_bc, op_bc) == OPCODE_RES) || \
                 (LC3_OPER_CODE(instr, instr_bc, op_bc) == OPCODE_LEA) \
             )
 
@@ -76,7 +77,6 @@
 #define LC3_CHECK_OPCODE_T(instr, instr_bc, op_bc) \
             ( \
                 (LC3_OPER_CODE(instr, instr_bc, op_bc) == OPCODE_RTI) || \
-                (LC3_OPER_CODE(instr, instr_bc, op_bc) == OPCODE_RES) || \
                 (LC3_OPER_CODE(instr, instr_bc, op_bc) == OPCODE_TRAP) \
             )
 

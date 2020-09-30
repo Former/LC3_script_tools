@@ -159,7 +159,7 @@
 #define LC3_MAKE_INSTR_RTI(val, instr_bc, op_bc)                                    /* RTI(val); */ \
     LC3_MAKE_INSTR_T(OPCODE_RTI, val, instr_bc, op_bc)
 
-#define LC3_MAKE_INSTR_RES(val, instr_bc, op_bc)                                    /* RES(val); */ \
-    LC3_MAKE_INSTR_T(OPCODE_RES, val, instr_bc, op_bc)
+#define LC3_MAKE_INSTR_RES(reg_num1, int_val, instr_bc, op_bc, rn_bc)               /* RES(reg[reg_num1], int_val); */ \
+    LC3_MAKE_INSTR_RI(OPCODE_RES, reg_num1, int_val, instr_bc, op_bc, rn_bc)
 
 
