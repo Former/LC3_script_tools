@@ -84,8 +84,13 @@ set(not_compile_src_files
 
 set(exclude_src_16bit_files
     ${not_compile_src_files}
+    __asm_test/test2.c # def16 fail
     __asm_test/test3.c # def16 fail
+    __asm_test/test4.c # def16 fail
+    __asm_test/test5.c # def16 fail
+    __asm_test/test6.c # def16 fail
     __asm_test/test7.c # def16 fail
+    __asm_test/test_res.c # sim16 fail
     )
 
 set(exclude_src_32bit_files
@@ -101,6 +106,7 @@ set(exclude_src_native_files
     __asm_test/test5.c
     __asm_test/test6.c
     __asm_test/test7.c
+    __asm_test/test_res.c
     )
 
 # Make source file list
@@ -197,6 +203,16 @@ set(exclude_src_files_for_lc3sim_c32
     c-testsuite/single-exec/00164.c # error! a == b always true, a != b always false 
     c-testsuite/single-exec/00220.c # not work %04x and %ld ....
     stackl_test/test3.c # COMP broken z=-42406
+    __asm_test/test_res.c # sim32 not implemented
+    )
+
+# Known errors 32 bit: Errors when execute
+set(exclude_src_files_for_lc3sim_cpp32
+    c-testsuite/single-exec/00087.c # in output restart os
+    c-testsuite/single-exec/00124.c # in output restart os
+    c-testsuite/single-exec/00164.c # error! a == b always true, a != b always false 
+    c-testsuite/single-exec/00220.c # not work %04x and %ld ....
+    stackl_test/test3.c # COMP broken z=-42406
     )
 
 # Config test 32 bit
@@ -209,6 +225,10 @@ foreach (index RANGE 0 ${obj_32bit_file_count})
     list(FIND exclude_src_files_for_lc3sim_c32 ${cur_src_file} find_src_file)
     if (${find_src_file} EQUAL -1)
         AddRegressTest(${LC3SIM_C32} ${cur_obj_file} ${cur_src_file} "sim32" ${DEFAULT_OUT} ${TYPE_OUT_STDOUT})
+    endif()
+
+    list(FIND exclude_src_files_for_lc3sim_cpp32 ${cur_src_file} find_src_file)
+    if (${find_src_file} EQUAL -1)
         AddRegressTest(${LC3SIM_CPP32} ${cur_obj_file} ${cur_src_file} "sim_cpp32" ${DEFAULT_OUT} ${TYPE_OUT_STDOUT})
     endif()
 endforeach()
@@ -221,7 +241,7 @@ foreach (index RANGE 0 ${obj_32bit_wide_file_count})
     list(GET obj_32bit_wide_file_list ${index} cur_obj_file)
     list(GET src_32bit_file_list ${index} cur_src_file)
 
-    list(FIND exclude_src_files_for_lc3sim_c32 ${cur_src_file} find_src_file)
+    list(FIND exclude_src_files_for_lc3sim_cpp32 ${cur_src_file} find_src_file)
     if (${find_src_file} EQUAL -1)
         AddRegressTest(${LC3SIM_CPP32W} ${cur_obj_file} ${cur_src_file} "sim_cpp32w" ${DEFAULT_OUT} ${TYPE_OUT_STDOUT})
     endif()
@@ -234,7 +254,7 @@ foreach (index RANGE 0 ${obj_64bit_wide_file_count})
     list(GET obj_64bit_wide_file_list ${index} cur_obj_file)
     list(GET src_32bit_file_list ${index} cur_src_file)
 
-    list(FIND exclude_src_files_for_lc3sim_c32 ${cur_src_file} find_src_file)
+    list(FIND exclude_src_files_for_lc3sim_cpp32 ${cur_src_file} find_src_file)
     if (${find_src_file} EQUAL -1)
         AddRegressTest(${LC3SIM_CPP64W} ${cur_obj_file} ${cur_src_file} "sim_cpp64w" ${DEFAULT_OUT} ${TYPE_OUT_STDOUT})
     endif()

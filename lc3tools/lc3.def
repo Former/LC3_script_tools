@@ -157,7 +157,11 @@ DEF_INST (LEA, FMT_RL, 0xF000, 0xE000, FLG_NONE, {
     REG (I_DR) = (REG (R_PC) + I_imm9) & 0xFFFF;
     SET_CC ();
 });
-
+/*
+DEF_INST (RES, FMT_RL, 0xF000, 0xD000, FLG_NONE, {
+    printf("ReservedOperation reg = %d val = %d\n", REG (I_DR), I_imm9);
+});
+*/
 DEF_INST (NOT, FMT_RR, 0xF03F, 0x903F, FLG_NONE, {
     REG (I_DR) = (REG (I_SR1) ^ 0xFFFF);
     SET_CC ();
