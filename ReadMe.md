@@ -58,8 +58,6 @@ Run `lcc` compile:
 
 `lcc` generate `script.asm` and `script.obj` files
 
-;
-
 ### Run script file
 
 Script file `script.obj` file can load with function ```LC3_Sim::Processor::LoadObjFile```, see example:
