@@ -39,7 +39,8 @@ set(SRCS
 	dagcheck.c
 	lc3.c
 	lc3_32bit.c
-	#lc3dtu.c
+	lc3dtu.c
+	lc3dtu_32bit.c
 	#sparc.c
 	#x86.c
 	#x86linux.c
@@ -62,7 +63,8 @@ set(GEN_FILES
 	dagcheck
 	lc3
 	lc3_32bit
-	#lc3dtu
+	lc3dtu
+	lc3dtu_32bit
 	#sparc
 	#x86
 	#x86linux
