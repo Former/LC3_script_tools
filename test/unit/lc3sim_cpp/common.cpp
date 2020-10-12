@@ -53,12 +53,14 @@ LC3_Sim::IVirtualMemory::Result TestVM::Write(LC3_Sim::RegType a_Value, LC3_Sim:
 
 TestOp::TestOp()
 {
-    m_RegValue = 0;
+    m_RegValue1 = 0;
+    m_RegValue2 = 0;
     m_Value = 0;
 }
 
-void TestOp::Operation(LC3_Sim::RegType a_RegValue, LC3_Sim::RegType a_Value)
+void TestOp::Operation(LC3_Sim::RegType a_RegValue1, LC3_Sim::RegType a_RegValue2, LC3_Sim::RegType a_Value)
 {
-    m_RegValue = a_RegValue;
+    m_RegValue1 = a_RegValue1;
+    m_RegValue2 = a_RegValue2;
     m_Value = a_Value;
 }

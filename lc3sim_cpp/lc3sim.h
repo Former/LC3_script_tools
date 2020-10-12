@@ -48,12 +48,12 @@ public:
     virtual Result Write(RegType a_Value, AddressType a_Address) = 0;
 };
 
-class IReservedOperation
+class I_RTI_Operation
 {
 public:
-    virtual ~IReservedOperation();
+    virtual ~I_RTI_Operation();
 
-    virtual void Operation(RegType a_RegValue, RegType a_Value) = 0;
+    virtual void Operation(RegType a_RegValue1, RegType a_RegValue2, RegType a_Value) = 0;
 };
 
 // Регистры процессора.
@@ -122,7 +122,7 @@ private:
         Exception(Type a_Type, AddressType a_ExecuteAddress, AddressType a_AccessAddress);
     };
 public:
-    InstructionExecuter(Registers* a_Registers, IVirtualMemory* a_VirtualMemory, IInputOutput* a_InputOutput, IReservedOperation* a_ReservedOperation);
+    InstructionExecuter(Registers* a_Registers, IVirtualMemory* a_VirtualMemory, IInputOutput* a_InputOutput, I_RTI_Operation* a_RTI_Operation);
 
     Exception ExecuteOneInstruction(RegType a_Instruction);
 
@@ -130,7 +130,7 @@ private:
     Registers*      m_Registers;
     IVirtualMemory* m_VirtualMemory;
     IInputOutput*   m_InputOutput;
-    IReservedOperation* m_ReservedOperation;
+    I_RTI_Operation* m_RTI_Operation;
 };
 
 // Процессор исполняет серию инструкций, обрабатывает исключения
@@ -145,7 +145,7 @@ public:
         lrWriteError,
     };
     
-    Processor(Registers* a_Registers, IVirtualMemory* a_VirtualMemory, IInputOutput* a_InputOutput, IReservedOperation* a_ReservedOperation, ProcessorConfig* a_ProcessorConfig);
+    Processor(Registers* a_Registers, IVirtualMemory* a_VirtualMemory, IInputOutput* a_InputOutput, I_RTI_Operation* a_RTI_Operation, ProcessorConfig* a_ProcessorConfig);
     
     Bool Run(InstructionIndex* a_ExecutedInsructionsCount, InstructionIndex a_MaxExecuteInsructCount);
 
@@ -157,7 +157,7 @@ private:
     Registers*       m_Registers;
     IVirtualMemory*  m_VirtualMemory;
     IInputOutput*    m_InputOutput;
-    IReservedOperation* m_ReservedOperation;
+    I_RTI_Operation* m_RTI_Operation;
     ProcessorConfig* m_ProcessorConfig;
     InstructionExecuter m_Executer;
 };

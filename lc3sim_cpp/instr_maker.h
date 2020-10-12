@@ -156,8 +156,8 @@
 #define LC3_MAKE_INSTR_TRAP(trap_val, instr_bc, op_bc)                              /* trap(trap_val); */ \
     LC3_MAKE_INSTR_T(OPCODE_TRAP, trap_val, instr_bc, op_bc)
 
-#define LC3_MAKE_INSTR_RTI(val, instr_bc, op_bc)                                    /* RTI(val); */ \
-    LC3_MAKE_INSTR_T(OPCODE_RTI, val, instr_bc, op_bc)
+#define LC3_MAKE_INSTR_RTI(reg_num1, reg_num2, int_val, instr_bc, op_bc, rn_bc)     /* RTI(reg[reg_num1], reg[reg_num2], int_val); */ \
+    LC3_MAKE_INSTR_RRI(OPCODE_RTI, reg_num1, reg_num2, int_val, instr_bc, op_bc, rn_bc)
 
 #define LC3_MAKE_INSTR_RES(reg_num1, int_val, instr_bc, op_bc, rn_bc)               /* RES(reg[reg_num1], int_val); */ \
     LC3_MAKE_INSTR_RI(OPCODE_RES, reg_num1, int_val, instr_bc, op_bc, rn_bc)

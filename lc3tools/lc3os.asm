@@ -688,9 +688,9 @@ BAD_TRAP
 
 	; interrupts aren't really defined, since privilege doesn't
 	; quite work
-INT_PRIV	RTI
-INT_ILL		RTI
-BAD_INT		RTI
+INT_PRIV	RTI R0,R0,#0
+INT_ILL		RTI R0,R0,#0
+BAD_INT		RTI R0,R0,#0
 
 TRAP_IN_MSG	.STRINGZ "\nInput a character> "
 TRAP_HALT_MSG	.STRINGZ "\n\n--- halting the LC-3 ---\n\n"

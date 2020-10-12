@@ -90,7 +90,7 @@ set(exclude_src_16bit_files
     __asm_test/test5.c # def16 fail
     __asm_test/test6.c # def16 fail
     __asm_test/test7.c # def16 fail
-    __asm_test/test_res.c # sim16 fail
+    __asm_test/test_rti.c # sim16 fail
     )
 
 set(exclude_src_32bit_files
@@ -106,7 +106,7 @@ set(exclude_src_native_files
     __asm_test/test5.c
     __asm_test/test6.c
     __asm_test/test7.c
-    __asm_test/test_res.c
+    __asm_test/test_rti.c
     )
 
 # Make source file list
@@ -203,7 +203,7 @@ set(exclude_src_files_for_lc3sim_c32
     c-testsuite/single-exec/00164.c # error! a == b always true, a != b always false 
     c-testsuite/single-exec/00220.c # not work %04x and %ld ....
     stackl_test/test3.c # COMP broken z=-42406
-    __asm_test/test_res.c # sim32 not implemented
+    __asm_test/test_rti.c # sim32 not implemented
     )
 
 # Known errors 32 bit: Errors when execute

@@ -65,7 +65,8 @@ protected:
 
 #define CHECK_LOCAL_VAR \
     /*EXPECT_EQ(io == *m_SimpleIO, true);*/ \
-    EXPECT_EQ(m_SimpleOP->m_RegValue, op.m_RegValue); \
+    EXPECT_EQ(m_SimpleOP->m_RegValue1, op.m_RegValue1); \
+    EXPECT_EQ(m_SimpleOP->m_RegValue2, op.m_RegValue2); \
     EXPECT_EQ(m_SimpleOP->m_Value, op.m_Value); \
     EXPECT_EQ(m_SimpleVM->m_Memory, vm.m_Memory); \
     EXPECT_EQ(m_Reg->m_Reg[LC3_Sim::Registers::rnReg_0], reg.m_Reg[LC3_Sim::Registers::rnReg_0]); \
@@ -719,13 +720,14 @@ TEST_F(TestInstrMaker, Test_EXCEPTION_HANDLER_mask)
     CHECK_LOCAL_VAR
 }
 
-TEST_F(TestInstrMaker, TestRES1)
+TEST_F(TestInstrMaker, TestRTI1)
 {
     LC3_Sim::RegType data[] =
     {
         START_ADDRESS,
         MAKE_INSTR_ADD_I(0, 0, 10), // reg[0] = reg[0] + 10; // 10
-        MAKE_INSTR_RES(0, 3), // RES(reg[0] = 10, 3);
+        MAKE_INSTR_ADD_I(1, 1, 11), // reg[0] = reg[0] + 10; // 11
+        MAKE_INSTR_RTI(0, 1, 3), // RTI(reg[0] = 10, reg[1] = 11, 3);
         MAKE_INSTR_NOP,
     };
 
@@ -737,21 +739,24 @@ TEST_F(TestInstrMaker, TestRES1)
     Run(instr);
 
     reg.m_Reg[LC3_Sim::Registers::rnReg_0] = 10;
-    op.m_RegValue = 10;
+    reg.m_Reg[LC3_Sim::Registers::rnReg_1] = 11;
+    op.m_RegValue1 = 10;
+    op.m_RegValue2 = 11;
     op.m_Value = 3;
     reg.m_Reg[LC3_Sim::Registers::rnReg_PC] += instr;
-    reg.m_Reg[LC3_Sim::Registers::rnReg_NumCC] = 0;
+    reg.m_Reg[LC3_Sim::Registers::rnReg_NumCC] = 1;
 
     CHECK_LOCAL_VAR
 }
 
-TEST_F(TestInstrMaker, TestRES2)
+TEST_F(TestInstrMaker, TestRTI2)
 {
     LC3_Sim::RegType data[] =
     {
         START_ADDRESS,
         MAKE_INSTR_ADD_I(0, 0, 0), // reg[0] = reg[0] + 0; // 0
-        MAKE_INSTR_RES(0, -35), // RES(reg[0] = 0, -35);
+        MAKE_INSTR_ADD_I(1, 1, 0), // reg[1] = reg[1] + 0; // 0
+        MAKE_INSTR_RTI(0, 1, -15), // RTI(reg[0] = 0, reg[1] = 0, -15);
         MAKE_INSTR_NOP,
     };
 
@@ -763,21 +768,24 @@ TEST_F(TestInstrMaker, TestRES2)
     Run(instr);
 
     reg.m_Reg[LC3_Sim::Registers::rnReg_0] = 0;
-    op.m_RegValue = 0;
-    op.m_Value = -35;
+    reg.m_Reg[LC3_Sim::Registers::rnReg_1] = 0;
+    op.m_RegValue1 = 0;
+    op.m_RegValue2 = 0;
+    op.m_Value = -15;
     reg.m_Reg[LC3_Sim::Registers::rnReg_PC] += instr;
-    reg.m_Reg[LC3_Sim::Registers::rnReg_NumCC] = 0;
+    reg.m_Reg[LC3_Sim::Registers::rnReg_NumCC] = 1;
 
     CHECK_LOCAL_VAR
 }
 
-TEST_F(TestInstrMaker, TestRES3)
+TEST_F(TestInstrMaker, TestRTI3)
 {
     LC3_Sim::RegType data[] =
     {
         START_ADDRESS,
         MAKE_INSTR_ADD_I(0, 0, -15), // reg[0] = reg[0] - 15; // -15
-        MAKE_INSTR_RES(0, 0), // RES(reg[0] = -15, 0);
+        MAKE_INSTR_ADD_I(1, 1, -7), // reg[1] = reg[1] - 7; // -7
+        MAKE_INSTR_RTI(0, 1, 0), // RTI(reg[0] = -15, reg[1] = -7, 0);
         MAKE_INSTR_NOP,
     };
 
@@ -789,10 +797,13 @@ TEST_F(TestInstrMaker, TestRES3)
     Run(instr);
 
     reg.m_Reg[LC3_Sim::Registers::rnReg_0] = -15;
-    op.m_RegValue = -15;
+    reg.m_Reg[LC3_Sim::Registers::rnReg_1] = -7;
+    op.m_RegValue1 = -15;
+    op.m_RegValue2 = -7;
     op.m_Value = 0;
     reg.m_Reg[LC3_Sim::Registers::rnReg_PC] += instr;
-    reg.m_Reg[LC3_Sim::Registers::rnReg_NumCC] = 0;
+    reg.m_Reg[LC3_Sim::Registers::rnReg_NumCC] = 1;
 
     CHECK_LOCAL_VAR
 }
+

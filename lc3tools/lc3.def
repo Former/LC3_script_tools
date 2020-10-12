@@ -157,20 +157,16 @@ DEF_INST (LEA, FMT_RL, 0xF000, 0xE000, FLG_NONE, {
     REG (I_DR) = (REG (R_PC) + I_imm9) & 0xFFFF;
     SET_CC ();
 });
-/*
-DEF_INST (RES, FMT_RL, 0xF000, 0xD000, FLG_NONE, {
-    printf("ReservedOperation reg = %d val = %d\n", REG (I_DR), I_imm9);
-});
-*/
+
 DEF_INST (NOT, FMT_RR, 0xF03F, 0x903F, FLG_NONE, {
     REG (I_DR) = (REG (I_SR1) ^ 0xFFFF);
     SET_CC ();
 }); 
 
 /* RTI */
-DEF_P_OP (RTI, FMT_, 0xFFFF, 0x8000);
-/* Illegal without privilege mode, so left out...caught by illegal 
-   instruction detection for now. */
+DEF_INST (RTI, FMT_RRI6, 0xF000, 0x8000, FLG_NONE, {
+    printf("RTI Operation reg1 = %d reg2 = %d val = %d\n", REG (I_DR), REG (I_SR1), I_imm9);
+});
 
 DEF_INST (ST, FMT_RL, 0xF000, 0x3000, FLG_NONE, {
     write_memory_traced ((REG (R_PC) + I_imm9) & 0xFFFF, REG (I_SR));

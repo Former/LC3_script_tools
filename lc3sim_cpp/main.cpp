@@ -80,12 +80,12 @@ private:
     LC3_Sim::RegType* m_Memory;
 };
 
-class SimpleOp: public LC3_Sim::IReservedOperation
+class SimpleOp: public LC3_Sim::I_RTI_Operation
 {
 public:
-    virtual void Operation(LC3_Sim::RegType a_RegValue, LC3_Sim::RegType a_Value) override
+    virtual void Operation(LC3_Sim::RegType a_RegValue1, LC3_Sim::RegType a_RegValue2, LC3_Sim::RegType a_Value) override
     {
-        printf("ReservedOperation reg = %ld val = %ld\n", (long int)a_RegValue, (long int)a_Value);
+        printf("RTI Operation reg1 = %ld reg2 = %ld val = %ld\n", (long int)a_RegValue1, (long int)a_RegValue2, (long int)a_Value);
     }
 };
 

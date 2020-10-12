@@ -67,7 +67,7 @@ enum opcode_t {
 
     /* real instruction opcodes */
     OP_ADD, OP_AND, OP_BR, OP_JMP, OP_JSR, OP_JSRR, OP_LD, OP_LDI, OP_LDR,
-    OP_LEA, OP_RES, OP_NOT, OP_RTI, OP_ST, OP_STI, OP_STR, OP_TRAP,
+    OP_LEA, OP_NOT, OP_RTI, OP_ST, OP_STI, OP_STR, OP_TRAP,
 
     /* trap pseudo-ops */
     OP_GETC, OP_HALT, OP_IN, OP_OUT, OP_PUTS, OP_PUTSP,
@@ -119,7 +119,7 @@ static const char* const opnames[NUM_OPS] = {
 
     /* real instruction opcodes */
     "ADD", "AND", "BR", "JMP", "JSR", "JSRR", "LD", "LDI", "LDR", "LEA",
-     "RES", "NOT", "RTI", "ST", "STI", "STR", "TRAP",
+     "NOT", "RTI", "ST", "STI", "STR", "TRAP",
 
     /* trap pseudo-ops */
     "GETC", "HALT", "IN", "OUT", "PUTS", "PUTSP",
@@ -179,9 +179,8 @@ static const int op_format_ok[NUM_OPS] = {
     0x018, /* LDI: RI or RL formats only   */
     0x002, /* LDR: RRI format only         */
     0x018, /* LEA: RI or RL formats only   */
-    0x018, /* RES: RI or RL formats only   */
     0x004, /* NOT: RR format only          */
-    0x200, /* RTI: no operands allowed     */
+    0x002, /* RTI: RRI format only         */
     0x018, /* ST: RI or RL formats only    */
     0x018, /* STI: RI or RL formats only   */
     0x002, /* STR: RRI format only         */
@@ -378,7 +377,6 @@ LDI       {inst.op = OP_LDI;  last_cmd = "LDI"; BEGIN (ls_operands);}
 LDR       {inst.op = OP_LDR;  last_cmd = "LDR"; BEGIN (ls_operands);}
 LD        {inst.op = OP_LD;   last_cmd = "LD";  BEGIN (ls_operands);}
 LEA       {inst.op = OP_LEA;  last_cmd = "LEA"; BEGIN (ls_operands);}
-RES       {inst.op = OP_RES;  last_cmd = "RES"; BEGIN (ls_operands);}
 NOT       {inst.op = OP_NOT;  last_cmd = "NOT"; BEGIN (ls_operands);}
 RTI       {inst.op = OP_RTI;  last_cmd = "RTI"; BEGIN (ls_operands);}
 STI       {inst.op = OP_STI;  last_cmd = "STI"; BEGIN (ls_operands);}
@@ -1087,14 +1085,12 @@ generate_instruction (operands_t operands, const char* opstr)
 	case OP_LEA:
 	    write_instruction_value (0xE000 | (r1 << 9) | (val & 0x1FF), 1);
 	    break;
-	case OP_RES:
-	    write_instruction_value (0xD000 | (r1 << 9) | (val & 0x1FF), 1);
-	    break;
 	case OP_NOT:
 	    write_instruction_value (0x903F | (r1 << 9) | (r2 << 6), 1);
 	    break;
 	case OP_RTI:
-	    write_instruction_value (0x8000, 1);
+	    (void)read_signed_val (o3, &val, 6);
+	    write_instruction_value (0x8000 | (r1 << 9) | (r2 << 6) | (val & 0x3F), 1);
 	    break;
 	case OP_ST:
 	    write_instruction_value (0x3000 | (r1 << 9) | (val & 0x1FF), 1);

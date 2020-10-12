@@ -91,6 +91,8 @@
                                         (OPER_CODE_TYPE)LC3_MAKE_INSTR_TRAP(trap_val, INSTRUCTION_BIT_COUNT, OPER_CODE_BIT_COUNT)
 #define MAKE_INSTR_RES(reg_num1, int_val) \
                                         (OPER_CODE_TYPE)LC3_MAKE_INSTR_RES(reg_num1, int_val, INSTRUCTION_BIT_COUNT, OPER_CODE_BIT_COUNT, REG_NUM_BIT_COUNT)
+#define MAKE_INSTR_RTI(reg_num1, reg_num2, int_val) \
+                                        (OPER_CODE_TYPE)LC3_MAKE_INSTR_RTI(reg_num1, reg_num2, int_val, INSTRUCTION_BIT_COUNT, OPER_CODE_BIT_COUNT, REG_NUM_BIT_COUNT)
 
 
 #define INSTR_CONVERT(instr, instr_bc_from, op_bc_from, rn_bc_from) \
