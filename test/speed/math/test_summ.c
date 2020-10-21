@@ -14,8 +14,10 @@ int main()
             for (k = -res1; k <= res1; k++)
                 res += k;
         }
-        printf("summ(%d, %d) = %d\n", res1, i, res);
+        if (res1 != res)
+            printf("Error summ(%d, %d) = %d\n", res1, i, res);
     }
+    printf("Finish");
 
     return 0;
 }

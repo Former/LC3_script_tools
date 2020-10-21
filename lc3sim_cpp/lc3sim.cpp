@@ -143,6 +143,15 @@ static LC3_Sim::Registers::EFlags SignFlag(LC3_Sim::RegType a_Value)
                                         DEBUG_TRACE("Reg[" PRINT_REG_TYPE "] = " PRINT_REG_TYPE "\n", REG_NUM1(instr), REG(REG_NUM1(instr)))
 
 #define CASE(instr_name)            case OPCODE_##instr_name: DEBUG_TRACE("Operation %s\n", #instr_name);
+#define CASE_RES(instr_name)        case RES_##instr_name: DEBUG_TRACE("ResOperation %s\n", #instr_name);
+
+#define RES_SLL     0
+#define RES_SRA     1
+#define RES_DIV     2
+#define RES_MOD     3
+#define RES_MUL     4
+#define RES_SLLI    5
+#define RES_SRAI    6
 
 LC3_Sim::InstructionExecuter::Exception LC3_Sim::InstructionExecuter::ExecuteOneInstruction(LC3_Sim::RegType a_Instruction)
 {
@@ -297,7 +306,46 @@ LC3_Sim::InstructionExecuter::Exception LC3_Sim::InstructionExecuter::ExecuteOne
             break;
         }
         CASE(RES)
-            return EXCEPTION(etNotImplemented);
+            switch(PARAM_AFTER_NUM2(a_Instruction))
+            {
+                CASE_RES(SLL)
+                {
+                    REG_WITH_NUM1(a_Instruction) = REG_WITH_NUM2(a_Instruction) << REG_WITH_NUM3(a_Instruction);
+                    break;
+                }
+                CASE_RES(SRA)
+                {
+                    REG_WITH_NUM1(a_Instruction) = REG_WITH_NUM2(a_Instruction) >> REG_WITH_NUM3(a_Instruction);
+                    break;
+                }
+                CASE_RES(DIV)
+                {
+                    REG_WITH_NUM1(a_Instruction) = (LC3_Sim::LC3_RegisterSignedType)REG_WITH_NUM2(a_Instruction) / (LC3_Sim::LC3_RegisterSignedType)REG_WITH_NUM3(a_Instruction);
+                    break;
+                }
+                CASE_RES(MOD)
+                {
+                    REG_WITH_NUM1(a_Instruction) = (LC3_Sim::LC3_RegisterSignedType)REG_WITH_NUM2(a_Instruction) % (LC3_Sim::LC3_RegisterSignedType)REG_WITH_NUM3(a_Instruction);
+                    break;
+                }
+                CASE_RES(MUL)
+                {
+                    REG_WITH_NUM1(a_Instruction) = (LC3_Sim::LC3_RegisterSignedType)REG_WITH_NUM2(a_Instruction) * (LC3_Sim::LC3_RegisterSignedType)REG_WITH_NUM3(a_Instruction);
+                    break;
+                }
+                CASE_RES(SLLI)
+                {
+                    REG_WITH_NUM1(a_Instruction) = REG_WITH_NUM2(a_Instruction) << UINT_AFTER_PARAM(a_Instruction);
+                    break;
+                }
+                CASE_RES(SRAI)
+                {
+                    REG_WITH_NUM1(a_Instruction) = REG_WITH_NUM2(a_Instruction) >> UINT_AFTER_PARAM(a_Instruction);
+                    break;
+                }
+            }
+            SET_CC_REG_NUM1(a_Instruction);
+            break;
         CASE(LEA)
         {
             REG_WITH_NUM1(a_Instruction) = REG(LC3_Sim::Registers::rnReg_PC) + INT_AFTER_NUM1(a_Instruction);

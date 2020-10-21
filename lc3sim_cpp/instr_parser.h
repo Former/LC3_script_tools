@@ -81,3 +81,15 @@
 
 #define LC3_TRAP(instr, instr_bc, op_bc) \
                                 LC3_INT_AFTER_OPER(instr, instr_bc, op_bc)
+
+#define LC3_PARAM_AFTER_NUM2_MOVE_BIT(instr_bc, op_bc, rn_bc, par_bc) \
+                                ( LC3_REG_NUM2_MOVE_BIT(instr_bc, op_bc, rn_bc) - par_bc)
+#define LC3_PARAM_AFTER_NUM2_MASK(par_bc) \
+                                ((I1 << par_bc) - 1)
+#define LC3_PARAM_AFTER_NUM2(instr, instr_bc, op_bc, rn_bc, par_bc) \
+                                ((instr >> LC3_PARAM_AFTER_NUM2_MOVE_BIT(instr_bc, op_bc, rn_bc, par_bc)) & LC3_PARAM_AFTER_NUM2_MASK(par_bc))
+
+#define LC3_UINT_AFTER_PARAM_MASK(instr_bc, op_bc, rn_bc, par_bc) \
+                                ((I1 << LC3_PARAM_AFTER_NUM2_MOVE_BIT(instr_bc, op_bc, rn_bc, par_bc)) - 1)
+#define LC3_UINT_AFTER_PARAM(instr, instr_bc, op_bc, rn_bc, par_bc) \
+                                (instr & LC3_UINT_AFTER_PARAM_MASK(instr_bc, op_bc, rn_bc, par_bc))

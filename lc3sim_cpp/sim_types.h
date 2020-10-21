@@ -7,12 +7,15 @@
 namespace LC3_Sim
 {
 
+typedef int64_t LC3_RegisterSignedType_64;
 typedef uint64_t LC3_RegisterType_64;
 typedef uint64_t LC3MemAddressType_64;
 
+typedef int32_t LC3_RegisterSignedType_32;
 typedef uint32_t LC3_RegisterType_32;
 typedef uint32_t LC3MemAddressType_32;
 
+typedef int16_t LC3_RegisterSignedType_16;
 typedef uint16_t LC3_RegisterType_16;
 typedef uint16_t LC3MemAddressType_16;
 
@@ -22,6 +25,7 @@ typedef uint16_t LC3MemAddressType_16;
 
 #if defined(LC3_64BIT_WIDE)
 
+    typedef LC3_RegisterSignedType_64 LC3_RegisterSignedType;
     typedef LC3_RegisterType_64 LC3_RegisterType;
     typedef LC3MemAddressType_64 LC3MemAddressType;
 
@@ -32,6 +36,7 @@ typedef uint16_t LC3MemAddressType_16;
 
 #elif defined(LC3_32BIT)
 
+    typedef LC3_RegisterSignedType_32 LC3_RegisterSignedType;
     typedef LC3_RegisterType_32 LC3_RegisterType;
     typedef LC3MemAddressType_32 LC3MemAddressType;
 
@@ -42,6 +47,7 @@ typedef uint16_t LC3MemAddressType_16;
 
 #elif defined(LC3_32BIT_WIDE)
 
+    typedef LC3_RegisterSignedType_32 LC3_RegisterSignedType;
     typedef LC3_RegisterType_32 LC3_RegisterType;
     typedef LC3MemAddressType_32 LC3MemAddressType;
 
@@ -52,6 +58,7 @@ typedef uint16_t LC3MemAddressType_16;
 
 #else // LC3_16BIT
 
+    typedef LC3_RegisterSignedType_16 LC3_RegisterSignedType;
     typedef LC3_RegisterType_16 LC3_RegisterType;
     typedef LC3MemAddressType_16 LC3MemAddressType;
 
