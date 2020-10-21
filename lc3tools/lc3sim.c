@@ -45,6 +45,7 @@
 #include <netinet/in.h>
 #include <time.h>
 #include <unistd.h>
+#include <stdint.h>
 
 #if defined(USE_READLINE)
 #include <readline/readline.h>

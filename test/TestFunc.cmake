@@ -20,7 +20,7 @@ set(CORRECT32_EXE ${CMAKE_CURRENT_SOURCE_DIR}/../correct_obj32_file)
 set(CORRECT32W_EXE ${CMAKE_CURRENT_SOURCE_DIR}/../correct_obj32w_file)
 set(CORRECT64W_EXE ${CMAKE_CURRENT_SOURCE_DIR}/../correct_obj64w_file)
 
-set(LC3_TARGET_LCC_NAME "lc3") 
+set(LC3_TARGET_LCC_NAME "lc3dtu")
 set(LC3_32_TARGET_LCC_NAME "lc3_32bit") 
 
 set(DEFAULT_OUT ${CMAKE_CURRENT_SOURCE_DIR}/../default_out) 

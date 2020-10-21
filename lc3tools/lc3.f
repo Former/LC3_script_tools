@@ -553,7 +553,6 @@ main (int argc, char** argv)
     }
 #endif // ONLY_OBJ_FILE
 
-    puts ("STARTING PASS 1");
     pass = 1;
     line_num = 0;
     num_errors = 0;
@@ -576,9 +575,13 @@ main (int argc, char** argv)
 	show_error("no .END directive found\n");
 	num_errors++;
     }
-    printf ("%d errors found in first pass.\n", num_errors);
-    if (num_errors > 0)
-    	return 1;
+
+    if (num_errors > 0) {
+        puts ("STARTING PASS 1");
+        printf ("%d errors found in first pass.\n", num_errors);
+        return 1;
+    }
+
     if (fseek (lc3in, 0, SEEK_SET) != 0) {
         perror ("fseek to start of ASM file");
 	return 3;
@@ -589,7 +592,6 @@ main (int argc, char** argv)
        if an .END directive was seen. */
     BEGIN (0);
 
-    puts ("STARTING PASS 2");
     pass = 2;
     dbg_line_state = DBG_LINE_NONE;
     line_num = 0;
@@ -599,9 +601,11 @@ main (int argc, char** argv)
     saw_end = 0;
     new_inst_line ();
     yylex ();
-    printf ("%d errors found in second pass.\n", num_errors);
-    if (num_errors > 0)
-    	return 1;
+    if (num_errors > 0) {
+        puts ("STARTING PASS 2");
+        printf ("%d errors found in second pass.\n", num_errors);
+        return 1;
+    }
 
     FPRINTF (symout, "\n");
     FCLOSE (symout);

@@ -27,8 +27,8 @@ foreach (cur_file ${src_files})
 
     BuildObjFile(out_obj_file ${out_asm_file} ${cur_file} ${LC3AS} ${CORRECT_EXE} ${OUT_DIR}16) 
     
-    AddSpeedTest(${LC3SIM_C16} ${out_obj_file} ${cur_file} "sim16" ${DEFAULT_OUT} ${TYPE_OUT_STDOUT})
-    AddSpeedTest(${LC3SIM_CPP16} ${out_obj_file} ${cur_file} "sim_cpp16" ${DEFAULT_OUT} ${TYPE_OUT_STDOUT})
+    #AddSpeedTest(${LC3SIM_C16} ${out_obj_file} ${cur_file} "sim16" ${DEFAULT_OUT} ${TYPE_OUT_STDOUT})
+    #AddSpeedTest(${LC3SIM_CPP16} ${out_obj_file} ${cur_file} "sim_cpp16" ${DEFAULT_OUT} ${TYPE_OUT_STDOUT})
     AddSpeedTest(${LC3SIM} ${out_obj_file} ${cur_file} "def16" ${DEFAULT_OUT} ${TYPE_OUT_FILE})
 
     BuildAsmFile(out_asm_file ${cur_file} ${LC3_32_TARGET_LCC_NAME} ${OUT_DIR}32) 

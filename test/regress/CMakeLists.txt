@@ -171,6 +171,7 @@ set(exclude_src_files_for_lc3sim
     lcc_regression/sort.c # in output restart os
     lcc_regression/spill.c # in output restart os
     lcc_regression/switch.c # in output restart os
+    lcc_regression/struct.c # in output restart os
     
     c-testsuite/single-exec/00181.c # unlimit time exec 
     c-testsuite/single-exec/00215.c # unlimit time exec 
@@ -183,11 +184,11 @@ foreach (index RANGE 0 ${obj_16bit_file_count})
     list(GET obj_16bit_file_list ${index} cur_obj_file)
     list(GET src_16bit_file_list ${index} cur_src_file)
 
-    list(FIND exclude_src_files_for_lc3sim_c ${cur_src_file} find_src_file)
-    if (${find_src_file} EQUAL -1)
-        AddRegressTest(${LC3SIM_C16} ${cur_obj_file} ${cur_src_file} "sim16" ${DEFAULT_OUT} ${TYPE_OUT_STDOUT})
-        AddRegressTest(${LC3SIM_CPP16} ${cur_obj_file} ${cur_src_file} "sim_cpp16" ${DEFAULT_OUT} ${TYPE_OUT_STDOUT})
-    endif()
+#    list(FIND exclude_src_files_for_lc3sim_c ${cur_src_file} find_src_file)
+#    if (${find_src_file} EQUAL -1)
+#        AddRegressTest(${LC3SIM_C16} ${cur_obj_file} ${cur_src_file} "sim16" ${DEFAULT_OUT} ${TYPE_OUT_STDOUT})
+#        AddRegressTest(${LC3SIM_CPP16} ${cur_obj_file} ${cur_src_file} "sim_cpp16" ${DEFAULT_OUT} ${TYPE_OUT_STDOUT})
+#    endif()
 
     list(FIND exclude_src_files_for_lc3sim ${cur_src_file} find_src_file)
     if (${find_src_file} EQUAL -1)

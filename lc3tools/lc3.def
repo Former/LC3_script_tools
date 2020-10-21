@@ -202,7 +202,7 @@ DEF_INST (SLL, FMT_RRIU4, 0xF030, 0x1010, FLG_NONE, {
 }); 
 
 DEF_INST (SRA, FMT_RRIU4, 0xF030, 0x5010, FLG_NONE, {
-    REG (I_DR) = (((signed) ~0xFFFF | REG (I_SR1)) >> I_immu4) & 0xFFFF;
+    REG (I_DR) = (( (int16_t) REG (I_SR1)) >> I_immu4) & 0xFFFF;
     SET_CC ();
 });
 
@@ -212,22 +212,22 @@ DEF_INST (SLL, FMT_RRR, 0xD038, 0xD000, FLG_NONE, {
 });
 
 DEF_INST (SRA, FMT_RRR, 0xD038, 0xD008, FLG_NONE, {
-    REG (I_DR) = (((signed) ~0xFFFF | REG (I_SR1)) >> REG (I_SR2)) & 0xFFFF;
+    REG (I_DR) = (( (int16_t) REG (I_SR1)) >> REG (I_SR2)) & 0xFFFF;
     SET_CC ();
 });
 
 DEF_INST (DIV, FMT_RRR, 0xD038, 0xD010, FLG_NONE, {
-    REG (I_DR) = (REG (I_SR1) / REG (I_SR2)) & 0xFFFF;
+    REG (I_DR) = ((int16_t)REG (I_SR1) / (int16_t)REG (I_SR2)) & 0xFFFF;
     SET_CC ();
 });
 
 DEF_INST (MOD, FMT_RRR, 0xD038, 0xD018, FLG_NONE, {
-    REG (I_DR) = (REG (I_SR1) % REG (I_SR2)) & 0xFFFF;
+    REG (I_DR) = ((int16_t)REG (I_SR1) % (int16_t)REG (I_SR2)) & 0xFFFF;
     SET_CC ();
 });
 
 DEF_INST (MUL, FMT_RRR, 0xD038, 0xD020, FLG_NONE, {
-    REG (I_DR) = (REG (I_SR1) * REG (I_SR2)) & 0xFFFF;
+    REG (I_DR) = ((int16_t)REG (I_SR1) * (int16_t)REG (I_SR2)) & 0xFFFF;
     SET_CC ();
 });
 
