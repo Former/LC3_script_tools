@@ -14,11 +14,11 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 FIND_PACKAGE(FLEX REQUIRED)
 if (FLEX_FOUND)
     ADD_CUSTOM_COMMAND(
-        OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/lex.lc3.c
+        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/lex.lc3.c
         SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/lc3.f
         COMMAND ${FLEX_EXECUTABLE} 
             -i -Plc3 ${CMAKE_CURRENT_SOURCE_DIR}/lc3.f
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         COMMENT "Generating lex.lc3.c"
     )
 endif(FLEX_FOUND)
@@ -30,7 +30,7 @@ add_library(libasm_symbol STATIC
 target_compile_options(libasm_symbol PRIVATE -g -Wall)
 
 set(SOURCES_ASM 
-     ${CMAKE_CURRENT_SOURCE_DIR}/lex.lc3.c
+     ${CMAKE_CURRENT_BINARY_DIR}/lex.lc3.c
      )
 
 function(add_asm_exe a_ExeName)
@@ -127,7 +127,7 @@ ADD_CUSTOM_COMMAND(
           ${CMAKE_CURRENT_SOURCE_DIR}/lc3sim-tk.def > ${INSTALL_DIR}/lc3sim-tk
      COMMAND ${CHMOD} u+x ${INSTALL_DIR}/lc3sim-tk
      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-     COMMENT "Generating lex.lc3.c"
+     COMMENT "Generating lc3sim-tk"
 )
 
 add_custom_target(lc3sim-tk_exe ALL DEPENDS ${INSTALL_DIR}/lc3sim-tk)

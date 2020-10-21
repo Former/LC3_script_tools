@@ -113,6 +113,17 @@ enum opcode_t {
     NUM_OPS
 };
 
+enum dtu_op_t
+{
+    DTU_SLL = 0,
+    DTU_SRA,
+    DTU_DIV,
+    DTU_MOD,
+    DTU_MUL,
+    DTU_SLLI,
+    DTU_SRAI,
+};
+
 static const char* const opnames[NUM_OPS] = {
     /* no opcode seen (yet) */
     "missing opcode",
@@ -1196,34 +1207,34 @@ generate_instruction (operands_t operands, const char* opstr)
     	/* Shift Left Logical */
 	case OP_SLL:
 	    if (operands == O_RRI) {
-	        (void)read_unsigned_val (o3, &val, 4);
-		write_instruction_value (0x1010 | (r1 << 9) | (r2 << 6) | (val & 0xF), 1);
+	        (void)read_unsigned_val (o3, &val, 3);
+		write_instruction_value (0xD000 | (r1 << 9) | (r2 << 6) | (DTU_SLLI << 3) | (val & 0x7), 1);
 	    } else
-		write_instruction_value (0xD000 | (r1 << 9) | (r2 << 6) | r3, 1);
+		write_instruction_value (0xD000 | (r1 << 9) | (r2 << 6) | (DTU_SLL << 3) | r3, 1);
 	    break;
 
 	/* Shift Right Arithmetic */
 	case OP_SRA:
 	    if (operands == O_RRI) {
-	        (void)read_unsigned_val (o3, &val, 4);
-		write_instruction_value (0x5010 | (r1 << 9) | (r2 << 6) | (val & 0xF), 1);
+	        (void)read_unsigned_val (o3, &val, 3);
+		write_instruction_value (0xD000 | (r1 << 9) | (r2 << 6) | (DTU_SRAI << 3) | (val & 0x7), 1);
 	    } else
-		write_instruction_value (0xD000 | (r1 << 9) | (r2 << 6) | ((OP_SRA-OP_SLL) << 3) | r3, 1);
+		write_instruction_value (0xD000 | (r1 << 9) | (r2 << 6) | (DTU_SRA << 3) | r3, 1);
 	    break;
 
 	/* Divide */
 	case OP_DIV:
-	    write_instruction_value (0xD000 | (r1 << 9) | (r2 << 6) | ((OP_DIV-OP_SLL) << 3) | r3, 1);
+	    write_instruction_value (0xD000 | (r1 << 9) | (r2 << 6) | (DTU_DIV << 3) | r3, 1);
 	    break;
 
 	/* Remainder */
 	case OP_MOD:
-	    write_instruction_value (0xD000 | (r1 << 9) | (r2 << 6) | ((OP_MOD-OP_SLL) << 3) | r3, 1);
+	    write_instruction_value (0xD000 | (r1 << 9) | (r2 << 6) | (DTU_MOD << 3) | r3, 1);
 	    break;
 
 	/* Multiply */
 	case OP_MUL:
-	    write_instruction_value (0xD000 | (r1 << 9) | (r2 << 6) | ((OP_MUL-OP_SLL) << 3) | r3, 1);
+	    write_instruction_value (0xD000 | (r1 << 9) | (r2 << 6) | (DTU_MUL << 3) | r3, 1);
 	    break;
 
 	/* pseudo-ops */

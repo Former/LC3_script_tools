@@ -878,8 +878,8 @@ print_operands (FILE *out, int addr, int inst, format_t fmt)
     	fprintf (out, "%sR%d", (found ? "," : ""), F_SR2 (inst));
 	found = 1;
     }
-    if (fmt & FMT_IMMU4) {	/* DTU extension for immediate SLL and SRA */
-    	fprintf (out, "%s#%d", (found ? "," : ""), F_immu4 (inst));
+    if (fmt & FMT_IMMU3) {	/* DTU extension for immediate SLL and SRA */
+    	fprintf (out, "%s#%d", (found ? "," : ""), F_immu3 (inst));
 	found = 1;
     }
     if (fmt & FMT_IMM5) {

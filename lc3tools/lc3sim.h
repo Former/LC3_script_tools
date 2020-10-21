@@ -44,7 +44,7 @@
 #define F_SR(i)    F_DR    /* for stores */
 #define F_CC(i)    ((i) & 0x0E00)
 #define F_vec8(i)  ((i) & 0xFF)
-#define F_immu4(i)  ((i) & 0x000F)	/* DTU extension for immediate SLL and SRA */
+#define F_immu3(i)  ((i) & 0x0007)	/* DTU extension for immediate SLL and SRA */
 
 #define F_imm5(i)  (((i) & 0x010) == 0 ? ((i) & 0x00F) : ((i) | ~0x00F))
 #define F_imm6(i)  (((i) & 0x020) == 0 ? ((i) & 0x01F) : ((i) | ~0x01F))
@@ -67,7 +67,7 @@ enum field_t {
     FMT_IMM9  = 0x100, /* label (or address from imm9)  */
     FMT_IMM11 = 0x200, /* label (or address from imm11) */
     FMT_IMM16 = 0x400, /* full instruction in hex       */
-    FMT_IMMU4 = 0x800  /* unsigned imm4 used in DTU ext SLL and SRA */
+    FMT_IMMU3 = 0x800  /* unsigned imm4 used in DTU ext SLL and SRA */
 };
 
 
@@ -82,7 +82,7 @@ enum format_t {
     FMT_R     = FMT_R2,
     FMT_L     = FMT_IMM11,
     FMT_RL    = (FMT_R1 | FMT_IMM9),
-    FMT_RRIU4 = (FMT_R1 | FMT_R2 | FMT_IMMU4),	/* DTU extension for immediate SLL and SRA */
+    FMT_RRIU3 = (FMT_R1 | FMT_R2 | FMT_IMMU3),	/* DTU extension for immediate SLL and SRA */
     FMT_RRI6  = (FMT_R1 | FMT_R2 | FMT_IMM6),
     FMT_RR    = (FMT_R1 | FMT_R2),
     FMT_V     = FMT_VEC8,
