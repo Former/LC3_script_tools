@@ -13,7 +13,6 @@
                 (LC3_OPER_CODE(instr, instr_bc, op_bc) == OPCODE_ST) || \
                 (LC3_OPER_CODE(instr, instr_bc, op_bc) == OPCODE_LDI) || \
                 (LC3_OPER_CODE(instr, instr_bc, op_bc) == OPCODE_STI) || \
-                (LC3_OPER_CODE(instr, instr_bc, op_bc) == OPCODE_RES) || \
                 (LC3_OPER_CODE(instr, instr_bc, op_bc) == OPCODE_LEA) \
             )
 
@@ -58,6 +57,15 @@
             LC3_MAKE_INSTR_RRI(LC3_OPER_CODE(instr, instr_bc_from, op_bc_from), LC3_REG_NUM1(instr, instr_bc_from, op_bc_from, rn_bc_from), LC3_REG_NUM2(instr, instr_bc_from, op_bc_from, rn_bc_from), INT_VALUE_TO_SIGNED(LC3_INT_AFTER_NUM2(instr, instr_bc_from, op_bc_from, rn_bc_from)), instr_bc_to, op_bc_to, rn_bc_to)
 
 
+#define LC3_CHECK_OPCODE_RRPI(instr, instr_bc, op_bc) \
+            ( \
+                (LC3_OPER_CODE(instr, instr_bc, op_bc) == OPCODE_RES) \
+            )
+
+#define LC3_INSTR_CONVERT_RRPI(instr, instr_bc_from, op_bc_from, rn_bc_from, par_bc_from, instr_bc_to, op_bc_to, rn_bc_to, par_bc_to) \
+            LC3_MAKE_INSTR_RRPI(LC3_OPER_CODE(instr, instr_bc_from, op_bc_from), LC3_REG_NUM1(instr, instr_bc_from, op_bc_from, rn_bc_from), LC3_REG_NUM2(instr, instr_bc_from, op_bc_from, rn_bc_from), LC3_PARAM_AFTER_NUM2(instr, instr_bc_from, op_bc_from, rn_bc_from, par_bc_from), INT_VALUE_TO_SIGNED(LC3_UINT_AFTER_PARAM(instr, instr_bc_from, op_bc_from, rn_bc_from, par_bc_from)), instr_bc_to, op_bc_to, rn_bc_to, par_bc_to)
+
+
 #define LC3_CHECK_OPCODE_RR(instr, instr_bc, op_bc) \
             ( \
                 (LC3_OPER_CODE(instr, instr_bc, op_bc) == OPCODE_NOT) \
@@ -84,7 +92,7 @@
             LC3_MAKE_INSTR_T(LC3_OPER_CODE(instr, instr_bc_from, op_bc_from), LC3_TRAP(instr, instr_bc_from, op_bc_from), instr_bc_to, op_bc_to)
 
 
-#define LC3_INSTR_CONVERT(instr, instr_bc_from, op_bc_from, rn_bc_from, instr_bc_to, op_bc_to, rn_bc_to) \
+#define LC3_INSTR_CONVERT(instr, instr_bc_from, op_bc_from, rn_bc_from, par_bc_from, instr_bc_to, op_bc_to, rn_bc_to, par_bc_to) \
             ( \
                 (LC3_CHECK_OPCODE_RI(instr, instr_bc_from, op_bc_from)) ? \
                     LC3_INSTR_CONVERT_RI(instr, instr_bc_from, op_bc_from, rn_bc_from, instr_bc_to, op_bc_to, rn_bc_to) \
@@ -97,6 +105,9 @@
                 : \
                 (LC3_CHECK_OPCODE_RRI(instr, instr_bc_from, op_bc_from)) ? \
                     LC3_INSTR_CONVERT_RRI(instr, instr_bc_from, op_bc_from, rn_bc_from, instr_bc_to, op_bc_to, rn_bc_to) \
+                : \
+                (LC3_CHECK_OPCODE_RRPI(instr, instr_bc_from, op_bc_from)) ? \
+                    LC3_INSTR_CONVERT_RRPI(instr, instr_bc_from, op_bc_from, rn_bc_from, par_bc_from, instr_bc_to, op_bc_to, rn_bc_to, par_bc_to) \
                 : \
                 (LC3_CHECK_OPCODE_RR(instr, instr_bc_from, op_bc_from)) ? \
                     LC3_INSTR_CONVERT_RR(instr, instr_bc_from, op_bc_from, rn_bc_from, instr_bc_to, op_bc_to, rn_bc_to) \

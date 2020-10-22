@@ -975,7 +975,7 @@ static void
 write_instruction_value (long val, int dbg)
 {
     if (LC3_INSTR_BIT_COUNT != 16) {
-        val = (lc3_register_type)LC3_INSTR_CONVERT(val, 16, 4, 3, LC3_INSTR_BIT_COUNT, 4, 3);
+        val = (lc3_register_type)LC3_INSTR_CONVERT(val, 16, 4, 3, 3, LC3_INSTR_BIT_COUNT, 4, 3, 3);
     }
     write_value (val, dbg);
 }

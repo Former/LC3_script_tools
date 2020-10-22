@@ -25,6 +25,14 @@
 #define OPCODE_LEA                      0b1110UL
 #define OPCODE_TRAP                     0b1111UL
 
+#define RES_OPCODE_SLL                  0
+#define RES_OPCODE_SRA                  1
+#define RES_OPCODE_DIV                  2
+#define RES_OPCODE_MOD                  3
+#define RES_OPCODE_MUL                  4
+#define RES_OPCODE_SLLI                 5
+#define RES_OPCODE_SRAI                 6
+
 #define TO_OPER_TYPE(oper)              ((uint64_t)oper)
 
 #define VALUE_ASSERT(cond) assert(cond) // TODO: Make static_assert
@@ -56,6 +64,12 @@
 #define LC3_CHECK_INT_TRAP(int_val, instr_bc, op_bc) \
     VALUE_ASSERT(!(TO_OPER_TYPE(int_val) & ~LC3_TRAP_MASK(instr_bc, op_bc)))
 
+#define LC3_CHECK_PARAM(par_val, par_bc) \
+    LC3_CHECK_INT_WITH_MASK(par_val, LC3_PARAM_AFTER_NUM2_MASK(par_bc))
+
+#define LC3_CHECK_UINT_AFTER_PARAM(int_val, instr_bc, op_bc, rn_bc, par_bc) \
+    LC3_CHECK_INT_WITH_MASK(int_val, LC3_UINT_AFTER_PARAM_MASK(instr_bc, op_bc, rn_bc, par_bc))
+
 
 #define LC3_MAKE_INSTR_RRR(opcode, reg_num1, reg_num2, reg_num3, instr_bc, op_bc, rn_bc) \
     ( LC3_CHECK_OPCODE(opcode, op_bc), LC3_CHECK_REGNUM(reg_num1, rn_bc), LC3_CHECK_REGNUM(reg_num2, rn_bc), LC3_CHECK_REGNUM(reg_num3, rn_bc), \
@@ -65,6 +79,11 @@
 #define LC3_MAKE_INSTR_RRI(opcode, reg_num1, reg_num2, int_val, instr_bc, op_bc, rn_bc) \
     ( LC3_CHECK_OPCODE(opcode, op_bc), LC3_CHECK_REGNUM(reg_num1, rn_bc), LC3_CHECK_REGNUM(reg_num2, rn_bc), LC3_CHECK_INT_AFTER_NUM2(int_val, instr_bc, op_bc, rn_bc), \
     (TO_OPER_TYPE(opcode) << LC3_OPER_CODE_MOVE_BIT(instr_bc, op_bc)) | (TO_OPER_TYPE(reg_num1) << LC3_REG_NUM1_MOVE_BIT(instr_bc, op_bc, rn_bc)) | (TO_OPER_TYPE(reg_num2) << LC3_REG_NUM2_MOVE_BIT(instr_bc, op_bc, rn_bc)) | (TO_OPER_TYPE(int_val) & LC3_INT_AFTER_NUM2_MASK(instr_bc, op_bc, rn_bc)) \
+    )
+
+#define LC3_MAKE_INSTR_RRPI(opcode, reg_num1, reg_num2, par_val, int_val, instr_bc, op_bc, rn_bc, par_bc) \
+    ( LC3_CHECK_OPCODE(opcode, op_bc), LC3_CHECK_REGNUM(reg_num1, rn_bc), LC3_CHECK_REGNUM(reg_num2, rn_bc), LC3_CHECK_PARAM(par_val, par_bc), LC3_CHECK_UINT_AFTER_PARAM(int_val, instr_bc, op_bc, rn_bc, par_bc), \
+    (TO_OPER_TYPE(opcode) << LC3_OPER_CODE_MOVE_BIT(instr_bc, op_bc)) | (TO_OPER_TYPE(reg_num1) << LC3_REG_NUM1_MOVE_BIT(instr_bc, op_bc, rn_bc)) | (TO_OPER_TYPE(reg_num2) << LC3_REG_NUM2_MOVE_BIT(instr_bc, op_bc, rn_bc)) | (TO_OPER_TYPE(par_val) << LC3_PARAM_AFTER_NUM2_MOVE_BIT(instr_bc, op_bc, rn_bc, par_bc)) | (TO_OPER_TYPE(int_val) & LC3_UINT_AFTER_PARAM_MASK(instr_bc, op_bc, rn_bc, par_bc)) \
     )
 
 #define LC3_MAKE_INSTR_RRI_WITH_FLAG(opcode, reg_num1, reg_num2, int_val, instr_bc, op_bc, rn_bc) \
@@ -159,7 +178,7 @@
 #define LC3_MAKE_INSTR_RTI(reg_num1, reg_num2, int_val, instr_bc, op_bc, rn_bc)     /* RTI(reg[reg_num1], reg[reg_num2], int_val); */ \
     LC3_MAKE_INSTR_RRI(OPCODE_RTI, reg_num1, reg_num2, int_val, instr_bc, op_bc, rn_bc)
 
-#define LC3_MAKE_INSTR_RES(reg_num1, int_val, instr_bc, op_bc, rn_bc)               /* RES(reg[reg_num1], int_val); */ \
-    LC3_MAKE_INSTR_RI(OPCODE_RES, reg_num1, int_val, instr_bc, op_bc, rn_bc)
+#define LC3_MAKE_INSTR_RES(reg_num1, reg_num2, par_val, int_val_or_reg_num3, instr_bc, op_bc, rn_bc, par_bc)  /* RES(reg[reg_num1], reg[reg_num2], par_val, int_val); */ \
+    LC3_MAKE_INSTR_RRPI(OPCODE_RES, reg_num1, reg_num2, par_val, int_val_or_reg_num3, instr_bc, op_bc, rn_bc, par_bc)
 
 

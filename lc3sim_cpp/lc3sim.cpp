@@ -143,15 +143,7 @@ static LC3_Sim::Registers::EFlags SignFlag(LC3_Sim::RegType a_Value)
                                         DEBUG_TRACE("Reg[" PRINT_REG_TYPE "] = " PRINT_REG_TYPE "\n", REG_NUM1(instr), REG(REG_NUM1(instr)))
 
 #define CASE(instr_name)            case OPCODE_##instr_name: DEBUG_TRACE("Operation %s\n", #instr_name);
-#define CASE_RES(instr_name)        case RES_##instr_name: DEBUG_TRACE("ResOperation %s\n", #instr_name);
-
-#define RES_SLL     0
-#define RES_SRA     1
-#define RES_DIV     2
-#define RES_MOD     3
-#define RES_MUL     4
-#define RES_SLLI    5
-#define RES_SRAI    6
+#define CASE_RES(instr_name)        case RES_OPCODE_##instr_name: DEBUG_TRACE("ResOperation %s\n", #instr_name);
 
 LC3_Sim::InstructionExecuter::Exception LC3_Sim::InstructionExecuter::ExecuteOneInstruction(LC3_Sim::RegType a_Instruction)
 {
