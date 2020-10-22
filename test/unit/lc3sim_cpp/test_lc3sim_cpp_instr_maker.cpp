@@ -891,7 +891,7 @@ TEST_F(TestInstrMaker, TestRES_MOD)
     {
         START_ADDRESS,
         MAKE_INSTR_ADD_I(0, 0, 3), // reg[0] = reg[0] + 3; // 3
-        MAKE_INSTR_ADD_I(1, 1, 9), // reg[1] = reg[1] + 10; // 10
+        MAKE_INSTR_ADD_I(1, 1, 10), // reg[1] = reg[1] + 10; // 10
         MAKE_INSTR_RES(0, 1, RES_OPCODE_MOD, 0), // reg[0] = reg[1] % reg[0];
         MAKE_INSTR_NOP,
     };
