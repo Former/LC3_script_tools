@@ -994,21 +994,55 @@ generate_instruction (operands_t operands, const char* opstr)
 	return;
     }
 
-    /* o1 = start of op1 */
-    o1 = opstr;
-    while (isspace((unsigned char)*o1)) o1++;	 /* skip spaces before op1 */
+    long operand_count = 0;
+    switch(operands)
+    {
+    case O_RRR:
+    case O_RRI:
+        operand_count = 3;
+        break;
+    case O_RR:
+    case O_RI:
+    case O_RL:
+        operand_count = 2;
+        break;
+    case O_R:
+    case O_I:
+    case O_L:
+    case O_S:
+        operand_count = 1;
+        break;
+    case O_:
+        operand_count = 0;
+        break;
+    }
 
-    /* o2 = start of op2 */
-    o2=o1; while (*o2!=',' && !isspace((unsigned char)*o2)) o2++; /* o2 = to the end of op1 */
-    while (isspace((unsigned char)*o2)) o2++;	 /* skip spaces before ',' */
-    if (*o2==',') o2++;
-    while (isspace((unsigned char)*o2)) o2++;	 /* skip spaces before op2 */
+    o1 = o2 = o3 = "\0\0";
 
-    /* o3 = start of op3 */
-    o3=o2; while (*o3!=',' && !isspace((unsigned char)*o3)) o3++; /* o3 = to the end of op2 */
-    while (isspace((unsigned char)*o3)) o3++;	 /* skip spaces before ',' */
-    if (*o3==',') o3++;
-    while (isspace((unsigned char)*o3)) o3++;	 /* skip spaces before op3 */
+    if (operand_count > 0)
+    {
+        /* o1 = start of op1 */
+        o1 = opstr;
+        while (isspace((unsigned char)*o1)) o1++;	 /* skip spaces before op1 */
+
+        if (operand_count > 1)
+        {
+            /* o2 = start of op2 */
+            o2=o1; while (*o2!=',' && !isspace((unsigned char)*o2)) o2++; /* o2 = to the end of op1 */
+            while (isspace((unsigned char)*o2)) o2++;	 /* skip spaces before ',' */
+            if (*o2==',') o2++;
+            while (isspace((unsigned char)*o2)) o2++;	 /* skip spaces before op2 */
+
+            if (operand_count > 2)
+            {
+                /* o3 = start of op3 */
+                o3=o2; while (*o3!=',' && !isspace((unsigned char)*o3)) o3++; /* o3 = to the end of op2 */
+                while (isspace((unsigned char)*o3)) o3++;	 /* skip spaces before ',' */
+                if (*o3==',') o3++;
+                while (isspace((unsigned char)*o3)) o3++;	 /* skip spaces before op3 */
+            }
+        }
+    }
 
     if (inst.op == OP_ORIG) {
 	if (saw_orig == 0) {
