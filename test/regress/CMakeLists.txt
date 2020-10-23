@@ -129,22 +129,22 @@ list(REMOVE_ITEM src_native_file_list ${exclude_src_native_files})
 
 # Make obj file list
 foreach (cur_file ${src_16bit_file_list})
-    BuildAsmFile(out_asm_file ${cur_file} ${LC3_TARGET_LCC_NAME} ${OUT_DIR}16) 
+    BuildAsmFile(out_asm_file ${cur_file} ${LC3_TARGET_LCC_NAME} ${OUT_DIR}16)
 
     BuildObjFile(out_file ${out_asm_file} ${cur_file} ${LC3AS} ${CORRECT_EXE} ${OUT_DIR}16) 
     list(APPEND obj_16bit_file_list ${out_file})
 endforeach()
 
 foreach (cur_file ${src_32bit_file_list})
-    BuildAsmFile(out_asm_file ${cur_file} ${LC3_32_TARGET_LCC_NAME} ${OUT_DIR}32) 
+    BuildAsmFile(out_asm_file ${cur_file} ${LC3_32_TARGET_DTU_LCC_NAME} ${OUT_DIR}32)
 
-    BuildObjFile(out_file ${out_asm_file} ${cur_file} ${LC3AS32} ${CORRECT32_EXE} ${OUT_DIR}32) 
+    BuildObjFile(out_file ${out_asm_file} ${cur_file} ${LC3AS32} ${CORRECT32_EXE} ${OUT_DIR}32)
     list(APPEND obj_32bit_file_list ${out_file})
 
-    BuildObjFile(out_file ${out_asm_file} ${cur_file} ${LC3AS32W} ${CORRECT32W_EXE} ${OUT_DIR}32W) 
+    BuildObjFile(out_file ${out_asm_file} ${cur_file} ${LC3AS32W} ${CORRECT32W_EXE} ${OUT_DIR}32W)
     list(APPEND obj_32bit_wide_file_list ${out_file})
 
-    BuildObjFile(out_file ${out_asm_file} ${cur_file} ${LC3AS64W} ${CORRECT64W_EXE} ${OUT_DIR}64W) 
+    BuildObjFile(out_file ${out_asm_file} ${cur_file} ${LC3AS64W} ${CORRECT64W_EXE} ${OUT_DIR}64W)
     list(APPEND obj_64bit_wide_file_list ${out_file})
 endforeach()
 
@@ -198,20 +198,20 @@ endforeach()
 
 
 # Known errors 32 bit: Errors when execute
-set(exclude_src_files_for_lc3sim_c32
-    c-testsuite/single-exec/00087.c # in output restart os
-    c-testsuite/single-exec/00124.c # in output restart os
-    c-testsuite/single-exec/00164.c # error! a == b always true, a != b always false 
-    c-testsuite/single-exec/00220.c # not work %04x and %ld ....
-    stackl_test/test3.c # COMP broken z=-42406
-    __asm_test/test_rti.c # sim32 not implemented
-    )
+#set(exclude_src_files_for_lc3sim_c32
+#    c-testsuite/single-exec/00087.c # in output restart os
+#    c-testsuite/single-exec/00124.c # in output restart os
+#    c-testsuite/single-exec/00164.c # error! a == b always true, a != b always false
+#    c-testsuite/single-exec/00220.c # not work %04x and %ld ....
+#    stackl_test/test3.c # COMP broken z=-42406
+#    __asm_test/test_rti.c # sim32 not implemented
+#    )
 
 # Known errors 32 bit: Errors when execute
 set(exclude_src_files_for_lc3sim_cpp32
     c-testsuite/single-exec/00087.c # in output restart os
     c-testsuite/single-exec/00124.c # in output restart os
-    c-testsuite/single-exec/00164.c # error! a == b always true, a != b always false 
+    c-testsuite/single-exec/00164.c # error! a == b always true, a != b always false
     c-testsuite/single-exec/00220.c # not work %04x and %ld ....
     stackl_test/test3.c # COMP broken z=-42406
     )
@@ -223,10 +223,10 @@ foreach (index RANGE 0 ${obj_32bit_file_count})
     list(GET obj_32bit_file_list ${index} cur_obj_file)
     list(GET src_32bit_file_list ${index} cur_src_file)
 
-    list(FIND exclude_src_files_for_lc3sim_c32 ${cur_src_file} find_src_file)
-    if (${find_src_file} EQUAL -1)
-        AddRegressTest(${LC3SIM_C32} ${cur_obj_file} ${cur_src_file} "sim32" ${DEFAULT_OUT} ${TYPE_OUT_STDOUT})
-    endif()
+    #list(FIND exclude_src_files_for_lc3sim_c32 ${cur_src_file} find_src_file)
+    #if (${find_src_file} EQUAL -1)
+    #    AddRegressTest(${LC3SIM_C32} ${cur_obj_file} ${cur_src_file} "sim32" ${DEFAULT_OUT} ${TYPE_OUT_STDOUT})
+    #endif()
 
     list(FIND exclude_src_files_for_lc3sim_cpp32 ${cur_src_file} find_src_file)
     if (${find_src_file} EQUAL -1)
