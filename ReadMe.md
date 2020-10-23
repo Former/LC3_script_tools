@@ -35,11 +35,13 @@ Install cmake, compiler and libs:
 ```c++
 void some_func(void)
 {
-    // This code run user operation SimpleOp::Operation with value a_RegValue = 10, a_Value = 20
+    // This code run user operation SimpleOp::Operation with value a_RegValue1 = 10, a_RegValue2 = 11, a_Value = 20
     __asm {
-        AND R0, R0, #0 
-        ADD R0, R0, #10 
-        RES R0, #20
+        AND R0, R0, #0
+        ADD R0, R0, #10
+        AND R1, R1, #0
+        ADD R1, R1, #11
+        RTI R0, R1, #20
     }
 }
 
@@ -117,9 +119,9 @@ private:
 class SimpleOp: public LC3_Sim::IReservedOperation
 {
 public:
-    virtual void Operation(LC3_Sim::RegType a_RegValue, LC3_Sim::RegType a_Value) override
+    virtual void Operation(LC3_Sim::RegType a_RegValue1, LC3_Sim::RegType a_RegValue2, LC3_Sim::RegType a_Value) override
     {
-        printf("User operation reg = %ld val = %ld\n", (long int)a_RegValue, (long int)a_Value);
+        printf("User operation reg1 = %ld reg2 = %ld val = %ld\n", (long int)a_RegValue1, (long int)a_RegValue2, (long int)a_Value);
     }
 };
 
