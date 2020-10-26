@@ -56,11 +56,13 @@ TestOp::TestOp()
     m_RegValue1 = 0;
     m_RegValue2 = 0;
     m_Value = 0;
+    m_Result = rSuccess;
 }
 
-void TestOp::Operation(LC3_Sim::RegType a_RegValue1, LC3_Sim::RegType a_RegValue2, LC3_Sim::RegType a_Value)
+LC3_Sim::I_RTI_Operation::Result TestOp::Operation(LC3_Sim::RegType a_RegValue1, LC3_Sim::RegType a_RegValue2, LC3_Sim::RegType a_Value)
 {
     m_RegValue1 = a_RegValue1;
     m_RegValue2 = a_RegValue2;
     m_Value = a_Value;
+    return m_Result;
 }

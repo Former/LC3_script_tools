@@ -243,12 +243,17 @@ LC3_Sim::InstructionExecuter::Exception LC3_Sim::InstructionExecuter::ExecuteOne
 
             if (res != LC3_Sim::IVirtualMemory::Result::rSuccess)
                 return EXCEPTION_A(etErrorWrite, addr);
-                
+
             break;
         }
         CASE(RTI)
-            m_RTI_Operation->Operation(REG_WITH_NUM1(a_Instruction), REG_WITH_NUM2(a_Instruction), INT_AFTER_NUM2(a_Instruction));
+        {
+            LC3_Sim::I_RTI_Operation::Result res = m_RTI_Operation->Operation(REG_WITH_NUM1(a_Instruction), REG_WITH_NUM2(a_Instruction), INT_AFTER_NUM2(a_Instruction));
+            if (res == LC3_Sim::I_RTI_Operation::Result::rRTI_Stop)
+                return EXCEPTION(etRTI);
+
             break;
+        }
         CASE(NOT)
         {
             REG_WITH_NUM1(a_Instruction) = ~REG_WITH_NUM2(a_Instruction);
@@ -383,7 +388,7 @@ LC3_Sim::Processor::Processor(Registers* a_Registers, IVirtualMemory* a_VirtualM
 {
 }
 
-LC3_Sim::Bool LC3_Sim::Processor::Run(InstructionIndex* a_ExecutedInsructionsCount, InstructionIndex a_MaxExecuteInsructCount)
+LC3_Sim::Processor::Result LC3_Sim::Processor::Run(InstructionIndex* a_ExecutedInsructionsCount, InstructionIndex a_MaxExecuteInsructCount)
 {
     LC3_Sim::InstructionExecuter::Exception exception;
     InstructionIndex* exec_instruct = a_ExecutedInsructionsCount;
@@ -393,23 +398,25 @@ LC3_Sim::Bool LC3_Sim::Processor::Run(InstructionIndex* a_ExecutedInsructionsCou
         LC3_Sim::RegType instruction = 0;
         LC3_Sim::IVirtualMemory::Result res =
             MEMORY_READ(&instruction, addr);
-            
+
         if (res != LC3_Sim::IVirtualMemory::Result::rSuccess)
-        {
             exception = EXCEPTION_A(etErrorRead, addr);
-            break;
+        else
+        {
+            ++REG(LC3_Sim::Registers::rnReg_PC);
+
+            exception = m_Executer.ExecuteOneInstruction(instruction);
+
+            if (exception.m_Type == LC3_Sim::InstructionExecuter::Exception::etSuccess)
+                continue;
+
+            if (exception.m_Type == LC3_Sim::InstructionExecuter::Exception::etStop)
+                break;
+
+            if (exception.m_Type == LC3_Sim::InstructionExecuter::Exception::etRTI)
+                break;
         }
 
-        ++REG(LC3_Sim::Registers::rnReg_PC);
-        
-        exception = m_Executer.ExecuteOneInstruction(instruction);
-        
-        if (exception.m_Type == LC3_Sim::InstructionExecuter::Exception::etSuccess)
-            continue;
-        
-        if (exception.m_Type == LC3_Sim::InstructionExecuter::Exception::etStop)
-            break;
-        
         // Exception handler
         ++m_ProcessorConfig->m_ExceptionCount;
         LC3_Sim::AddressType addr_of_exception = addr;
@@ -419,8 +426,15 @@ LC3_Sim::Bool LC3_Sim::Processor::Run(InstructionIndex* a_ExecutedInsructionsCou
         MEMORY_WRITE(addr_of_exception, m_ProcessorConfig->m_ExceptionInfoAddress);
         REG(LC3_Sim::Registers::rnReg_PC) = m_ProcessorConfig->m_ExceptionHandlerAddress;        
     }
-    
-    return (exception.m_Type == LC3_Sim::InstructionExecuter::Exception::etStop) ? true : false;
+
+    switch (exception.m_Type)
+    {
+        case LC3_Sim::InstructionExecuter::Exception::etStop:
+            return rStop;
+        case LC3_Sim::InstructionExecuter::Exception::etRTI:
+            return rRTI_Stop;
+    }
+    return rGlobalError;
 }
 
 LC3_Sim::Processor::LoadResult LC3_Sim::Processor::LoadObjFile(const char* a_FileName)

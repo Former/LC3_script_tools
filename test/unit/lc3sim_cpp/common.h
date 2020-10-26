@@ -34,9 +34,10 @@ class TestOp: public LC3_Sim::I_RTI_Operation
 public:
     TestOp();
 
-    virtual void Operation(LC3_Sim::RegType a_RegValue1, LC3_Sim::RegType a_RegValue2, LC3_Sim::RegType a_Value) override;
+    virtual LC3_Sim::I_RTI_Operation::Result Operation(LC3_Sim::RegType a_RegValue1, LC3_Sim::RegType a_RegValue2, LC3_Sim::RegType a_Value) override;
 
     LC3_Sim::RegType m_RegValue1;
     LC3_Sim::RegType m_RegValue2;
     LC3_Sim::RegType m_Value;
+    LC3_Sim::I_RTI_Operation::Result m_Result;
 };

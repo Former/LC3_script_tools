@@ -83,9 +83,10 @@ private:
 class SimpleOp: public LC3_Sim::I_RTI_Operation
 {
 public:
-    virtual void Operation(LC3_Sim::RegType a_RegValue1, LC3_Sim::RegType a_RegValue2, LC3_Sim::RegType a_Value) override
+    virtual LC3_Sim::I_RTI_Operation::Result Operation(LC3_Sim::RegType a_RegValue1, LC3_Sim::RegType a_RegValue2, LC3_Sim::RegType a_Value) override
     {
         printf("RTI Operation reg1 = %ld reg2 = %ld val = %ld\n", (long int)a_RegValue1, (long int)a_RegValue2, (long int)a_Value);
+        return rSuccess;
     }
 };
 

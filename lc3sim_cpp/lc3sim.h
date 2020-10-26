@@ -51,9 +51,15 @@ public:
 class I_RTI_Operation
 {
 public:
+    enum Result
+    {
+        rSuccess,
+        rRTI_Stop,
+    };
+
     virtual ~I_RTI_Operation();
 
-    virtual void Operation(RegType a_RegValue1, RegType a_RegValue2, RegType a_Value) = 0;
+    virtual Result Operation(RegType a_RegValue1, RegType a_RegValue2, RegType a_Value) = 0;
 };
 
 // Регистры процессора.
@@ -109,10 +115,11 @@ private:
             // Программа завершилась успешно
             etSuccess          = 0x00,
             etStop             = 0x01,
+            etRTI              = 0x02,
             // Ошибки - необходимо запустить exception handler
-            etNotImplemented   = 0x02,
-            etErrorRead        = 0x04,
-            etErrorWrite       = 0x08,
+            etNotImplemented   = 0x10,
+            etErrorRead        = 0x20,
+            etErrorWrite       = 0x40,
         };
         Type            m_Type;
         AddressType     m_AccessAddress;
@@ -144,10 +151,17 @@ public:
         lrFileTooLarge,
         lrWriteError,
     };
-    
+
+    enum Result
+    {
+        rGlobalError,
+        rStop,
+        rRTI_Stop,
+    };
+
     Processor(Registers* a_Registers, IVirtualMemory* a_VirtualMemory, IInputOutput* a_InputOutput, I_RTI_Operation* a_RTI_Operation, ProcessorConfig* a_ProcessorConfig);
     
-    Bool Run(InstructionIndex* a_ExecutedInsructionsCount, InstructionIndex a_MaxExecuteInsructCount);
+    Result Run(InstructionIndex* a_ExecutedInsructionsCount, InstructionIndex a_MaxExecuteInsructCount);
 
     LoadResult LoadObjFile(const char* a_FileName);
 

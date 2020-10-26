@@ -39,12 +39,13 @@ protected:
         EXPECT_EQ(res, LC3_Sim::Processor::lrSuccess);
     }
 
-    void Run(LC3_Sim::InstructionIndex a_InstrCount)
+    LC3_Sim::Processor::Result Run(LC3_Sim::InstructionIndex a_InstrCount)
     {
         LC3_Sim::InstructionIndex instr = 0;
-        m_Proc->Run(&instr, 0xFFF);
+        LC3_Sim::Processor::Result res = m_Proc->Run(&instr, 0xFFF);
 
         EXPECT_EQ(instr, a_InstrCount);
+        return res;
     }
 
     TestIO* m_SimpleIO;
@@ -89,16 +90,18 @@ protected:
 TEST_F(TestInstrMaker, TestNop)
 {
     LC3_Sim::RegType data[] = {START_ADDRESS, MAKE_INSTR_NOP, 0xFFu, 0xFFFu, 0u};  
-    
+
     LoadData(data, ARRAY_SIZE(data));
-    
+
     LOCAL_VAR_COPY
 
     LC3_Sim::InstructionIndex instr = 1u;
-    Run(instr); // Stop on NOP=0u
-    
+    LC3_Sim::Processor::Result res = Run(instr); // Stop on NOP=0u
+
+    EXPECT_EQ(res, LC3_Sim::Processor::Result::rStop);
+
     reg.m_Reg[LC3_Sim::Registers::rnReg_PC] += instr;
-    
+
     CHECK_LOCAL_VAR
 }
 
@@ -795,6 +798,38 @@ TEST_F(TestInstrMaker, TestRTI3)
 
     LC3_Sim::InstructionIndex instr = ARRAY_SIZE(data) - 1;
     Run(instr);
+
+    reg.m_Reg[LC3_Sim::Registers::rnReg_0] = -15;
+    reg.m_Reg[LC3_Sim::Registers::rnReg_1] = -7;
+    op.m_RegValue1 = -15;
+    op.m_RegValue2 = -7;
+    op.m_Value = 0;
+    reg.m_Reg[LC3_Sim::Registers::rnReg_PC] += instr;
+    reg.m_Reg[LC3_Sim::Registers::rnReg_NumCC] = 1;
+
+    CHECK_LOCAL_VAR
+}
+
+TEST_F(TestInstrMaker, TestRTI4)
+{
+    LC3_Sim::RegType data[] =
+    {
+        START_ADDRESS,
+        MAKE_INSTR_ADD_I(0, 0, -15), // reg[0] = reg[0] - 15; // -15
+        MAKE_INSTR_ADD_I(1, 1, -7), // reg[1] = reg[1] - 7; // -7
+        MAKE_INSTR_RTI(0, 1, 0), // RTI(reg[0] = -15, reg[1] = -7, 0);
+        MAKE_INSTR_NOP,
+    };
+
+    LoadData(data, ARRAY_SIZE(data));
+
+    LOCAL_VAR_COPY
+
+    m_SimpleOP->m_Result = LC3_Sim::I_RTI_Operation::Result::rRTI_Stop;
+    LC3_Sim::InstructionIndex instr = ARRAY_SIZE(data) - 2;
+    LC3_Sim::Processor::Result res = Run(instr); // Stop on RTI
+
+    EXPECT_EQ(res, LC3_Sim::Processor::Result::rRTI_Stop);
 
     reg.m_Reg[LC3_Sim::Registers::rnReg_0] = -15;
     reg.m_Reg[LC3_Sim::Registers::rnReg_1] = -7;

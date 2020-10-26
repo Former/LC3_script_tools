@@ -80,7 +80,7 @@ public:
     {
         putchar(a_Word);
     }
-    
+
     virtual LC3_Sim::Bool CheckKeyboard() const override
     {
         return false;
@@ -99,7 +99,7 @@ public:
     {
         if (a_Address >= LC3_MAX_MEMORY_ADDRESS)
             return rErrorAddressOutOfRange;
-        
+
         *a_Value = m_Memory[a_Address];
         return rSuccess;
     }
@@ -108,7 +108,7 @@ public:
     {
         if (a_Address >= LC3_MAX_MEMORY_ADDRESS)
             return rErrorAddressOutOfRange;
-        
+
         m_Memory[a_Address] = a_Value;
         return rSuccess;
     }
@@ -119,9 +119,10 @@ private:
 class SimpleOp: public LC3_Sim::IReservedOperation
 {
 public:
-    virtual void Operation(LC3_Sim::RegType a_RegValue1, LC3_Sim::RegType a_RegValue2, LC3_Sim::RegType a_Value) override
+    virtual LC3_Sim::I_RTI_Operation::Result Operation(LC3_Sim::RegType a_RegValue1, LC3_Sim::RegType a_RegValue2, LC3_Sim::RegType a_Value) override
     {
         printf("User operation reg1 = %ld reg2 = %ld val = %ld\n", (long int)a_RegValue1, (long int)a_RegValue2, (long int)a_Value);
+        return rSuccess;
     }
 };
 
@@ -134,9 +135,9 @@ int main(int argc, const char* argv[])
 
     LC3_Sim::ProcessorConfig config(0, 0xfffe, 0);
     LC3_Sim::Processor proc(&reg, &simplevm, &simpleio, &simpleop, &config);
-    
+
     LC3_Sim::Processor::LoadResult res = proc.LoadData(lc3os_bin_data, lc3os_bin_data_len);
-    
+
     if (res == LC3_Sim::Processor::lrSuccess)
         res = proc.LoadObjFile("script.obj");
 
