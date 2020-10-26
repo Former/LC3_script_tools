@@ -44,6 +44,15 @@ foreach (cur_file ${src_files})
     BuildObjFile(out_obj_file ${out_asm_file} ${cur_file} ${LC3AS64W} ${CORRECT64W_EXE} ${OUT_DIR}64W)
     AddSpeedTest(${LC3SIM_CPP64W} ${out_obj_file} ${cur_file} "sim_cpp64w" ${DEFAULT_OUT} ${TYPE_OUT_STDOUT})
 
+    # Not DTU files
+    BuildAsmFile(out_asm_file ${cur_file} ${LC3_32_TARGET_LCC_NAME} ${OUT_DIR}32_notdtu)
+
+    BuildObjFile(out_obj_file ${out_asm_file} ${cur_file} ${LC3AS32} ${CORRECT32_EXE} ${OUT_DIR}32_notdtu)
+
+    AddSpeedTest(${LC3SIM_C32} ${out_obj_file} ${cur_file} "sim32_notdtu" ${DEFAULT_OUT} ${TYPE_OUT_STDOUT})
+    AddSpeedTest(${LC3SIM_CPP32} ${out_obj_file} ${cur_file} "sim_cpp32_notdtu" ${DEFAULT_OUT} ${TYPE_OUT_STDOUT})
+
+    # Native test
     BuildNative(out_native_file ${cur_file})
     AddSpeedTest("null" ${out_native_file} ${cur_file} "nativeO0" ${DEFAULT_OUT} ${TYPE_OUT_NATIVE})
 endforeach()
