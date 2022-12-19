@@ -539,14 +539,14 @@ static void epilogue(Node p,int* x,int* y,int* yflag,int* destflag) {
 	}
 }
 
-char* filename;
+char* filename_32bit;
 /************************************************************
   progend
   last thing called, can emit any back end specific things
  *************************************************************/
 static void progend(void){
 	print(".END\n\n");
-    free(filename);
+    free(filename_32bit);
 }
 
 
@@ -559,15 +559,15 @@ static void progbeg(int argc, char *argv[]) {
 	int i;
 
 
-    filename = (char*) malloc(strlen(firstfile));
-    strcpy(filename, firstfile);
+    filename_32bit = (char*) malloc(strlen(firstfile));
+    strcpy(filename_32bit, firstfile);
     i = 0;
-    while(filename[i]!='.' && filename[i]!='\0') {
-        if(!isalnum(filename[i]))
-		filename[i] = '_';
+    while(filename_32bit[i]!='.' && filename_32bit[i]!='\0') {
+        if(!isalnum(filename_32bit[i]))
+		filename_32bit[i] = '_';
         i++;
     }
-    filename[i] = '\0';
+    filename_32bit[i] = '\0';
 
 	{
 		union {
@@ -1478,9 +1478,9 @@ static void import(Symbol p) {
 static void defsymbol(Symbol p) {
 	// FixMe: for some reason this doesn't work (i.e. the default case is executed)
 	if (p->scope >= LOCAL && p->sclass == STATIC)
-		p->x.name = stringf("L%d_%s", genlabel(1), filename);
+		p->x.name = stringf("L%d_%s", genlabel(1), filename_32bit);
 	else if (p->generated)
-		p->x.name = stringf("L%s_%s", p->name, filename);
+		p->x.name = stringf("L%s_%s", p->name, filename_32bit);
 	else {
 		assert(p->scope != CONSTANTS || isint(p->type) || isptr(p->type));
 		p->x.name = p->name;

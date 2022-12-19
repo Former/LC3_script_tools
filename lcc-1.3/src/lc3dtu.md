@@ -548,14 +548,14 @@ static void epilogue(Node p,int* x,int* y,int* yflag,int* destflag) {
 	}
 }
 
-char* filename;
+char* filename_dtu;
 /************************************************************
   progend
   last thing called, can emit any back end specific things
  *************************************************************/
 static void progend(void){
 	printf(".END\n\n");
-    free(filename);
+    free(filename_dtu);
 }
 
 
@@ -568,15 +568,15 @@ static void progbeg(int argc, char *argv[]) {
 	int i;
 
 
-    filename = (char*) malloc(strlen(firstfile));
-    strcpy(filename, firstfile);
+    filename_dtu = (char*) malloc(strlen(firstfile));
+    strcpy(filename_dtu, firstfile);
     i = 0;
-    while(filename[i]!='.' && filename[i]!='\0') {
-        if(!isalnum(filename[i]))
-		filename[i] = '_';
+    while(filename_dtu[i]!='.' && filename_dtu[i]!='\0') {
+        if(!isalnum(filename_dtu[i]))
+		filename_dtu[i] = '_';
         i++;
     }
-    filename[i] = '\0';
+    filename_dtu[i] = '\0';
 
 	{
 		union {
@@ -1458,9 +1458,9 @@ static void import(Symbol p) {
  *************************************************************/
 static void defsymbol(Symbol p) {
 	if (p->scope >= LOCAL && p->sclass == STATIC)
-		p->x.name = stringf("L%d_%s", genlabel(1), filename);
+		p->x.name = stringf("L%d_%s", genlabel(1), filename_dtu);
 	else if (p->generated)
-		p->x.name = stringf("L%s_%s", p->name, filename);
+		p->x.name = stringf("L%s_%s", p->name, filename_dtu);
 	else {
 		assert(p->scope != CONSTANTS || isint(p->type) || isptr(p->type));
 		p->x.name = p->name;

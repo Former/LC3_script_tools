@@ -36,11 +36,11 @@ set(SRCS
 	profio.c
 	symbolic.c
 
-	dagcheck.c
-	lc3.c
-	lc3_32bit.c
-	lc3dtu.c
-	lc3dtu_32bit.c
+	#dagcheck.c
+	#lc3.c
+	#lc3_32bit.c
+	#lc3dtu.c
+	#lc3dtu_32bit.c
 	#sparc.c
 	#x86.c
 	#x86linux.c
@@ -89,6 +89,14 @@ endforeach()
 
 add_executable(rcc
 	main.c
+	dagcheck.c
+	lc3.c
+	lc3_32bit.c
+	lc3dtu.c
+	lc3dtu_32bit.c
+	#sparc.c
+	#x86.c
+	#x86linux.c
 	)
 target_compile_options(rcc PRIVATE ${COMPILE_FLAG} ${EXTRA_COMPILE_OPTIONS})
 set_target_properties(rcc PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${INSTALL_DIR}/")
