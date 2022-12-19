@@ -12,9 +12,9 @@ LC3 script toolchain based on sources - https://github.com/edga/lc3 commit c7e82
 
 ## Before compile
 
-Install cmake, compiler and libs:
+Install cmake, compiler and libs (for altlinux):
 
-`sudo aptitude install cmake gcc g++ libncurses5-dev`
+`sudo apt-get install build-environment ctest gcc-c++ flex libncurses-devel`
 
 ## Chages
 
