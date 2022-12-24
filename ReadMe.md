@@ -2,6 +2,10 @@
 
 LC3 script toolchain based on sources - https://github.com/edga/lc3 commit c7e8222bd74923f02a80986c83197796a725136c
 
+## Video instruction
+
+https://vk.com/video-210998646_456239037
+
 ## Dirs
 
 * `/tests`: Regress, unit and speed tests.
