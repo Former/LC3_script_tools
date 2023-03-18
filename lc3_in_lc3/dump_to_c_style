@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# Example
+# dump_to_c_style myfile 4
+
+file=$1
+format=$2
+if [ -z $format ]
+then
+     format=4
+fi
+
+lines=$(xxd -ps -c $format $file)
+
+var_name=$(echo $file | sed "s!\.!_!g")
+len_name="_len"
+var_len_name="$var_name$len_name"
+
+echo "const unsigned int $var_name[] = {"
+
+let i=0
+for byte in $lines
+do
+    echo -n "   0x$byte,"
+    i=$(($i+1))
+    if (( $i >= 5 )); then
+        echo ""
+        i=0
+    fi
+done
+
+echo "}"
+
+echo "const unsigned int $var_len_name = $(echo "$lines" | wc -l);"
+
